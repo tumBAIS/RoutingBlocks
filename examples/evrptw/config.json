@@ -1,0 +1,32 @@
+{
+  "adaptive_smoothing_factor": 0.2,
+  "min_removed_customer_percentage": 0.1,
+  "max_removed_customer_percentage": 0.5,
+  "new_best_feasible_score": 9,
+  "new_best_score": 4,
+  "new_improvement_score": 1,
+  "num_starting_solutions": 10,
+  "adaptive_period_length": 50,
+  "penalty_period_length": 50,
+  "delta_local_search": 0.5,
+  "delta_frvcp": 0.25,
+  "target_feasibility_ratios": [
+    0.9,
+    0.9,
+    0.9
+  ],
+  "penalty_increase_factor": 1.2,
+  "penalty_decrease_factor": 0.8,
+  "use_best_improvement": true,
+  "shuffle_operators": false,
+  "distance_weight": 0.75,
+  "demand_weight": 0.1,
+  "time_weight": 0.1,
+  "shaw_exponent": 4,
+  "tw_shift_weight": 1,
+  "slack_weight": 1,
+  "vehicle_decrease_period_length": 250,
+  "worst_removal_blink_probability": 0.01,
+  "best_insertion_blink_probability": 0.15,
+  "granularity": 30
+}

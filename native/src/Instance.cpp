@@ -1,0 +1,48 @@
+#include "vrpis/Instance.h"
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
+#include <algorithm>
+#include <iostream>
+
+using namespace vrpis;
+
+Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> arcs, int fleetSize)
+    : _vertices(std::move(vertices)), _arcs(std::move(arcs)), _fleet_size(fleetSize) {
+    // vertices should be ordered as [depot, cust_1, ..., cust_n, station_1, ..., station_n]
+    auto next_vertex = _vertices.begin();
+    size_t next_vertex_id = 0;
+
+    if (!next_vertex->is_depot || next_vertex->id != next_vertex_id) {
+        throw std::runtime_error("Depot is not first vertex");
+    }
+
+    for (next_vertex = std::next(next_vertex), next_vertex_id = 1; !next_vertex->is_station;
+         ++next_vertex, ++next_vertex_id) {
+        if (next_vertex->is_depot || next_vertex->is_station || next_vertex->id != next_vertex_id) {
+            throw std::runtime_error(fmt::format(
+                "expected vertex {} to have id {} and to be a customer (not a station or depot)",
+                *next_vertex, next_vertex_id));
+        }
+    }
+
+    _number_of_customers = next_vertex_id - 1;  // Account for depot
+    _number_of_stations = _vertices.size() - 1 - _number_of_customers;
+    _station_offset = next_vertex_id;
+
+    for (; next_vertex != _vertices.end(); ++next_vertex, ++next_vertex_id) {
+        if (next_vertex->is_depot || !next_vertex->is_station
+            || next_vertex_id != next_vertex->id) {
+            throw std::runtime_error(
+                fmt::format("expected vertex {} to have id {} and to be a station", *next_vertex,
+                            next_vertex_id));
+        }
+    }
+
+    if (_fleet_size <= 0) {
+        throw std::runtime_error(
+            "fleet size, vehicle capacity, and vehicle battery capacity must be greater than 0");
+    }
+}
+Arc::Arc(Arc::data_t data) : data(std::move(data)) {}

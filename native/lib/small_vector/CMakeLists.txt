@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
+
+project(SMALL_VECTOR VERSION 1.0 LANGUAGES CXX)
+
+
+add_library(SMALL_VECTOR INTERFACE)
+target_include_directories(SMALL_VECTOR INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+
