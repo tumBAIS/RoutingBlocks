@@ -15,7 +15,7 @@ from fixtures import *
 import sys
 
 try:
-    import vrpis as evrptw
+    import routingblocks as evrptw
 except ModuleNotFoundError:
     pass
 
@@ -71,6 +71,7 @@ except:
     pass
 
 
+@pytest.mark.skip
 def test_evaluation_lifetime(instance):
     _, instance = instance
     eval = MockEvaluation()

@@ -14,7 +14,7 @@ import helpers
 from fixtures import *
 
 try:
-    import vrpis as evrptw
+    import routingblocks as evrptw
 except ModuleNotFoundError:
     pass
 
@@ -402,7 +402,7 @@ def test_solution_node_iterators(adptw_instance: evrptw.Instance, mock_evaluatio
                                  raw_routes: List[List[int]]):
     instance = adptw_instance
     solution = evrptw.Solution(mock_evaluation, instance,
-                               [vrpis.create_route(mock_evaluation, instance, route) for route in raw_routes])
+                               [routingblocks.create_route(mock_evaluation, instance, route) for route in raw_routes])
     expected_number_of_non_depot_nodes = sum(len(route) for route in raw_routes)
     expected_number_of_insertion_points = expected_number_of_non_depot_nodes + len(
         raw_routes)  # Begin depot is a valid insertion point

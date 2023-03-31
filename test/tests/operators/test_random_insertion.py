@@ -14,7 +14,7 @@ import helpers
 from fixtures import *
 
 try:
-    import vrpis as alns
+    import routingblocks as alns
 except ModuleNotFoundError:
     pass
 

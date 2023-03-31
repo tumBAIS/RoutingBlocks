@@ -1,11 +1,11 @@
 from typing import Iterable, Callable, TypeVar
 from collections.abc import Sequence
 
-import vrpis
+import routingblocks
 
 T = TypeVar('T')
 MoveSelector = Callable[[Iterable[T]], T]
-import vrpis as alns
+import routingblocks as alns
 
 
 def first_move_selector(moves: Iterable[T]) -> T:
@@ -59,7 +59,7 @@ def blink_selector_factory(blink_probability: float, randgen: alns.Random) -> Mo
     return select
 
 
-def random_selector_factory(rangen: vrpis.Random):
+def random_selector_factory(rangen: routingblocks.Random):
     def select(moves: Iterable[T]) -> T:
         # TODO Improve
         if not isinstance(moves, Sequence):

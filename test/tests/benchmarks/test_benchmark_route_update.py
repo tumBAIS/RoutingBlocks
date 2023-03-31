@@ -9,8 +9,8 @@ import helpers
 
 from fixtures import *
 
-import vrpis as alns
-from vrpis import niftw
+import routingblocks as alns
+from routingblocks import niftw
 
 
 @dataclass

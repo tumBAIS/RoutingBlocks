@@ -3,8 +3,8 @@ from __future__ import annotations
 from fixtures import *
 
 try:
-    import vrpis as alns
-    from vrpis import adptw
+    import routingblocks as alns
+    from routingblocks import adptw
 except ModuleNotFoundError:
     pass
 

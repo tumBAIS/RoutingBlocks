@@ -5,7 +5,7 @@ from typing import List
 
 import pytest
 
-import vrpis
+import routingblocks
 
 
 class MockLabel:
@@ -25,12 +25,12 @@ class MockLabel:
         return str(self.state)
 
 
-class MockEvaluation(vrpis.PyConcatenationBasedEvaluation):
+class MockEvaluation(routingblocks.PyConcatenationBasedEvaluation):
     @dataclass
     class ConcatenationCall:
         fwd: MockLabel
         bwd: MockLabel
-        vertex: vrpis.Vertex
+        vertex: routingblocks.Vertex
 
         def __str__(self):
             return f"{self.vertex.id}"
@@ -38,9 +38,9 @@ class MockEvaluation(vrpis.PyConcatenationBasedEvaluation):
     @dataclass
     class ForwardEvaluationCall:
         pred_label: MockLabel
-        pred_vertex: vrpis.Vertex
-        vertex: vrpis.Vertex
-        arc: vrpis.Arc
+        pred_vertex: routingblocks.Vertex
+        vertex: routingblocks.Vertex
+        arc: routingblocks.Arc
 
         def __str__(self):
             return f"{self.pred_vertex.id} -> {self.vertex.id}"
@@ -48,20 +48,20 @@ class MockEvaluation(vrpis.PyConcatenationBasedEvaluation):
     @dataclass
     class BackwardEvaluationCall:
         succ_label: MockLabel
-        succ_vertex: vrpis.Vertex
-        vertex: vrpis.Vertex
-        arc: vrpis.Arc
+        succ_vertex: routingblocks.Vertex
+        vertex: routingblocks.Vertex
+        arc: routingblocks.Arc
 
         def __str__(self):
             return f"{self.vertex.id} -> {self.succ_vertex.id}"
 
     @dataclass
     class CreateForwardLabelCall:
-        vertex: vrpis.Vertex
+        vertex: routingblocks.Vertex
 
     @dataclass
     class CreateBackwardLabelCall:
-        vertex: vrpis.Vertex
+        vertex: routingblocks.Vertex
 
     @dataclass
     class ComputeCostCall:
@@ -76,7 +76,7 @@ class MockEvaluation(vrpis.PyConcatenationBasedEvaluation):
         fwd: MockLabel
 
     def __init__(self):
-        vrpis.PyConcatenationBasedEvaluation.__init__(self)
+        routingblocks.PyConcatenationBasedEvaluation.__init__(self)
         self.ops = []
 
     def reset(self):
@@ -98,7 +98,7 @@ class MockEvaluation(vrpis.PyConcatenationBasedEvaluation):
         self.ops.append(MockEvaluation.CreateBackwardLabelCall(vertex))
         return MockLabel(hash(('depot_bwd', vertex.vertex_id)))
 
-    def concatenate(self, fwd: MockLabel, bwd: MockLabel, vertex: vrpis.Vertex) -> float:
+    def concatenate(self, fwd: MockLabel, bwd: MockLabel, vertex: routingblocks.Vertex) -> float:
         self.ops.append(MockEvaluation.ConcatenationCall(fwd, bwd, vertex))
         return 0
 

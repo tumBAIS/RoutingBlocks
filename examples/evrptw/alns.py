@@ -6,18 +6,18 @@ from copy import deepcopy
 import itertools
 import sys
 
-from vrpis.operators import best_insert, WorstRemovalOperator, blink_selector_factory, first_move_selector
-from vrpis.operators.route_removal import RouteRemoveOperator
+from routingblocks.operators import best_insert, WorstRemovalOperator, blink_selector_factory, first_move_selector
+from routingblocks.operators.route_removal import RouteRemoveOperator
 from .operators import create_shaw_remove_operator, create_related_remove_operator
 from .instance import Instance as ADPTWInstance
 from .utility import distribute_randomly
 from .parameters import ALNSParams
 
-import vrpis
+import routingblocks
 
 
-def create_reduced_arc_set(instance: vrpis.Instance, py_instance: ADPTWInstance, n_neighbours: int) -> vrpis.ArcSet:
-    arc_set = vrpis.ArcSet(instance.number_of_vertices)
+def create_reduced_arc_set(instance: routingblocks.Instance, py_instance: ADPTWInstance, n_neighbours: int) -> routingblocks.ArcSet:
+    arc_set = routingblocks.ArcSet(instance.number_of_vertices)
     for i in range(1, instance.number_of_vertices):
         sorted_arcs = sorted(
             ((j, py_instance.arcs[instance.get_vertex(i).str_id, instance.get_vertex(j).str_id]) for j in
@@ -32,7 +32,7 @@ class CostComponentTracker:
         self._last_penalites = []
         self._window_length = window_length
 
-    def _get_cost_components(self, solution: vrpis.Solution):
+    def _get_cost_components(self, solution: routingblocks.Solution):
         return solution.cost_components[1:]
 
     @property
@@ -43,34 +43,34 @@ class CostComponentTracker:
             for i in range(len(self._last_penalites[0]))
         ]
 
-    def register(self, solution: vrpis.Solution):
+    def register(self, solution: routingblocks.Solution):
         self._last_penalites.append(self._get_cost_components(solution))
         if len(self._last_penalites) > self._window_length:
             self._last_penalites.pop(0)
 
 
 class ALNS:
-    def __init__(self, evaluation: vrpis.Evaluation, py_instance: ADPTWInstance, cpp_instance: vrpis.Instance,
+    def __init__(self, evaluation: routingblocks.Evaluation, py_instance: ADPTWInstance, cpp_instance: routingblocks.Instance,
                  params: ALNSParams, seed: int):
         self._evaluation = evaluation
         self._py_instance = py_instance
         self._cpp_instance = cpp_instance
         self._params = params
         # Initialize random engines
-        self._random = vrpis.Random(seed)
+        self._random = routingblocks.Random(seed)
         self._py_random = random.Random(seed)
 
         # Create and configure algorithmic components
-        self._adaptive_large_neighborhood = vrpis.AdaptiveLargeNeighborhood(self._random,
+        self._adaptive_large_neighborhood = routingblocks.AdaptiveLargeNeighborhood(self._random,
                                                                             self._params.adaptive_smoothing_factor)
-        self._local_search = vrpis.LocalSearch(self._cpp_instance, evaluation, None)
+        self._local_search = routingblocks.LocalSearch(self._cpp_instance, evaluation, None)
         self._local_search.set_use_best_improvement(self._params.use_best_improvement)
 
         # Compute the granular neighborhood
         self._reduced_arc_set = create_reduced_arc_set(self._cpp_instance, self._py_instance, self._params.granularity)
 
         # Create specialized FRVCP solver
-        self._frvcp = vrpis.adptw.FRVCP(self._cpp_instance, self._py_instance.parameters.battery_capacity_time)
+        self._frvcp = routingblocks.adptw.FRVCP(self._cpp_instance, self._py_instance.parameters.battery_capacity_time)
 
         # Create cost component tracker
         self._cost_component_tracker = \
@@ -80,7 +80,7 @@ class ALNS:
         self._evaluation.penalty_factors = [1., *self._params.initial_penalties]
 
         # Initialize state
-        self._current_solution: vrpis.Solution = None
+        self._current_solution: routingblocks.Solution = None
         self._best_solution = None
         self._best_feasible_solution = None
         self._start_time = None
@@ -103,17 +103,17 @@ class ALNS:
 
     def _configure_local_search_operators(self):
         self._operators = [
-            vrpis.SwapOperator_0_1(self._cpp_instance, self._reduced_arc_set),
-            vrpis.SwapOperator_0_2(self._cpp_instance, self._reduced_arc_set),
-            vrpis.SwapOperator_0_3(self._cpp_instance, self._reduced_arc_set),
-            vrpis.SwapOperator_1_1(self._cpp_instance, self._reduced_arc_set),
-            vrpis.InterRouteTwoOptOperator(self._cpp_instance, self._reduced_arc_set),
-            vrpis.InsertStationOperator(self._cpp_instance),
-            vrpis.RemoveStationOperator(self._cpp_instance)
+            routingblocks.SwapOperator_0_1(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.SwapOperator_0_2(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.SwapOperator_0_3(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.SwapOperator_1_1(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.InterRouteTwoOptOperator(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.InsertStationOperator(self._cpp_instance),
+            routingblocks.RemoveStationOperator(self._cpp_instance)
         ]
 
     def _configure_destroy_operators(self):
-        self._adaptive_large_neighborhood.add_destroy_operator(vrpis.RandomRemoveOperator(self._random))
+        self._adaptive_large_neighborhood.add_destroy_operator(routingblocks.RandomRemoveOperator(self._random))
         self._adaptive_large_neighborhood.add_destroy_operator(RouteRemoveOperator(self._random))
         self._adaptive_large_neighborhood.add_destroy_operator(
             create_related_remove_operator(self._py_instance, self._cpp_instance, self._random,
@@ -128,7 +128,7 @@ class ALNS:
                                                         self._random)))
 
     def _configure_repair_operators(self):
-        self._adaptive_large_neighborhood.add_repair_operator(vrpis.RandomInsertionOperator(self._random))
+        self._adaptive_large_neighborhood.add_repair_operator(routingblocks.RandomInsertionOperator(self._random))
         self._adaptive_large_neighborhood.add_repair_operator(
             best_insert.BestInsertionOperator(self._cpp_instance, first_move_selector))
         self._adaptive_large_neighborhood.add_repair_operator(
@@ -136,19 +136,19 @@ class ALNS:
                                               blink_selector_factory(self._params.best_insertion_blink_probability,
                                                                      self._random)))
 
-    def _apply_dp(self, _solution: vrpis.Solution) -> vrpis.Solution:
-        optimized_routes = [vrpis.create_route(self._evaluation, self._cpp_instance,
+    def _apply_dp(self, _solution: routingblocks.Solution) -> routingblocks.Solution:
+        optimized_routes = [routingblocks.create_route(self._evaluation, self._cpp_instance,
                                                self._frvcp.optimize([x.vertex_id for x in route])[1:-1]) for route
                             in
                             _solution]
-        return vrpis.Solution(self._evaluation, self._cpp_instance,
+        return routingblocks.Solution(self._evaluation, self._cpp_instance,
                               [route for route in optimized_routes if not route.empty or not _solution.feasible])
 
     def _generate_random_solution(self):
         customers = [x.vertex_id for x in self._cpp_instance.customers]
         while True:
-            sol = vrpis.Solution(self._evaluation, self._cpp_instance,
-                                 [vrpis.create_route(self._evaluation, self._cpp_instance, r) for r in
+            sol = routingblocks.Solution(self._evaluation, self._cpp_instance,
+                                 [routingblocks.create_route(self._evaluation, self._cpp_instance, r) for r in
                                   distribute_randomly(customers, self._cpp_instance.fleet_size,
                                                       self._random)])
             self._local_search.optimize(sol, self._operators)
@@ -166,7 +166,7 @@ class ALNS:
     def _best_feasible_obj(self):
         return self._best_feasible_solution.cost if self._best_feasible_solution else sys.float_info.max
 
-    def _make_feasible(self, solution: vrpis.Solution):
+    def _make_feasible(self, solution: routingblocks.Solution):
         penalty_factors = self._evaluation.penalty_factors
         self._evaluation.penalty_factors = [penalty_factors[0], penalty_factors[1] * 100.,
                                             penalty_factors[2] * 100.,
@@ -174,7 +174,7 @@ class ALNS:
         self._local_search.optimize(solution, self._operators)
         self._evaluation.penalty_factors = penalty_factors
 
-    def _remove_vehicle(self, solution: vrpis.Solution):
+    def _remove_vehicle(self, solution: routingblocks.Solution):
         # Reset penalty
         current_penalties = self._evaluation.penalty_factors
         for i in range(1, len(current_penalties)):
@@ -191,7 +191,7 @@ class ALNS:
         reinsertion_operator = best_insert.BestInsertionOperator(self._cpp_instance, first_move_selector)
         reinsertion_operator.apply(self._evaluation, solution, customers)
 
-    def _accept_solution(self, solution: vrpis.Solution):
+    def _accept_solution(self, solution: routingblocks.Solution):
         score = 0
         solution_cost = solution.cost
         if solution_cost < self._current_obj:
@@ -239,9 +239,9 @@ class ALNS:
         for route in solution:
             if any(x.vertex.is_customer for x in route):
                 new_routes.append(route)
-        return vrpis.Solution(self._evaluation, self._cpp_instance, new_routes)
+        return routingblocks.Solution(self._evaluation, self._cpp_instance, new_routes)
 
-    def _generate_solution_from_lns(self, seed_solution: vrpis.Solution):
+    def _generate_solution_from_lns(self, seed_solution: routingblocks.Solution):
         sol = deepcopy(seed_solution)
         destroy_op, repair_op = self._adaptive_large_neighborhood.generate(self._evaluation, sol,
                                                                            int(self._cpp_instance.number_of_customers * self._random.uniform(

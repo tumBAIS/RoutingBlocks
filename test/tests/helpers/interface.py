@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Callable, Any
 
 try:
-    import vrpis as evrptw
+    import routingblocks as evrptw
 except ModuleNotFoundError:
     pass
 

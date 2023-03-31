@@ -4,15 +4,15 @@ from pathlib import Path
 import random
 import click
 
-import vrpis
-from vrpis import adptw as adptw
+import routingblocks
+from routingblocks import adptw as adptw
 
 from .alns import ALNS
 from .parameters import ALNSParams
 from .instance import parse_evrptw_instance, create_cpp_instance
 
 
-def compute_initial_penalties(instance: vrpis.Instance):
+def compute_initial_penalties(instance: routingblocks.Instance):
     max_demand = max([customer.demand for customer in instance.customers])
     max_dist = max(x.cost for x in instance.arcs.values())
     return [1.0, max_dist / max_demand, 10., 10.]
@@ -24,7 +24,7 @@ def parse_config(config_path: Path):
         return ALNSParams(**data)
 
 
-def format_solution(solution: vrpis.Solution):
+def format_solution(solution: routingblocks.Solution):
     return {
         'cost': solution.cost,
         'feasible': solution.feasible,

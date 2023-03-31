@@ -6,22 +6,22 @@ from itertools import islice
 from fixtures import *
 import pytest
 
-import vrpis
-from vrpis import niftw
+import routingblocks
+from routingblocks import niftw
 
 
-def iter_vertices(instance: vrpis.Instance):
+def iter_vertices(instance: routingblocks.Instance):
     for i in range(instance.number_of_vertices):
         yield instance.get_vertex(i)
 
 
-def assert_cache_equal(cache1: vrpis.RemovalCache, cache2: vrpis.RemovalCache):
+def assert_cache_equal(cache1: routingblocks.RemovalCache, cache2: routingblocks.RemovalCache):
     assert list(cache1.moves_in_order) == list(cache2.moves_in_order)
 
 
-def build_solution(evaluation: vrpis.Evaluation, instance: vrpis.Instance, raw_routes: List[List[int]]):
-    return vrpis.Solution(evaluation, instance,
-                          [vrpis.create_route(evaluation, instance, route) for route in raw_routes])
+def build_solution(evaluation: routingblocks.Evaluation, instance: routingblocks.Instance, raw_routes: List[List[int]]):
+    return routingblocks.Solution(evaluation, instance,
+                          [routingblocks.create_route(evaluation, instance, route) for route in raw_routes])
 
 
 @pytest.mark.parametrize("raw_routes,expected_number_of_moves", [
@@ -32,9 +32,9 @@ def test_removal_cache_build(instance, raw_routes, expected_number_of_moves):
     py_instance, instance = instance
     evaluation = niftw.Evaluation(py_instance.parameters.battery_capacity_time, py_instance.parameters.capacity,
                                   0.0)
-    cache = vrpis.RemovalCache(instance)
+    cache = routingblocks.RemovalCache(instance)
 
-    solution: vrpis.Solution = build_solution(evaluation, instance, raw_routes)
+    solution: routingblocks.Solution = build_solution(evaluation, instance, raw_routes)
 
     cache.rebuild(evaluation, solution)
 
@@ -60,8 +60,8 @@ def test_removal_cache_update(instance, raw_routes):
     py_instance, instance = instance
     evaluation = niftw.Evaluation(py_instance.parameters.battery_capacity_time, py_instance.parameters.capacity,
                                   0.0)
-    updated_cache = vrpis.RemovalCache(instance)
-    expected_cache = vrpis.RemovalCache(instance)
+    updated_cache = routingblocks.RemovalCache(instance)
+    expected_cache = routingblocks.RemovalCache(instance)
 
     solution = build_solution(evaluation, instance, raw_routes)
 
@@ -76,7 +76,7 @@ def test_removal_cache_update(instance, raw_routes):
     vertices = [x for route in raw_routes for x in route]
     while len(vertices) > 0:
         vertex_id = vertices.pop()
-        location: vrpis.NodeLocation = solution.find(vertex_id)[0]
+        location: routingblocks.NodeLocation = solution.find(vertex_id)[0]
         solution.remove_vertex(location)
         updated_cache.invalidate_route(solution[location.route], location.route)
 

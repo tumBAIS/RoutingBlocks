@@ -4,8 +4,8 @@ from typing import Tuple, Callable, Dict, List, TypeVar, Union
 
 from fixtures import *
 
-import vrpis as evrptw
-from vrpis import niftw
+import routingblocks as evrptw
+from routingblocks import niftw
 
 
 def create_solution(evaluation, instance: evrptw.Instance, routes: List[evrptw.Route]):

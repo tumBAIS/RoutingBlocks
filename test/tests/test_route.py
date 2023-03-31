@@ -8,7 +8,7 @@ import pytest
 from fixtures import *
 
 try:
-    import vrpis as evrptw
+    import routingblocks as evrptw
 except ModuleNotFoundError:
     pass
 

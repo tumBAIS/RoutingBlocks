@@ -15,9 +15,9 @@ import helpers
 from fixtures import *
 
 try:
-    import vrpis as alns
-    from vrpis import adptw
-    from vrpis import niftw
+    import routingblocks as alns
+    from routingblocks import adptw
+    from routingblocks import niftw
 except ModuleNotFoundError:
     pass
 

@@ -1,18 +1,18 @@
 from typing import List
 
-import vrpis
+import routingblocks
 
 
-class RouteRemoveOperator(vrpis.DestroyOperator):
-    def __init__(self, rng: vrpis.Random):
+class RouteRemoveOperator(routingblocks.DestroyOperator):
+    def __init__(self, rng: routingblocks.Random):
         # Important: Do not use super()!
-        vrpis.DestroyOperator.__init__(self)
+        routingblocks.DestroyOperator.__init__(self)
         self._rng = rng
 
-    def can_apply_to(self, _solution: vrpis.Solution) -> bool:
+    def can_apply_to(self, _solution: routingblocks.Solution) -> bool:
         return len(_solution) > 0
 
-    def apply(self, evaluation: vrpis.Evaluation, _solution: vrpis.Solution, number_of_removed_vertices: int) -> List[
+    def apply(self, evaluation: routingblocks.Evaluation, _solution: routingblocks.Solution, number_of_removed_vertices: int) -> List[
         int]:
         # Try to remove random routes
         removed_customers = []

@@ -2,14 +2,14 @@ from typing import List
 import math
 import pytest
 
-import vrpis
-from vrpis.operators.related_removal import RelatedVertexRemovalMove, RelatedRemovalOperator
+import routingblocks
+from routingblocks.operators.related_removal import RelatedVertexRemovalMove, RelatedRemovalOperator
 from fixtures import *
 
 
 def create_solution(instance, evaluation, raw_routes):
-    return vrpis.Solution(evaluation, instance,
-                          [vrpis.create_route(evaluation, instance, route) for route in raw_routes])
+    return routingblocks.Solution(evaluation, instance,
+                          [routingblocks.create_route(evaluation, instance, route) for route in raw_routes])
 
 
 class MockSeedSelector:
@@ -65,7 +65,7 @@ def create_relatedness_matrix(instance, expected_moves: List[RelatedVertexRemova
          # Pick 2 as initial seed
          # Then most related vertex 3
          # Then most related vertex 4
-     ], [vrpis.NodeLocation(0, 2), vrpis.NodeLocation(1, 2), vrpis.NodeLocation(1, 3)]),
+     ], [routingblocks.NodeLocation(0, 2), routingblocks.NodeLocation(1, 2), routingblocks.NodeLocation(1, 3)]),
     ([
          [1, 2],
          [3, 4, 5],
@@ -73,7 +73,7 @@ def create_relatedness_matrix(instance, expected_moves: List[RelatedVertexRemova
          # Pick 2 as initial seed
          # Then most related vertex 3
          # Then most related vertex 4
-     ], [vrpis.NodeLocation(0, 2), vrpis.NodeLocation(1, 2), vrpis.NodeLocation(1, 3), vrpis.NodeLocation(1, 1)])
+     ], [routingblocks.NodeLocation(0, 2), routingblocks.NodeLocation(1, 2), routingblocks.NodeLocation(1, 3), routingblocks.NodeLocation(1, 1)])
 ])
 def test_related_remove(instance, mock_evaluation, cluster_size, raw_routes, expected_moves):
     py_instance, instance = instance
@@ -81,7 +81,7 @@ def test_related_remove(instance, mock_evaluation, cluster_size, raw_routes, exp
     solution = create_solution(instance, mock_evaluation, raw_routes)
 
     number_of_vertices_to_remove = len(expected_moves)
-    expected_moves: List[vrpis.NodeLocation] = expected_moves[:number_of_vertices_to_remove + 1]
+    expected_moves: List[routingblocks.NodeLocation] = expected_moves[:number_of_vertices_to_remove + 1]
     expected_moves: List[RelatedVertexRemovalMove] = [
         RelatedVertexRemovalMove(solution[x.route][x.position].vertex_id, 1., x) for x in expected_moves]
 

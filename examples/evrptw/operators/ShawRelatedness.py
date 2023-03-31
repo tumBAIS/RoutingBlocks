@@ -1,10 +1,10 @@
-import vrpis
+import routingblocks
 from sys import float_info
 from evrptw.instance import Instance
 
 
 class ShawRelatedness:
-    def __init__(self, py_instance: Instance, cpp_instance: vrpis.Instance, distance_weight: float,
+    def __init__(self, py_instance: Instance, cpp_instance: routingblocks.Instance, distance_weight: float,
                  demand_weight: float,
                  time_weight: float):
         self._py_instance = py_instance

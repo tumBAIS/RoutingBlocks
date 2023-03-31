@@ -2,14 +2,14 @@ from dataclasses import dataclass
 from typing import List, Iterator, Iterable, Set
 from itertools import islice
 
-import vrpis
-import vrpis as alns
+import routingblocks
+import routingblocks as alns
 
 
 @dataclass
 class InsertionMove:
     vertex_id: int
-    after_node: vrpis.NodeLocation
+    after_node: routingblocks.NodeLocation
     delta_cost: float
 
     def __str__(self):
@@ -17,9 +17,9 @@ class InsertionMove:
 
 
 class InsertionCache:
-    def __init__(self, instance: vrpis.Instance):
+    def __init__(self, instance: routingblocks.Instance):
         self._instance = instance
-        self._evaluation: vrpis.Evaluation = None
+        self._evaluation: routingblocks.Evaluation = None
         self._best_insertions: List[List[InsertionMove]] = [list() for _ in range(instance.number_of_vertices)]
         self._active_vertices: Set[int] = set()
 
@@ -27,13 +27,13 @@ class InsertionCache:
         for insertion_points in self._best_insertions:
             insertion_points.sort(key=lambda insertion: insertion.delta_cost)
 
-    def _calculate_best_insertions(self, route: vrpis.Route, route_index: int,
+    def _calculate_best_insertions(self, route: routingblocks.Route, route_index: int,
                                    vertex_ids: Iterable[int]):
         for pos, (pred, succ) in enumerate(zip(route, islice(route, 1, None))):
             for vertex_id in vertex_ids:
-                cost = vrpis.evaluate_insertion(self._evaluation, self._instance, route, pos, vertex_id)
+                cost = routingblocks.evaluate_insertion(self._evaluation, self._instance, route, pos, vertex_id)
                 self._best_insertions[vertex_id].append(
-                    InsertionMove(vertex_id, vrpis.NodeLocation(route_index, pos), cost))
+                    InsertionMove(vertex_id, routingblocks.NodeLocation(route_index, pos), cost))
 
     def clear(self):
         for insertion_points in self._best_insertions:
@@ -41,7 +41,7 @@ class InsertionCache:
         self._active_vertices.clear()
         self._evaluation = None
 
-    def rebuild(self, evaluation: vrpis.Evaluation, solution: vrpis.Solution, vertex_ids: Iterable[int]):
+    def rebuild(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution, vertex_ids: Iterable[int]):
         self.clear()
         self._evaluation = evaluation
         for route_index, route in enumerate(solution):
@@ -50,7 +50,7 @@ class InsertionCache:
         self._active_vertices = set(vertex_ids)
         self._sort_insertions()
 
-    def _update_route(self, route: vrpis.Route, route_index: int):
+    def _update_route(self, route: routingblocks.Route, route_index: int):
         self._calculate_best_insertions(route, route_index, self._active_vertices)
         self._sort_insertions()
 
@@ -64,7 +64,7 @@ class InsertionCache:
             self._best_insertions[i][:] = [insertion for insertion in insertion_points if
                                            insertion.after_node.route != route_index]
 
-    def invalidate_route(self, route: vrpis.Route, route_index: int):
+    def invalidate_route(self, route: routingblocks.Route, route_index: int):
         self._invalidate_route(route_index)
         # Recalculate
         self._update_route(route, route_index)

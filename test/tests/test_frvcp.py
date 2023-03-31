@@ -12,8 +12,8 @@ from fixtures import *
 import sys
 
 try:
-    import vrpis as evrptw
-    from vrpis import adptw
+    import routingblocks as evrptw
+    from routingblocks import adptw
 
 
     class MockLabel:
@@ -113,7 +113,7 @@ def test_frvcp_routes(large_instance):
         sol = evrptw.Solution(evaluation, instance,
                               [evrptw.create_route(evaluation, instance, picked_customers),
                                *(evrptw.Route(evaluation, instance) for _ in range(instance.fleet_size - 1))])
-        local_search.optimize(sol, [vrpis.SwapOperator_0_1(instance, None)])
+        local_search.optimize(sol, [routingblocks.SwapOperator_0_1(instance, None)])
         for r in sol:
             if r.empty:
                 continue

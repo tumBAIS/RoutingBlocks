@@ -17,8 +17,8 @@ from fixtures import *
 import sys
 
 try:
-    import vrpis as alns
-    from vrpis import adptw
+    import routingblocks as alns
+    from routingblocks import adptw
 except ModuleNotFoundError:
     pass
 

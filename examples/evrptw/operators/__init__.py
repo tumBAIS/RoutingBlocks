@@ -1,12 +1,12 @@
-import vrpis
+import routingblocks
 from examples.evrptw.operators.ShawMoveSelector import ShawMoveSelector
 from examples.evrptw.operators.ShawRelatedness import ShawRelatedness
 from examples.evrptw.operators.SpatioTemporalRelatedness import SpatioTemporalRelatedness
-from vrpis.operators.related_removal import RelatedRemovalOperator, build_relatedness_matrix
-from vrpis.operators.move_selectors import random_selector_factory, first_move_selector
+from routingblocks.operators.related_removal import RelatedRemovalOperator, build_relatedness_matrix
+from routingblocks.operators.move_selectors import random_selector_factory, first_move_selector
 
 
-def create_shaw_remove_operator(py_instance, cpp_instance, randgen: vrpis.Random, distance_weight=1.0,
+def create_shaw_remove_operator(py_instance, cpp_instance, randgen: routingblocks.Random, distance_weight=1.0,
                                 demand_weight=1.0, time_weight=1.0, shaw_exponent=1.0):
     relatedness_matrix = build_relatedness_matrix(cpp_instance,
                                                   ShawRelatedness(py_instance, cpp_instance,
@@ -19,7 +19,7 @@ def create_shaw_remove_operator(py_instance, cpp_instance, randgen: vrpis.Random
         initial_seed_selector=first_move_selector)
 
 
-def create_related_remove_operator(py_instance, cpp_instance, randgen: vrpis.Random, tw_shift_weight, slack_weight):
+def create_related_remove_operator(py_instance, cpp_instance, randgen: routingblocks.Random, tw_shift_weight, slack_weight):
     relatedness_matrix = build_relatedness_matrix(cpp_instance,
                                                   SpatioTemporalRelatedness(py_instance, cpp_instance,
                                                                             slack_weight=slack_weight,

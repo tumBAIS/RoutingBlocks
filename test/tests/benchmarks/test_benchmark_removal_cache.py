@@ -7,15 +7,15 @@ import pytest
 
 from fixtures import *
 
-import vrpis
-from vrpis import niftw
+import routingblocks
+from routingblocks import niftw
 
 from .reference.removal_cache import RemovalCache, RemovalMove
 
 
-def build_solution(evaluation: vrpis.Evaluation, instance: vrpis.Instance, raw_routes: List[List[int]]):
-    return vrpis.Solution(evaluation, instance,
-                          [vrpis.create_route(evaluation, instance, route) for route in raw_routes])
+def build_solution(evaluation: routingblocks.Evaluation, instance: routingblocks.Instance, raw_routes: List[List[int]]):
+    return routingblocks.Solution(evaluation, instance,
+                          [routingblocks.create_route(evaluation, instance, route) for route in raw_routes])
 
 
 @pytest.fixture(
@@ -25,14 +25,14 @@ def removal_cache_factory(request):
     if request.param == 'python':
         return RemovalCache
     elif request.param == 'cpp':
-        return vrpis.RemovalCache
+        return routingblocks.RemovalCache
 
 
-def benchmark_removal_cache_rebuild(removal_cache, evaluation, solution: vrpis.Solution):
+def benchmark_removal_cache_rebuild(removal_cache, evaluation, solution: routingblocks.Solution):
     removal_cache.rebuild(evaluation, solution)
 
 
-def benchmark_removal_cache_invalidate(removal_cache, route: vrpis.Route, route_index: int):
+def benchmark_removal_cache_invalidate(removal_cache, route: routingblocks.Route, route_index: int):
     removal_cache.invalidate_route(route, route_index)
 
 

@@ -1,10 +1,10 @@
-import vrpis
+import routingblocks
 from sys import float_info
 from evrptw.instance import Instance
 
 
 class SpatioTemporalRelatedness:
-    def __init__(self, py_instance: Instance, cpp_instance: vrpis.Instance, slack_weight: float,
+    def __init__(self, py_instance: Instance, cpp_instance: routingblocks.Instance, slack_weight: float,
                  tw_shift_weight: float):
         self._py_instance = py_instance
         self._cpp_id_to_vertex = [self._py_instance.vertices[x.str_id] for x in cpp_instance]

@@ -5,7 +5,7 @@ from typing import List, Callable, Set, Tuple
 from .move_selectors import MoveSelector
 from dataclasses import dataclass
 
-import vrpis
+import routingblocks
 
 RelatednessComputer = Callable[[int, int], float]
 
@@ -14,7 +14,7 @@ RelatednessComputer = Callable[[int, int], float]
 class RelatedVertexRemovalMove:
     vertex_id: int
     relatedness: float
-    location: vrpis.NodeLocation
+    location: routingblocks.NodeLocation
 
     def __hash__(self):
         return hash((self.vertex_id, self.location.route, self.location.position))
@@ -25,7 +25,7 @@ class RelatedVertexRemovalMove:
             self.location.position == other.location.position
 
 
-def build_relatedness_matrix(instance: vrpis.Instance, relatedness_computer: RelatednessComputer) -> List[
+def build_relatedness_matrix(instance: routingblocks.Instance, relatedness_computer: RelatednessComputer) -> List[
     List[float]]:
     matrix: List[List[float]] = []
     n = instance.number_of_vertices
@@ -37,23 +37,23 @@ def build_relatedness_matrix(instance: vrpis.Instance, relatedness_computer: Rel
     return matrix
 
 
-class RelatedRemovalOperator(vrpis.DestroyOperator):
+class RelatedRemovalOperator(routingblocks.DestroyOperator):
     def __init__(self, relatedness_matrix: List[List[float]],
                  move_selector: MoveSelector[RelatedVertexRemovalMove],
                  seed_selector: MoveSelector[RelatedVertexRemovalMove],
-                 initial_seed_selector: MoveSelector[vrpis.Node] = None,
+                 initial_seed_selector: MoveSelector[routingblocks.Node] = None,
                  cluster_size: int = 1):
         # Important: Do not use super()!
-        vrpis.DestroyOperator.__init__(self)
+        routingblocks.DestroyOperator.__init__(self)
         self._relatedness_matrix = relatedness_matrix
         self._move_selector = move_selector
         self._seed_selector = seed_selector
         self._initial_seed_selector = initial_seed_selector
         self._cluster_size = cluster_size
 
-        self._nodes_in_solution: List[Tuple[vrpis.NodeLocation, vrpis.Node]] = []
+        self._nodes_in_solution: List[Tuple[routingblocks.NodeLocation, routingblocks.Node]] = []
 
-    def can_apply_to(self, _solution: vrpis.Solution) -> bool:
+    def can_apply_to(self, _solution: routingblocks.Solution) -> bool:
         return len(_solution) > 0
 
     def _get_sorted_related_vertices(self, related_vertices: List[float],
@@ -70,7 +70,7 @@ class RelatedRemovalOperator(vrpis.DestroyOperator):
         related_vertices_in_solution.sort(key=lambda x: x.relatedness, reverse=True)
         return related_vertices_in_solution
 
-    def _remove_seed_and_related(self, solution: vrpis.Solution,
+    def _remove_seed_and_related(self, solution: routingblocks.Solution,
                                  removed_vertices: List[RelatedVertexRemovalMove], num_vertices_to_remove: int):
         # Pick random node from already removed vertices
         seed_move = self._seed_selector(removed_vertices)
@@ -86,20 +86,20 @@ class RelatedRemovalOperator(vrpis.DestroyOperator):
         # Convenience return, actually modifies in-place
         return removed_vertices
 
-    def _select_initial_seed(self, _solution: vrpis.Solution) -> vrpis.NodeLocation:
+    def _select_initial_seed(self, _solution: routingblocks.Solution) -> routingblocks.NodeLocation:
         return self._initial_seed_selector(x[0] for x in self._nodes_in_solution)
 
-    def _cache_nodes_in_solution(self, solution: vrpis.Solution):
+    def _cache_nodes_in_solution(self, solution: routingblocks.Solution):
         for node_location in solution.non_depot_nodes:
             self._nodes_in_solution.append((node_location, solution[node_location.route][node_location.position]))
 
-    def apply(self, evaluation: vrpis.Evaluation, _solution: vrpis.Solution, number_of_removed_vertices: int) -> List[
+    def apply(self, evaluation: routingblocks.Evaluation, _solution: routingblocks.Solution, number_of_removed_vertices: int) -> List[
         int]:
         # Cache nodes in the solution with their locations
         self._cache_nodes_in_solution(_solution)
         # Select seed node
         initial_seed_location = self._select_initial_seed(_solution)
-        # seed_node_location = vrpis.sample_locations(_solution, self._randgen, 1, False)[0]
+        # seed_node_location = routingblocks.sample_locations(_solution, self._randgen, 1, False)[0]
         seed_node = _solution[initial_seed_location.route][initial_seed_location.position]
         # Initialize removed vertices
         removed_vertices = [RelatedVertexRemovalMove(seed_node.vertex_id, 1.0, initial_seed_location)]

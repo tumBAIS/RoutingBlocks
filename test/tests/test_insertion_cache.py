@@ -7,9 +7,9 @@ from fixtures import *
 import pytest
 
 try:
-    import vrpis as alns
-    from vrpis import niftw
-    from vrpis import InsertionCache, InsertionMove
+    import routingblocks as alns
+    from routingblocks import niftw
+    from routingblocks import InsertionCache, InsertionMove
 except ImportError:
     pass
 

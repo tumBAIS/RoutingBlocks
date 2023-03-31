@@ -15,7 +15,7 @@ from fixtures import *
 import sys
 
 try:
-    import vrpis as evrptw
+    import routingblocks as evrptw
 except ModuleNotFoundError:
     pass
 
