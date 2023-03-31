@@ -38,10 +38,10 @@ target_include_directories(
 )
 
 if ( CMAKE_COMPILER_IS_GNUCC )
-    target_compile_options(main PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 if ( MSVC )
-    target_compile_options(main PRIVATE /W4)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 endif()
 
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:-O0;-g3>")
