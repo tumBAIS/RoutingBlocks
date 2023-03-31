@@ -12,7 +12,7 @@ VRPIS, but can be used for other classes of vehicle routing problems as well.
 To obtain the bleeding-edge development version, run
 
 ```bash
-pip install routingblocks git+https://github.com/tumBAIS/RoutingBlocks
+pip install git+https://github.com/tumBAIS/RoutingBlocks
 ```
 
 instead.
