@@ -9,16 +9,10 @@ VRPIS, but can be used for other classes of vehicle routing problems as well.
 
 ## Installation
 
-Stable releases of `RoutingBlocks` are available via [pip](https://pip.pypa.io/en/stable/):
-
-```bash
-pip install routingblocks
-```
-
 To obtain the bleeding-edge development version, run
 
 ```bash
-pip install routingblocks @git+https://github.com/tumBAIS/RoutingBlocks
+pip install routingblocks git+https://github.com/tumBAIS/RoutingBlocks
 ```
 
 instead.
