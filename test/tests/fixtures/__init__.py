@@ -17,6 +17,11 @@ from fixtures.mock_evaluation import *
 T = TypeVar('T')
 
 
+def create_solution(instance, evaluation, raw_routes):
+    return routingblocks.Solution(evaluation, instance,
+                                  [routingblocks.create_route(evaluation, instance, route) for route in raw_routes])
+
+
 @pytest.fixture
 def instance_parser() -> Callable[[str], InstanceType]:
     def parse_instance(instance_name: str) -> InstanceType:
@@ -79,8 +84,8 @@ def random_routes_factory():
         def create_route(vertices: List[routingblocks.Vertex]) -> routingblocks.Route:
             if len(vertices) > 0:
                 return routingblocks.create_route(evaluation, instance,
-                                          [(x.vertex_id if isinstance(x, routingblocks.Vertex) else x) for x in
-                                           vertices])
+                                                  [(x.vertex_id if isinstance(x, routingblocks.Vertex) else x) for x in
+                                                   vertices])
             return routingblocks.Route(evaluation, instance)
 
         routes = [create_route(route_vertices) for route_vertices in assigned_vertices]
@@ -108,7 +113,7 @@ def random_route_factory(random_raw_route_factory):
         if randgen is None:
             randgen = random
         return routingblocks.create_route(evaluation, instance,
-                                  random_raw_route_factory(instance, randgen, include_depot=False))
+                                          random_raw_route_factory(instance, randgen, include_depot=False))
 
     return build
 
@@ -133,9 +138,10 @@ def random_solution_factory(random_routes_factory):
               n_routes: int = None, randgen=None) -> routingblocks.Solution:
         if n_routes is None:
             n_routes = instance.fleet_size
-        return routingblocks.Solution(evaluation, instance, random_routes_factory(evaluation=evaluation, instance=instance,
-                                                                          vertices=vertices, n_routes=n_routes,
-                                                                          randgen=randgen))
+        return routingblocks.Solution(evaluation, instance,
+                                      random_routes_factory(evaluation=evaluation, instance=instance,
+                                                            vertices=vertices, n_routes=n_routes,
+                                                            randgen=randgen))
 
     return build
 

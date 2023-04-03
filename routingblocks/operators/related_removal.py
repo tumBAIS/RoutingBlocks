@@ -1,5 +1,4 @@
-import itertools
-from itertools import islice
+from __future__ import annotations
 from typing import List, Callable, Set, Tuple
 
 from .move_selectors import MoveSelector
@@ -93,7 +92,8 @@ class RelatedRemovalOperator(routingblocks.DestroyOperator):
         for node_location in solution.non_depot_nodes:
             self._nodes_in_solution.append((node_location, solution[node_location.route][node_location.position]))
 
-    def apply(self, evaluation: routingblocks.Evaluation, _solution: routingblocks.Solution, number_of_removed_vertices: int) -> List[
+    def apply(self, evaluation: routingblocks.Evaluation, _solution: routingblocks.Solution,
+              number_of_removed_vertices: int) -> List[
         int]:
         # Cache nodes in the solution with their locations
         self._cache_nodes_in_solution(_solution)

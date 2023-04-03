@@ -7,11 +7,6 @@ from routingblocks.operators.related_removal import RelatedVertexRemovalMove, Re
 from fixtures import *
 
 
-def create_solution(instance, evaluation, raw_routes):
-    return routingblocks.Solution(evaluation, instance,
-                          [routingblocks.create_route(evaluation, instance, route) for route in raw_routes])
-
-
 class MockSeedSelector:
     def __init__(self, expected_moves, cluster_size):
         self.expected_moves = expected_moves
@@ -73,7 +68,8 @@ def create_relatedness_matrix(instance, expected_moves: List[RelatedVertexRemova
          # Pick 2 as initial seed
          # Then most related vertex 3
          # Then most related vertex 4
-     ], [routingblocks.NodeLocation(0, 2), routingblocks.NodeLocation(1, 2), routingblocks.NodeLocation(1, 3), routingblocks.NodeLocation(1, 1)])
+     ], [routingblocks.NodeLocation(0, 2), routingblocks.NodeLocation(1, 2), routingblocks.NodeLocation(1, 3),
+         routingblocks.NodeLocation(1, 1)])
 ])
 def test_related_remove(instance, mock_evaluation, cluster_size, raw_routes, expected_moves):
     py_instance, instance = instance
