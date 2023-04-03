@@ -28,10 +28,26 @@ class StationSeedSelector:
 
 
 class StationVicinityRemovalOperator(routingblocks.DestroyOperator):
+    """
+    Station vicinity removal is a specialized cluster removal operator designed to reorder customer visits in the
+    vicinity of recharging stations. The operator defines the vicinity of a station by selecting a random radius
+    based on a percentage of the maximum distance between vertices. It then randomly chooses a recharging station
+    and removes the station along with vertices within the selected radius, repeating this process until the
+    desired number of vertices are removed.
+    """
+
     def __init__(self, instance: routingblocks.Instance,
                  get_distance: Callable[[routingblocks.Vertex, routingblocks.Vertex], float],
                  min_radius_factor: float, max_radius_factor: float,
                  randgen: Optional[routingblocks.Randgen]):
+        """
+        :param instance: Instance the operator will be applied to
+        :param get_distance: A function taking two vertices and returning the distance between them. The distance can be
+        arbitrary, i.e., does not have to correspond to the evaluation function.
+        :param min_radius_factor: Minimum of the interval the radius is picked from
+        :param max_radius_factor: Maximum of the interval the radius is picked from
+        :param randgen: Random number generator
+        """
         routingblocks.DestroyOperator.__init__(self)
         self._cluster_removal_operator = ClusterRemovalOperator(
             seed_selector=StationSeedSelector(list(instance.stations), randgen),
@@ -43,9 +59,14 @@ class StationVicinityRemovalOperator(routingblocks.DestroyOperator):
                 randgen=randgen)
         )
 
-    def can_apply_to(self, _solution: routingblocks.Solution) -> bool:
+    def can_apply_to(self, solution: routingblocks.Solution) -> bool:
+        """
+        Station vicinity removal can be applied to any solution that contains at least one station.
+        :param solution: The solution to which the operator should be applied.
+        :return:
+        """
         return any(node.vertex.is_station
-                   for route in _solution.routes for node in route)
+                   for route in solution.routes for node in route)
 
     def name(self) -> str:
         return "StationVicinityRemovalOperator"
