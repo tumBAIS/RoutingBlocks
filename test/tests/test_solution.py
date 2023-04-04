@@ -92,6 +92,13 @@ def test_solution_route_remove(random_solution, strategy):
     original_routes = deepcopy(list(solution))
     while len(solution) > 0:
         index = random.randint(0, len(solution) - 1)
+        # It is possible (e.g., when we have two identical routes), that index points to the route with the higher
+        # index. In this case, by_value will fail because the route with the lower index compares equal to the route
+        # with the higher index, such that the one with the lower index will be removed.
+        for i, route in enumerate(solution):
+            if route == solution[index]:
+                index = i
+                break
         expected_routes = original_routes[:index] + original_routes[index + 1:]
         if strategy == 'by_index':
             del solution[index]
