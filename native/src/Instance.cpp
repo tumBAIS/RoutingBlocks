@@ -29,7 +29,7 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
 
     _number_of_customers = next_vertex_id - 1;  // Account for depot
     _number_of_stations = _vertices.size() - 1 - _number_of_customers;
-    _station_offset = next_vertex_id;
+    auto station_offset = next_vertex_id;
 
     for (; next_vertex != _vertices.end(); ++next_vertex, ++next_vertex_id) {
         if (next_vertex->is_depot || !next_vertex->is_station
@@ -44,5 +44,10 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
         throw std::runtime_error(
             "fleet size, vehicle capacity, and vehicle battery capacity must be greater than 0");
     }
+
+    _customers_begin = std::next(_vertices.begin(), 1);
+    _customers_end = std::next(_vertices.begin(), 1 + _number_of_customers);
+    _stations_begin = std::next(_vertices.begin(), station_offset);
+    _stations_end = std::next(_vertices.begin(), station_offset + _number_of_stations);
 }
 Arc::Arc(Arc::data_t data) : data(std::move(data)) {}

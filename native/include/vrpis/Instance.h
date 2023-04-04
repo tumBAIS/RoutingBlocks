@@ -5,11 +5,11 @@
 #include <cassert>
 #include <memory>
 #include <ostream>
-#include <ranges>
 #include <vector>
 
 #include "vrpis/interfaces/arc.h"
 #include "vrpis/interfaces/vertex.h"
+#include "vrpis/utility/iterator_pair.h"
 
 namespace vrpis {
     class Instance {
@@ -18,8 +18,12 @@ namespace vrpis {
         std::vector<std::vector<Arc>> _arcs;
 
         VertexID _number_of_customers;
-        VertexID _station_offset;
         VertexID _number_of_stations;
+
+        std::vector<Vertex>::const_iterator _customers_begin;
+        std::vector<Vertex>::const_iterator _customers_end;
+        std::vector<Vertex>::const_iterator _stations_begin;
+        std::vector<Vertex>::const_iterator _stations_end;
 
         int _fleet_size;
 
@@ -33,12 +37,12 @@ namespace vrpis {
 
         [[nodiscard]] const Vertex& getCustomer(size_t id) const {
             assert(id < _number_of_customers);
-            return _vertices[id + 1];
+            return *std::next(_customers_begin, id);
         }
 
         [[nodiscard]] const Vertex& getStation(size_t id) const {
             assert(id < _number_of_stations);
-            return _vertices[id + _station_offset];
+            return *std::next(_stations_begin, id);
         }
 
         [[nodiscard]] const Arc& getArc(size_t i, size_t j) const { return _arcs[i][j]; }
@@ -54,11 +58,11 @@ namespace vrpis {
         [[nodiscard]] const Vertex& Depot() const { return _vertices[0]; }
 
         [[nodiscard]] auto Customers() const {
-            return std::views::counted(_vertices.begin() + 1, _number_of_customers);
+            return utility::make_iterator_pair(_customers_begin, _customers_end);
         }
 
         [[nodiscard]] auto Stations() const {
-            return std::views::counted(_vertices.begin() + _station_offset, _number_of_stations);
+            return utility::make_iterator_pair(_stations_begin, _stations_end);
         }
 
         [[nodiscard]] auto begin() { return _vertices.begin(); }

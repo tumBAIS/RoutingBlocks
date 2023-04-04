@@ -64,14 +64,14 @@ namespace vrpis::bindings {
             .def_property_readonly("stations",
                                    [](const vrpis::Instance& inst) {
                                        auto stations = inst.Stations();
-                                       return pybind11::make_iterator(stations.begin(),
-                                                                      stations.end());
+                                       return pybind11::make_iterator(std::begin(stations),
+                                                                      std::end(stations));
                                    })
             .def_property_readonly("customers",
                                    [](const vrpis::Instance& inst) {
                                        auto customers = inst.Customers();
-                                       return pybind11::make_iterator(customers.begin(),
-                                                                      customers.end());
+                                       return pybind11::make_iterator(std::begin(customers),
+                                                                      std::end(customers));
                                    })
             .def("__len__", &vrpis::Instance::NumberOfVertices)
             .def("__iter__",
