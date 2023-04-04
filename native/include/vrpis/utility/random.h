@@ -47,8 +47,11 @@ namespace vrpis::utility {
         size_t generateInt(size_t min, size_t max) { return this->generate(min, max + 1); }
 
         result_type operator()() noexcept {
-            static_assert(std::is_same_v<size_t, uint64_t>);
-            return sfmt_genrand_uint64(&_generator);
+            if constexpr (std::is_same_v<size_t, uint64_t>) {
+                return sfmt_genrand_uint64(&_generator);
+            } else {
+                return sfmt_genrand_uint32(&_generator);
+            }
         }
 
         /**
