@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-benchmark", "pydantic"]
+test = ["pytest", "pytest-benchmark", "pytest-randomly", "pydantic"]
 
 
 [tool.scikit-build]
@@ -35,7 +35,7 @@ testpaths = [
 ]
 
 [tool.cibuildwheel]
-test-command = "pytest {project}/test/tests -m 'not benchmark'"
+test-command = "pytest {project}/test/tests -m 'not benchmark' --randomly-dont-reorganize"
 test-extras = ["test"]
 test-skip = ["*universal2:arm64"]
 build = ["cp*-manylinux_x86_64"]
