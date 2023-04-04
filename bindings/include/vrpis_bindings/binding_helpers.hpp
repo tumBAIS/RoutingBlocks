@@ -20,7 +20,7 @@
                 auto py_obj = pybind11::reinterpret_borrow<pybind11::object>(src);              \
                 auto base_ptr = static_cast<std::shared_ptr<type>>(bc);                         \
                 auto py_obj_ptr                                                                 \
-                    = std::shared_ptr<object>{new object{py_obj}, [](auto py_object_ptr) {      \
+                    = std::shared_ptr<object>{new object{py_obj}, [](auto* py_object_ptr) {     \
                                                   gil_scoped_acquire gil;                       \
                                                   delete py_object_ptr;                         \
                                               }};                                               \

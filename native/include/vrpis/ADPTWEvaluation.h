@@ -2,8 +2,10 @@
 #ifndef vrpis_ADPTWEVALUATION_H
 #define vrpis_ADPTWEVALUATION_H
 
+#include <array>
 #include <dynamic_bitset/dynamic_bitset.hpp>
 #include <optional>
+#include <vector>
 
 #include "FRVCP.h"
 #include "vrpis/interfaces/evaluation.h"
