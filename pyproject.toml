@@ -38,5 +38,5 @@ testpaths = [
 test-command = "pytest {project}/test/tests -m 'not benchmark'"
 test-extras = ["test"]
 test-skip = ["*universal2:arm64"]
-build = ["*x86_64", "*win_amd64","*win32"]
+build = ["*-manylinux_x86_64"]
 build-verbosity = 1
