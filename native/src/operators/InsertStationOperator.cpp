@@ -5,7 +5,6 @@ namespace vrpis {
     cost_t InsertStationMove::get_cost_delta(Evaluation& evaluation, const Instance& instance,
                                              const Solution& solution) const {
         auto [route, node] = to_iter(_after_node, solution);
-        auto succ_node = std::next(node);
         const auto& station = instance.getVertex(_station_id);
 
         cost_t cost = evaluate_insertion(evaluation, instance, *route, node, station);
@@ -20,7 +19,7 @@ namespace vrpis {
     InsertStationMove::InsertStationMove(const NodeLocation& afterNode, VertexID stationId)
         : _after_node(afterNode), _station_id(stationId) {}
 
-    void InsertStationOperator::prepare_search(const Solution& solution) {}
+    void InsertStationOperator::prepare_search(const Solution&) {}
     void InsertStationOperator::finalize_search() {}
 
     std::shared_ptr<Move> InsertStationOperator::find_next_improving_move(

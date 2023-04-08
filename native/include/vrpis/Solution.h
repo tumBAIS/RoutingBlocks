@@ -349,11 +349,10 @@ namespace vrpis {
 
     class NodeLocation {
       public:
-        unsigned int route;
-        unsigned int position;
+        size_t route;
+        size_t position;
 
-        NodeLocation(unsigned int route, unsigned int position)
-            : route(route), position(position) {}
+        NodeLocation(size_t route, size_t position) : route(route), position(position) {}
 
         bool operator==(const NodeLocation& rhs) const;
         bool operator!=(const NodeLocation& rhs) const;

@@ -1,13 +1,12 @@
 #pragma once
 
 #include <algorithm>
+#include <concepts>
 #include <ctime>
-#include <exception>
-#include <iterator>
 #include <limits>
-#include <stdexcept>
+#include <random>
 
-#include "sfmt/SFMT.h"
+#include "xoshiro/xoshiro.h"
 
 namespace vrpis::utility {
     class random {
@@ -19,52 +18,33 @@ namespace vrpis::utility {
         constexpr static result_type max() { return std::numeric_limits<result_type>::max(); }
 
       private:
-        sfmt_t _generator{};
+        using generator_ = XoshiroCpp::Xoshiro256PlusPlus;
+        generator_ _generator;
 
       public:
-        explicit random() { sfmt_init_gen_rand(&_generator, std::time(nullptr)); }
+        explicit random() : _generator(time(nullptr)) {}
 
-        explicit random(uint32_t seed) { sfmt_init_gen_rand(&_generator, seed); }
-
-        template <typename numeric_type> numeric_type generate(numeric_type min, numeric_type max) {
-            assert(min <= max);
-            return static_cast<numeric_type>(min + (max - min) * sfmt_genrand_real2(&_generator));
-        }
-
-        template <typename numeric_type> numeric_type generate(numeric_type max) {
-            return static_cast<numeric_type>(max * sfmt_genrand_real2(&_generator));
-        }
-
-        /**
-         * @return Random double from [0, 1)
-         */
-        inline auto generate() { return sfmt_genrand_real2(&_generator); }
+        explicit random(uint64_t seed) : _generator(seed) {}
 
         /**
          * \brief Returns a random int equally distributed on [min,max]
          * undefined behaviour if min > max.
          */
-        size_t generateInt(size_t min, size_t max) { return this->generate(min, max + 1); }
-
-        result_type operator()() noexcept {
-            if constexpr (std::is_same_v<size_t, uint64_t>) {
-                return sfmt_genrand_uint64(&_generator);
-            } else {
-                return sfmt_genrand_uint32(&_generator);
-            }
+        template <typename T>
+            requires std::integral<T>
+        T generateInt(T min, T max) {
+            return std::uniform_int_distribution<T>(min, max)(_generator);
         }
 
-        /**
-         * \brief Returns a random double equally distributed on [0,1)
-         */
-        double generateDouble() { return sfmt_genrand_real2(&_generator); }
+        result_type operator()() noexcept { return _generator(); }
 
         /**
          * \brief Returns a random double equally distributed on [min, max)
          */
-        double uniform(double min, double max) {
-            assert(min <= max);
-            return min + (max - min) * sfmt_genrand_real2(&_generator);
+        template <class T>
+            requires std::floating_point<T>
+        T uniform(T min, T max) {
+            return std::uniform_real_distribution<T>(min, max)(_generator);
         }
 
         /**
@@ -97,7 +77,7 @@ namespace vrpis::utility {
                 aggregated_weights += higher_better ? dbl_weight : (1 / dbl_weight);
             }
 
-            double picked = uniform(0, aggregated_weights);
+            double picked = uniform(0., aggregated_weights);
             double current_weight = 0.0;
             for (ForwardIterator next = beg; next != end; ++next) {
                 double dbl_weight = static_cast<double>((*next).*weight_member - reference_point);
@@ -117,28 +97,6 @@ namespace vrpis::utility {
             }
 
             throw std::logic_error("Reached end of roulette pick");
-        }
-
-        /**
-         * \brief Returns
-         */
-        template <class ForwardIterator, class weight_type>
-        auto roulette(ForwardIterator beg, ForwardIterator end,
-                      weight_type ForwardIterator::value_type::*weight_member,
-                      bool higher_better = true, weight_type reference_point = weight_type())
-            -> decltype(*beg)& {
-            return *roulette_iter(beg, end, weight_member, higher_better, reference_point);
-        }
-
-        /**
-         * \brief Returns a reference to a random element in [beg, end)
-         * \param beg A RandomAccessIterator specifing the begin of the sequence
-         * \param end A RandomAccessIterator pointing to the end of the sequence
-         */
-        template <class RandomAccessIterator>
-        typename RandomAccessIterator::value_type& pick(RandomAccessIterator beg,
-                                                        RandomAccessIterator end) {
-            return *(beg + generateDouble() * (end - beg));
         }
     };
 }  // namespace vrpis::utility

@@ -28,7 +28,7 @@ namespace vrpis::lns::operators {
                     continue;
                 }
 
-                auto j = random.generateInt(0, i);
+                auto j = random.generateInt(static_cast<decltype(i)>(0), i);
                 if (j < k) {
                     sample[j] = vrpis::location_cast(solution, route_iter, node_iter);
                 }
@@ -38,9 +38,9 @@ namespace vrpis::lns::operators {
         return sample;
     }
 
-    std::vector<vrpis::VertexID> RandomRemoval::apply(vrpis::Evaluation& evaluation,
-                                                      vrpis::Solution& sol,
-                                                      size_t numberOfRemovedCustomers) {
+    std::vector<vrpis::VertexID> RandomRemoval::apply(
+        [[maybe_unused]] vrpis::Evaluation& evaluation, vrpis::Solution& sol,
+        size_t numberOfRemovedCustomers) {
         std::vector<vrpis::VertexID> removed_vertices(numberOfRemovedCustomers);
         // Ensure more than numberOfremovedcustomers in solution
         if (numberOfRemovedCustomers > vrpis::number_of_nodes(sol)) {
@@ -60,9 +60,12 @@ namespace vrpis::lns::operators {
 
     std::string_view RandomRemoval::name() const { return "RandomRemoval"; }
 
-    bool RandomRemoval::can_apply_to(const vrpis::Solution& sol) const { return true; }
+    bool RandomRemoval::can_apply_to([[maybe_unused]] const vrpis::Solution& sol) const {
+        return true;
+    }
 
-    void RandomInsertion::apply(vrpis::Evaluation& evaluation, vrpis::Solution& sol,
+    void RandomInsertion::apply([[maybe_unused]] vrpis::Evaluation& evaluation,
+                                vrpis::Solution& sol,
                                 const std::vector<vrpis::VertexID>& missing_vertices) {
         size_t inserted_vertices = 0;
         std::vector<std::pair<vrpis::VertexID, vrpis::NodeLocation>> locations;

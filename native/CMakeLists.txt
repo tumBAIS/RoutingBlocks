@@ -26,7 +26,7 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 
 add_library(${PROJECT_NAME} ${headers} ${sources})
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
-target_link_libraries(${PROJECT_NAME} PUBLIC SFMT)
+target_link_libraries(${PROJECT_NAME} PUBLIC XOSHIRO)
 target_link_libraries(${PROJECT_NAME} PUBLIC DYNAMIC_BITSET)
 target_link_libraries(${PROJECT_NAME} PUBLIC SMALL_VECTOR)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20 POSITION_INDEPENDENT_CODE ON)

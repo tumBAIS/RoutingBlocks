@@ -2,10 +2,10 @@
 
 #include <pybind11/stl.h>
 
+#include "vrpis/lns_operators.h"
 #include "vrpis/utility/insertion_cache.h"
 #include "vrpis/utility/random.h"
 #include "vrpis/utility/removal_cache.h"
-#include "vrpis/lns_operators.h"
 
 namespace vrpis::bindings {
     void bind_removal_cache(pybind11::module_& m) {
@@ -96,17 +96,24 @@ namespace vrpis::bindings {
         pybind11::class_<vrpis::utility::random>(m, "Random")
             .def(pybind11::init<>(),
                  "Initialize random number generator with a seed based on the current time.")
-            .def(pybind11::init<int>(), "Initialize the random number generator with a seed.")
-            .def("randint",
-                 pybind11::overload_cast<size_t, size_t>(&vrpis::utility::random::generateInt),
-                 "Generates a random integer between min and max")
-            .def("uniform",
-                 pybind11::overload_cast<double, double>(&vrpis::utility::random::uniform),
-                 "Generates a random float between min and max");
+            .def(pybind11::init<uint64_t>(), "Initialize the random number generator with a seed.")
+            .def(
+                "randint",
+                [](vrpis::utility::random& r, size_t min, size_t max) {
+                    return r.generateInt(min, max);
+                },
+                "Generates a random integer between min and max")
+            .def(
+                "uniform",
+                [](vrpis::utility::random& r, double min, double max) {
+                    return r.uniform(min, max);
+                },
+                "Generates a random float between min and max");
     }
 
     void bind_algorithms(pybind11::module_& m) {
-        m.def("sample_locations", &vrpis::lns::operators::sample_positions, "Samples node locations for the passed solution.");
+        m.def("sample_locations", &vrpis::lns::operators::sample_positions,
+              "Samples node locations for the passed solution.");
     }
 
     void bind_utility(pybind11::module_& m) {
