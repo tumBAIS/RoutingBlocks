@@ -9,6 +9,12 @@ VRPIS, but can be used for other classes of vehicle routing problems as well.
 
 ## Installation
 
+The package is available on PyPI and can be installed using `pip`:
+
+```bash
+pip install routingblocks
+```
+
 To obtain the bleeding-edge development version, run
 
 ```bash
