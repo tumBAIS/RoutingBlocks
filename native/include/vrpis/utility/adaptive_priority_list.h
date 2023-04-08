@@ -42,14 +42,17 @@ namespace vrpis::utility {
         random rand;
 
       public:
-        class const_iterator
-            : public std::iterator<std::forward_iterator_tag, T,
-                                   typename priority_list_t::const_iterator::difference_type, T*,
-                                   T&> {
+        class const_iterator {
             friend adaptive_priority_list<T>;
             typename priority_list_t::const_iterator list_iter;
 
           public:
+            using iterator_category = std::forward_iterator_tag;
+            using value_type = T;
+            using difference_type = typename priority_list_t::const_iterator::difference_type;
+            using pointer = T*;
+            using reference = T&;
+
             const_iterator() = default;
             explicit const_iterator(typename priority_list_t::const_iterator base_iter) {
                 this->list_iter = base_iter;
@@ -71,14 +74,17 @@ namespace vrpis::utility {
             const T* operator->() const { return &(list_iter->value); }
         };
 
-        class iterator
-            : public std::iterator<std::forward_iterator_tag, T,
-                                   typename priority_list_t::const_iterator::difference_type, T*,
-                                   T&> {
+        class iterator {
             friend adaptive_priority_list<T>;
             typename priority_list_t::iterator list_iter;
 
           public:
+            using iterator_category = std::forward_iterator_tag;
+            using value_type = T;
+            using difference_type = typename priority_list_t::const_iterator::difference_type;
+            using pointer = T*;
+            using reference = T&;
+
             iterator() = default;
             explicit iterator(typename priority_list_t::iterator base_iter) {
                 this->list_iter = base_iter;
