@@ -2,7 +2,7 @@ from typing import List, Iterable, Callable, TypeVar
 
 import routingblocks
 
-from . import MoveSelector
+from .move_selectors import MoveSelector
 
 
 class BestInsertionOperator(routingblocks.RepairOperator):
@@ -13,7 +13,8 @@ class BestInsertionOperator(routingblocks.RepairOperator):
         # Exposed
         self.move_selector = move_selector
 
-    def apply(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution, vertex_ids: Iterable[int]) -> None:
+    def apply(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution,
+              vertex_ids: Iterable[int]) -> None:
         vertex_ids = [x for x in vertex_ids if not self._instance.get_vertex(x).is_station]
         self._move_cache.rebuild(evaluation, solution, vertex_ids)
         for vertex_id in vertex_ids:
