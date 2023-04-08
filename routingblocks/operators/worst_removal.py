@@ -1,14 +1,13 @@
 import routingblocks
 from typing import Iterable, List
-from . import MoveSelector
-from routingblocks import RemovalCache, RemovalMove
+from .move_selectors import MoveSelector
 
 
 class WorstRemovalOperator(routingblocks.DestroyOperator):
-    def __init__(self, instance: routingblocks.Instance, move_selector: MoveSelector[RemovalMove]):
+    def __init__(self, instance: routingblocks.Instance, move_selector: MoveSelector[routingblocks.RemovalMove]):
         routingblocks.DestroyOperator.__init__(self)
         self._instance = instance
-        self._move_cache = RemovalCache(self._instance)
+        self._move_cache = routingblocks.RemovalCache(self._instance)
         # Exposed
         self.move_selector = move_selector
 
@@ -18,7 +17,8 @@ class WorstRemovalOperator(routingblocks.DestroyOperator):
     def can_apply_to(self, _solution: routingblocks.Solution) -> bool:
         return len(_solution) > 0
 
-    def apply(self, evaluation: routingblocks.Evaluation, _solution: routingblocks.Solution, number_of_removed_vertices: int) -> List[
+    def apply(self, evaluation: routingblocks.Evaluation, _solution: routingblocks.Solution,
+              number_of_removed_vertices: int) -> List[
         int]:
         self._move_cache.rebuild(evaluation, _solution)
         removed_vertices = []

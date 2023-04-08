@@ -1,6 +1,6 @@
 API
 ===
 
-.. automodule:: evrptw_bindings
+.. automodule:: routingblocks
    :members:
    :undoc-members:

@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ALNS Framework's documentation!
+Welcome to RoutingBlock's documentation!
 ==========================================
 
 .. toctree::
@@ -11,7 +11,7 @@ Welcome to ALNS Framework's documentation!
    :caption: Contents:
 
    usage
-   evrptw_bindings
+   routingblocks
 
 
 Indices and tables

@@ -28,11 +28,11 @@ PYBIND11_MODULE(VRPIS_MODULE_NAME, m) {
     // Evaluation
     bind_evaluation(m);
 
-    // LS Operators
-    bind_operators(m);
     // Local search
     bind_neighborhood_structures(m);
     bind_local_search(m);
+    // LS Operators
+    bind_operators(m);
 
     // Solution
     bind_node(m);
