@@ -7,3 +7,9 @@ python:
       path: .
       extra_requirements:
         - docs
+
+build:
+  os: ubuntu-22.04
+  apt_packages:
+    - cmake
+    - gcc
