@@ -17,9 +17,6 @@ pip install git+https://github.com/tumBAIS/RoutingBlocks
 
 instead.
 
-Please note that the package requires a recent version of CMake and a compiler with C++-20 support, such that 
-support is currently limited to linux systems.
-
 ## Features
 
 * Efficient C++-based solution representation
