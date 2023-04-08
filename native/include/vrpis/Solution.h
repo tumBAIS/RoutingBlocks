@@ -459,7 +459,7 @@ namespace vrpis {
 
         [[nodiscard]] cost_t cost() const {
             return std::accumulate(
-                _routes.begin(), _routes.end(), 0.0,
+                _routes.begin(), _routes.end(), cost_t(0.0),
                 [](cost_t acc, const route_t& route) { return acc + route.cost(); });
         }
 
