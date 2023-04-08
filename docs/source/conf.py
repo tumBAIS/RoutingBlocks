@@ -3,6 +3,9 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import datetime
+from pathlib import Path
+
+import routingblocks
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -15,9 +18,12 @@ release = '01.04.2023'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
+routingblocks_import_path = Path(routingblocks.__file__).parent
+
 extensions = [
     'autoapi.extension',
     'sphinx.ext.autodoc',
+    'sphinx.ext.autodoc.typehints',
     'sphinx.ext.autosummary',
     'sphinx.ext.duration',
     'sphinx.ext.doctest'
@@ -25,7 +31,7 @@ extensions = [
 
 autosummary_generate = True
 autoapi_type = "python"
-autoapi_dirs = ["../../routingblocks"]
+autoapi_dirs = [str(routingblocks_import_path)]
 autoapi_options = ["undoc-members", "members", "special-members"]
 
 autoapi_generate_api_docs = False
@@ -35,7 +41,7 @@ autoapi_add_objects_to_toctree = False
 autoapi_python_class_content = "class"
 autoapi_member_order = "bysource"
 
-autodoc_typehints = "signature"
+autodoc_typehints = "description"
 
 templates_path = ['_templates']
 exclude_patterns = []
