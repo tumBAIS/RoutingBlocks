@@ -35,7 +35,7 @@ testpaths = [
 ]
 
 [tool.cibuildwheel]
-test-command = "python -m pytest {project}/test/tests -m 'not benchmark' --randomly-dont-reorganize"
+test-command = 'python -m pytest {project}/test/tests -m "not benchmark" --randomly-dont-reorganize'
 test-extras = ["test"]
 test-skip = ["*universal2:arm64"]
 build = ["cp*-manylinux_x86_64", "cp*-win32", "cp*-win_amd64"]
