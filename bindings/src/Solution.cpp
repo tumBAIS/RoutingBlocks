@@ -386,7 +386,8 @@ namespace vrpis::bindings {
             [](Evaluation& evaluation, const Instance& instance, const Route& route,
                size_t pred_index, size_t succ_index) -> cost_t {
                 return concatenate(
-                    evaluation, instance, route_segment{route.begin(), pred_index + 1},
+                    evaluation, instance,
+                    route_segment{route.begin(), std::next(route.begin(), pred_index + 1)},
                     route_segment{std::next(route.begin(), succ_index), route.end()});
             },
             "Compute the cost of the route resulting from concatenating the route segment ending "
