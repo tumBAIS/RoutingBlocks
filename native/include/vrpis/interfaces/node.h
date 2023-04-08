@@ -2,6 +2,7 @@
 #ifndef _VRPIS_NODE_H
 #define _VRPIS_NODE_H
 
+#include <concepts>
 #include <memory>
 #include <span>
 #include <vector>
@@ -72,7 +73,14 @@ namespace vrpis {
         }
     };
 
-    using route_segment = std::span<const Node>;
+    // using route_segment = std::span<const Node>;
+    class route_segment : public std::span<const Node> {
+      public:
+        using std::span<const Node>::span;
+
+        template <class IteratorType> route_segment(IteratorType begin, IteratorType end)
+            : std::span<const Node>(&*begin, &*end) {}
+    };
 
     inline route_segment singleton_route_segment(const Node& node) {
         return route_segment{&node, 1};
