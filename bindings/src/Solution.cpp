@@ -366,15 +366,18 @@ namespace vrpis::bindings {
               [](Evaluation& evaluation, const Instance& instance, const Route& route,
                  int after_pos, std::variant<VertexID, const Vertex*, const Node*> node) -> cost_t {
                   auto after_iter = std::next(route.begin(), after_pos);
-                  if (std::holds_alternative<VertexID>(node)) {
+
+                  if (auto* v_id_ptr = std::get_if<VertexID>(&node)) {
                       return evaluate_insertion(evaluation, instance, route, after_iter,
-                                                instance.getVertex(std::get<VertexID>(node)));
-                  } else if (std::holds_alternative<const Vertex*>(node)) {
+                                                instance.getVertex(*v_id_ptr));
+                  } else if (auto* vertex_ptr = std::get_if<const Vertex*>(&node)) {
                       return evaluate_insertion(evaluation, instance, route, after_iter,
-                                                *std::get<const Vertex*>(node));
+                                                **vertex_ptr);
+                  } else if (auto* node_ptr = std::get_if<const Node*>(&node)) {
+                      return evaluate_insertion(evaluation, instance, route, after_iter,
+                                                (*node_ptr)->vertex());
                   } else {
-                      return evaluate_insertion(evaluation, instance, route, after_iter,
-                                                std::get<const Node*>(node)->vertex());
+                      throw std::runtime_error("Invalid node type!");
                   }
               });
 
@@ -383,7 +386,8 @@ namespace vrpis::bindings {
             [](Evaluation& evaluation, const Instance& instance, const Route& route,
                size_t pred_index, size_t succ_index) -> cost_t {
                 return concatenate(
-                    evaluation, instance, route_segment{route.begin(), pred_index + 1},
+                    evaluation, instance,
+                    route_segment{route.begin(), std::next(route.begin(), pred_index + 1)},
                     route_segment{std::next(route.begin(), succ_index), route.end()});
             },
             "Compute the cost of the route resulting from concatenating the route segment ending "
