@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(ROUTINGBLOCKS VERSION 0.1 LANGUAGES CXX)
+project(routingblocks VERSION 0.1 LANGUAGES CXX)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CPM.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools.cmake)
@@ -21,17 +21,17 @@ set_target_properties(fmt PROPERTIES POSITION_INDEPENDENT_CODE ON)
 add_subdirectory(lib)
 
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks/*.h")
-file(GLOB_RECURSE public_headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks/interfaces/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 add_library(${PROJECT_NAME} ${headers} ${sources})
-target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PUBLIC XOSHIRO)
 target_link_libraries(${PROJECT_NAME} PUBLIC DYNAMIC_BITSET)
 target_link_libraries(${PROJECT_NAME} PUBLIC SMALL_VECTOR)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20 POSITION_INDEPENDENT_CODE ON)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
 # TODO Include lib directories
+set(public_headers ${headers})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${public_headers}")
 
 target_include_directories(

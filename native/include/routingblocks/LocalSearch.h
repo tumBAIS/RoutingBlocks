@@ -24,9 +24,6 @@ SOFTWARE.*/
 #ifndef LOCALSEARCH_H
 #define LOCALSEARCH_H
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <fmt/ranges.h>
 #include <routingblocks/Instance.h>
 #include <routingblocks/Solution.h>
 #include <routingblocks/evaluation.h>

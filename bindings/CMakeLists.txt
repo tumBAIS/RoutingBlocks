@@ -35,7 +35,7 @@ if (MSVC)
 endif ()
 
 # Link to main routing blocks library
-target_link_libraries(${PROJECT_NAME} PUBLIC ROUTINGBLOCKS)
+target_link_libraries(${PROJECT_NAME} PUBLIC routingblocks)
 
 check_ipo_supported(RESULT ${PROJECT_NAME}_HAS_LTO)
 if (${${PROJECT_NAME}_HAS_LTO})

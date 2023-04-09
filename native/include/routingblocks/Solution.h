@@ -9,6 +9,7 @@
 #include <any>
 #include <atomic>
 #include <concepts>
+#include <iterator>
 #include <numeric>
 
 namespace {

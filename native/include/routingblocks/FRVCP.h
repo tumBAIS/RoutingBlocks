@@ -2,9 +2,6 @@
 #ifndef routingblocks_FRVCP_H
 #define routingblocks_FRVCP_H
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <fmt/ranges.h>
 #include <routingblocks/Instance.h>
 #include <routingblocks/utility/heap.h>
 
@@ -332,13 +329,6 @@ namespace routingblocks {
             _buckets.resize(_graph.size(), LabelBucket(*_propagator));
         }
 
-        void log(std::string_view msg, const DPVertex& extracted_dp_vertex,
-                 const DPVertex* target_dp_vertex) const {
-            if (extracted_dp_vertex.original_vertex().id == 95) {
-                std::cout << msg << std::flush;
-            }
-        }
-
         void _enqueue(VertexID vertex_id) { _node_queue.insert({vertex_id, &_buckets[vertex_id]}); }
         void _update_queue(VertexID vertex_id) {
             _node_queue.update({vertex_id, &_buckets[vertex_id]});
@@ -366,12 +356,10 @@ namespace routingblocks {
             while (!_node_queue.empty()) {
                 auto [extracted_label, origin_vertex_id] = _extract_next_label();
                 const auto& origin_dp_vertex = _graph.get_vertex(origin_vertex_id);
-                // log(fmt::format("\nExtracted {} at {}\n", *extracted_label, origin_dp_vertex),
                 // origin_dp_vertex, nullptr);
 
                 if (_propagator->is_final_label(*extracted_label)) {
                     // We have found a feasible solution
-                    // log(fmt::format("Reached root!\n"), origin_dp_vertex, nullptr);
                     return _propagator->extract_path(*extracted_label);
                 }
 
@@ -380,9 +368,6 @@ namespace routingblocks {
                     = _graph.get_successors(origin_vertex_id);
                 for (; next_target_dp_vertex != target_vertices_end; ++next_target_dp_vertex) {
                     const auto& target_dp_vertex = **next_target_dp_vertex;
-
-                    // log(fmt::format("\tAttempting to propgate {} to {}: ", *extracted_label,
-                    //            target_dp_vertex), origin_dp_vertex, &target_dp_vertex);
 
                     if (auto propagated_label = _propagator->propagate(
                             *extracted_label, origin_dp_vertex.original_vertex(),
@@ -393,17 +378,9 @@ namespace routingblocks {
                         // Store candidate label
                         Label* next_label = _label_slab.allocate();
                         *next_label = std::move(*propagated_label);
-                        // log(fmt::format("feasible: {}", *next_label), origin_dp_vertex,
-                        // &target_dp_vertex);
                         if (_buckets[target_dp_vertex.dp_vertex_id()].add(next_label)) {
                             _update_queue(target_dp_vertex.dp_vertex_id());
-                        } else {
-                            // log(fmt::format(" but dominated"), origin_dp_vertex,
-                            // &target_dp_vertex);
                         }
-                        // log(fmt::format("\n"), origin_dp_vertex, &target_dp_vertex);
-                    } else {
-                        // log(fmt::format("discarded\n"), origin_dp_vertex, &target_dp_vertex);
                     }
                 }
             }
