@@ -1,11 +1,11 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <vrpis/Instance.h>
+#include <routingblocks/Instance.h>
 
 #include <algorithm>
 #include <iostream>
 
-using namespace vrpis;
+using namespace routingblocks;
 
 Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> arcs, int fleetSize)
     : _vertices(std::move(vertices)), _arcs(std::move(arcs)), _fleet_size(fleetSize) {

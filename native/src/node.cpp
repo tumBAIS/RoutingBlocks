@@ -1,7 +1,7 @@
-#include <vrpis/evaluation.h>
-#include <vrpis/node.h>
+#include <routingblocks/evaluation.h>
+#include <routingblocks/node.h>
 
-namespace vrpis {
+namespace routingblocks {
 
     void Node::update_forward(Evaluation& evaluation, const Node& pred_node, const Arc& arc) {
         _forward_label = evaluation.propagate_forward(pred_node._forward_label, *pred_node._vertex,
@@ -20,4 +20,4 @@ namespace vrpis {
     bool Node::feasible(Evaluation& evaluation) const {
         return evaluation.is_feasible(_forward_label);
     }
-}  // namespace vrpis
+}  // namespace routingblocks

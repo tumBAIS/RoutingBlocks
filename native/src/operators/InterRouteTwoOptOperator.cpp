@@ -1,6 +1,6 @@
-#include <vrpis/operators/InterRouteTwoOptOperator.h>
+#include <routingblocks/operators/InterRouteTwoOptOperator.h>
 
-namespace vrpis {
+namespace routingblocks {
 
     cost_t InterRouteTwoOptMove::evaluate(Evaluation& evaluation, const Instance& instance,
                                           const Solution& solution) const {
@@ -36,4 +36,4 @@ namespace vrpis {
                                   target_route, std::next(target_node), target_route->end_depot());
     }
 
-}  // namespace vrpis
+}  // namespace routingblocks

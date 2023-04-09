@@ -1,15 +1,13 @@
-#include "vrpis_bindings/utility.h"
-
 #include <pybind11/stl.h>
+#include <routingblocks/insertion_cache.h>
+#include <routingblocks/lns_operators.h>
+#include <routingblocks/removal_cache.h>
+#include <routingblocks/utility/random.h>
+#include <routingblocks_bindings/utility.h>
 
-#include "vrpis/insertion_cache.h"
-#include "vrpis/lns_operators.h"
-#include "vrpis/removal_cache.h"
-#include "vrpis/utility/random.h"
-
-namespace vrpis::bindings {
+namespace routingblocks::bindings {
     void bind_removal_cache(pybind11::module_& m) {
-        using cache_t = vrpis::utility::removal_cache<>;
+        using cache_t = routingblocks::utility::removal_cache<>;
 
         pybind11::class_<cache_t::move_t>(m, "RemovalMove")
             .def(pybind11::init<VertexID, NodeLocation, resource_t>())
@@ -37,7 +35,7 @@ namespace vrpis::bindings {
     }
 
     void bind_insertion_cache(pybind11::module_& m) {
-        using cache_t = vrpis::utility::insertion_cache<>;
+        using cache_t = routingblocks::utility::insertion_cache<>;
 
         pybind11::class_<cache_t::move_t>(m, "InsertionMove")
             .def(pybind11::init<VertexID, NodeLocation, resource_t>())
@@ -93,26 +91,26 @@ namespace vrpis::bindings {
     }
 
     void bind_random(pybind11::module_& m) {
-        pybind11::class_<vrpis::utility::random>(m, "Random")
+        pybind11::class_<routingblocks::utility::random>(m, "Random")
             .def(pybind11::init<>(),
                  "Initialize random number generator with a seed based on the current time.")
             .def(pybind11::init<uint64_t>(), "Initialize the random number generator with a seed.")
             .def(
                 "randint",
-                [](vrpis::utility::random& r, size_t min, size_t max) {
+                [](routingblocks::utility::random& r, size_t min, size_t max) {
                     return r.generateInt(min, max);
                 },
                 "Generates a random integer between min and max")
             .def(
                 "uniform",
-                [](vrpis::utility::random& r, double min, double max) {
+                [](routingblocks::utility::random& r, double min, double max) {
                     return r.uniform(min, max);
                 },
                 "Generates a random float between min and max");
     }
 
     void bind_algorithms(pybind11::module_& m) {
-        m.def("sample_locations", &vrpis::lns::operators::sample_positions,
+        m.def("sample_locations", &routingblocks::lns::operators::sample_positions,
               "Samples node locations for the passed solution.");
     }
 
@@ -122,4 +120,4 @@ namespace vrpis::bindings {
         bind_insertion_cache(m);
         bind_algorithms(m);
     }
-}  // namespace vrpis::bindings
+}  // namespace routingblocks::bindings

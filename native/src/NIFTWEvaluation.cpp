@@ -1,21 +1,21 @@
 #include <fmt/core.h>
-#include <vrpis/NIFTWEvaluation.h>
+#include <routingblocks/NIFTWEvaluation.h>
 
 #include <iostream>
 
-namespace vrpis {
+namespace routingblocks {
 
     auto NIFTWEvaluation::propagate_backward(const bwd_label_t &succ_label,
-                                             const vrpis::Vertex &succ_vertex,
+                                             const routingblocks::Vertex &succ_vertex,
                                              [[maybe_unused]] const vertex_data_t &succ_vertex_data,
-                                             [[maybe_unused]] const vrpis::Vertex &vertex,
+                                             [[maybe_unused]] const routingblocks::Vertex &vertex,
                                              const vertex_data_t &vertex_data,
-                                             [[maybe_unused]] const vrpis::Arc &arc,
+                                             [[maybe_unused]] const routingblocks::Arc &arc,
                                              const arc_data_t &arc_data) const -> bwd_label_t {
         using std::max;
         using std::min;
 
-        vrpis::NIFTWBackwardLabel propagated_label;
+        routingblocks::NIFTWBackwardLabel propagated_label;
 
         const auto t_ij = arc_data.duration + vertex_data.service_time;
         const auto q_ij = arc_data.consumption;
@@ -50,16 +50,16 @@ namespace vrpis {
     }
 
     auto NIFTWEvaluation::propagate_forward(const fwd_label_t &pred_label,
-                                            const vrpis::Vertex &pred_vertex,
+                                            const routingblocks::Vertex &pred_vertex,
                                             const vertex_data_t &pred_vertex_data,
-                                            [[maybe_unused]] const vrpis::Vertex &vertex,
+                                            [[maybe_unused]] const routingblocks::Vertex &vertex,
                                             const vertex_data_t &vertex_data,
-                                            [[maybe_unused]] const vrpis::Arc &arc,
+                                            [[maybe_unused]] const routingblocks::Arc &arc,
                                             const arc_data_t &arc_data) const -> fwd_label_t {
         using std::max;
         using std::min;
 
-        vrpis::NIFTWForwardLabel propagated_label;
+        routingblocks::NIFTWForwardLabel propagated_label;
         auto t_ij = arc_data.duration + pred_vertex_data.service_time;
         auto q_ij = arc_data.consumption;
         auto c_ij = arc_data.cost;
@@ -97,7 +97,7 @@ namespace vrpis {
     }
 
     cost_t NIFTWEvaluation::concatenate(const fwd_label_t &fwd, const bwd_label_t &bwd,
-                                        const vrpis::Vertex &vertex,
+                                        const routingblocks::Vertex &vertex,
                                         const vertex_data_t &vertex_data) {
         using std::max;
         using std::min;
@@ -169,4 +169,4 @@ namespace vrpis {
                                    + static_cast<double>(time_shift) * _time_shift_penalty_factor
                                    + static_cast<double>(overcharge) * _overcharge_penalty_factor);
     }
-}  // namespace vrpis
+}  // namespace routingblocks

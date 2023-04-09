@@ -16,7 +16,7 @@ message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 # Set the sources for the unit tests and add the executable(s)
 #
 
-file(GLOB_RECURSE test_headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/vrpis-tests/*.h")
+file(GLOB_RECURSE test_headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks-tests/*.h")
 file(GLOB_RECURSE test_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 add_executable(${PROJECT_NAME} ${test_headers} ${test_sources})
@@ -24,7 +24,7 @@ add_executable(${PROJECT_NAME} ${test_headers} ${test_sources})
 #
 # Set seed for reproducibility
 #
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DVRPIS_RAND_SEED=2021)
+target_compile_definitions(${PROJECT_NAME} PUBLIC -DROUTINGBLOCKS_RAND_SEED=2021)
 
 #
 # Set the compiler standard

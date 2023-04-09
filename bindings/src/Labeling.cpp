@@ -1,13 +1,12 @@
-#include "vrpis_bindings/Labeling.h"
-
-#include <vrpis/ADPTWEvaluation.h>
-#include <vrpis/FRVCP.h>
-#include <vrpis/Instance.h>
 #include <pybind11/stl.h>
+#include <routingblocks/ADPTWEvaluation.h>
+#include <routingblocks/FRVCP.h>
+#include <routingblocks/Instance.h>
+#include <routingblocks_bindings/Labeling.h>
 
-#include "vrpis_bindings/binding_helpers.hpp"
+#include <routingblocks_bindings/binding_helpers.hpp>
 
-namespace vrpis {
+namespace routingblocks {
     template <> class Propagator<pybind11::object> {
       public:
         using value_type = pybind11::object;
@@ -31,11 +30,11 @@ namespace vrpis {
         virtual value_type create_root_label() = 0;
     };
     using PyPropagator = Propagator<pybind11::object>;
-}  // namespace vrpis
+}  // namespace routingblocks
 
-BIND_LIFETIME_PYTHON(vrpis::Propagator<pybind11::object>, "Propagator")
+BIND_LIFETIME_PYTHON(routingblocks::Propagator<pybind11::object>, "Propagator")
 
-namespace vrpis::bindings {
+namespace routingblocks::bindings {
     class PyPropagatorTramboline : public PyPropagator {
       public:
         using value_type = PyPropagator::value_type;
@@ -76,7 +75,7 @@ namespace vrpis::bindings {
         }
     };
 
-    using PyFRVCP = vrpis::FRVCP<pybind11::object>;
+    using PyFRVCP = routingblocks::FRVCP<pybind11::object>;
 
     template <class PropagatorClass> auto bind_propagator(auto& propagator) {
         return propagator.def("propagate", &PropagatorClass::propagate)
@@ -115,21 +114,21 @@ namespace vrpis::bindings {
                  "Solve FRVCP for the specified route.");
 
         /*auto propagator_interface
-            = bind_propagator<vrpis::Propagator, PyPropagator>(m, "Propagator")
+            = bind_propagator<routingblocks::Propagator, PyPropagator>(m, "Propagator")
                   .def(pybind11::init<>());
 
-        bind_propagator<vrpis::ADPTWPropagation>(m, "ADPTWPropagation", propagator_interface)
-            .def(pybind11::init<const vrpis::Instance&>());
+        bind_propagator<routingblocks::ADPTWPropagation>(m, "ADPTWPropagation",
+        propagator_interface) .def(pybind11::init<const routingblocks::Instance&>());
 
-        m.def("create_adptw_propagator", [](const vrpis::Instance& instance) {
-            return std::make_shared<vrpis::ADPTWPropagation>(instance);
+        m.def("create_adptw_propagator", [](const routingblocks::Instance& instance) {
+            return std::make_shared<routingblocks::ADPTWPropagation>(instance);
         });
 
-        pybind11::class_<vrpis::Label, std::shared_ptr<vrpis::Label>>(m, "DPLabel",
+        pybind11::class_<routingblocks::Label, std::shared_ptr<routingblocks::Label>>(m, "DPLabel",
                                                                         pybind11::dynamic_attr())
             .def(pybind11::init<>());
 
         */
     }
 
-}  // namespace vrpis::bindings
+}  // namespace routingblocks::bindings

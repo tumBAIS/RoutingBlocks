@@ -1,22 +1,21 @@
-#include "vrpis_bindings/Evaluation.h"
-
 #include <pybind11/stl.h>
+#include <routingblocks/ADPTWEvaluation.h>
+#include <routingblocks/NIFTWEvaluation.h>
+#include <routingblocks/evaluation.h>
+#include <routingblocks_bindings/Evaluation.h>
 
-#include "vrpis/ADPTWEvaluation.h"
-#include "vrpis/NIFTWEvaluation.h"
-#include "vrpis/evaluation.h"
-#include "vrpis_bindings/binding_helpers.hpp"
+#include <routingblocks_bindings/binding_helpers.hpp>
 
-namespace vrpis::bindings {
+namespace routingblocks::bindings {
 
-    class PyEvaluation : public vrpis::Evaluation {
+    class PyEvaluation : public routingblocks::Evaluation {
       protected:
         using py_type = pybind11::object;
         using py_segment_node_type = std::tuple<const Vertex*, py_type, py_type>;
         using py_segment_type = std::vector<py_segment_node_type>;
 
       public:
-        using vrpis::Evaluation::Evaluation;
+        using routingblocks::Evaluation::Evaluation;
 
         virtual cost_t py_evaluate(const Instance& instance, std::vector<py_segment_type> segments)
             = 0;
@@ -99,12 +98,12 @@ namespace vrpis::bindings {
         }
     };
 
-    class PyConcatenationBasedEvaluation : public vrpis::ConcatenationBasedEvaluation {
+    class PyConcatenationBasedEvaluation : public routingblocks::ConcatenationBasedEvaluation {
       protected:
         using py_type = pybind11::object;
 
       public:
-        using vrpis::ConcatenationBasedEvaluation::ConcatenationBasedEvaluation;
+        using routingblocks::ConcatenationBasedEvaluation::ConcatenationBasedEvaluation;
 
         virtual cost_t py_concatenate(const py_type& fwd, const py_type& bwd, const Vertex& vertex)
             = 0;
@@ -172,12 +171,12 @@ namespace vrpis::bindings {
         }
     };
 
-}  // namespace vrpis::bindings
+}  // namespace routingblocks::bindings
 
-BIND_LIFETIME_PYTHON(vrpis::Evaluation, "Evaluation")
-BIND_LIFETIME_PYTHON(vrpis::bindings::PyEvaluation, "PyEvaluation")
+BIND_LIFETIME_PYTHON(routingblocks::Evaluation, "Evaluation")
+BIND_LIFETIME_PYTHON(routingblocks::bindings::PyEvaluation, "PyEvaluation")
 
-namespace vrpis::bindings {
+namespace routingblocks::bindings {
 
     class PyConcatenationBasedEvaluationTramboline : public PyConcatenationBasedEvaluation {
         using PyConcatenationBasedEvaluation::PyConcatenationBasedEvaluation;
@@ -283,7 +282,7 @@ namespace vrpis::bindings {
 
         auto niftw_module = m.def_submodule("niftw");
         bind_evaluation<NIFTWEvaluation>(
-            pybind11::class_<vrpis::NIFTWEvaluation, std::shared_ptr<NIFTWEvaluation>>(
+            pybind11::class_<routingblocks::NIFTWEvaluation, std::shared_ptr<NIFTWEvaluation>>(
                 niftw_module, "Evaluation", evaluation_interface)
                 .def(pybind11::init<resource_t, resource_t, resource_t>()))
             .def_property("penalty_factors", &NIFTWEvaluation::get_penalty_factors,
@@ -299,4 +298,4 @@ namespace vrpis::bindings {
             = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::TIME_SHIFT_INDEX));
     }
 
-}  // namespace vrpis::bindings
+}  // namespace routingblocks::bindings

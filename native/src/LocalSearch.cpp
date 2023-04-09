@@ -1,13 +1,13 @@
-#include <vrpis/FRVCP.h>
-#include <vrpis/LocalSearch.h>
-#include <vrpis/Solution.h>
+#include <routingblocks/FRVCP.h>
+#include <routingblocks/LocalSearch.h>
+#include <routingblocks/Solution.h>
 
 #include <algorithm>
 #include <chrono>
 #include <set>
 #include <vector>
 
-namespace vrpis {
+namespace routingblocks {
     std::shared_ptr<Move> LocalSearch::_explore_neighborhood() {
         std::shared_ptr<Move> next_move, best_move;
         auto best_cost = 0.;
@@ -43,11 +43,12 @@ namespace vrpis {
 
     void LocalSearch::_apply_move(const Move& move) { move.apply(*_instance, _current_solution); }
 
-    LocalSearch::LocalSearch(const vrpis::Instance& instance, std::shared_ptr<eval_t> evaluation,
+    LocalSearch::LocalSearch(const routingblocks::Instance& instance,
+                             std::shared_ptr<eval_t> evaluation,
                              std::shared_ptr<eval_t> exact_evaluation)
         : _instance(&instance),
           _evaluation(std::move(evaluation)),
           _exact_evaluation(std::move(exact_evaluation)),
           _current_solution(_evaluation, *_instance, _instance->FleetSize()) {}
 
-}  // namespace vrpis
+}  // namespace routingblocks

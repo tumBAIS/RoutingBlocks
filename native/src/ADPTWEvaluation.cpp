@@ -1,12 +1,12 @@
 #include <fmt/core.h>
-#include <vrpis/ADPTWEvaluation.h>
+#include <routingblocks/ADPTWEvaluation.h>
 
 #include <iostream>
 
-namespace vrpis {
+namespace routingblocks {
 
     ADPTWForwardResourceLabel::ADPTWForwardResourceLabel(
-        const vrpis::Vertex &depot, [[maybe_unused]] resource_t battery_capacity)
+        const routingblocks::Vertex &depot, [[maybe_unused]] resource_t battery_capacity)
         : ADPTWResourceLabel{.earliest_arrival
                              = depot.get_data<ADPTWVertexData>().earliest_arrival_time,
                              .latest_arrival
@@ -25,7 +25,7 @@ namespace vrpis {
           prev_overcharge(0) {}
 
     ADPTWBackwardResourceLabel::ADPTWBackwardResourceLabel(
-        const vrpis::Vertex &depot, [[maybe_unused]] resource_t battery_capacity)
+        const routingblocks::Vertex &depot, [[maybe_unused]] resource_t battery_capacity)
         : ADPTWResourceLabel{
             .earliest_arrival = depot.get_data<ADPTWVertexData>().latest_arrival_time,
             .latest_arrival = depot.get_data<ADPTWVertexData>().latest_arrival_time,
@@ -60,4 +60,4 @@ namespace vrpis {
                                    + static_cast<double>(time_shift) * _time_shift_penalty_factor
                                    + static_cast<double>(overcharge) * _overcharge_penalty_factor);
     }
-}  // namespace vrpis
+}  // namespace routingblocks
