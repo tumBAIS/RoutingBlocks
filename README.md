@@ -9,6 +9,12 @@ VRPIS, but can be used for other classes of vehicle routing problems as well.
 
 ## Installation
 
+The package is available on PyPI and can be installed using `pip`:
+
+```bash
+pip install routingblocks
+```
+
 To obtain the bleeding-edge development version, run
 
 ```bash
@@ -31,6 +37,8 @@ We provide an [example implementation](https://github.com/tumBAIS/RoutingBlocks/
 algorithm for
 the [EVRPTW-PR](https://research.sabanciuniv.edu/id/eprint/26033/1/WP_EVRPTW-Partial_Recharge_KeskinCatay.pdf) as part
 of this repository.
+
+Further documentation is available at [readthedocs](https://routingblocks.readthedocs.io/en/latest/).
 
 ## Contributing
 

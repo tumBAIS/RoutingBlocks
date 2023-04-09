@@ -3,6 +3,7 @@
 hgs
 *.pyi
 docs/build/
+dist
 
 # Python tests
 .pytest_cache

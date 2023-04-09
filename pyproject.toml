@@ -5,7 +5,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "RoutingBlocks"
-version = "0.1.1"
+version = "0.1.2"
 description = "A package for the implementation of vehicle routing problems with intermediate stops"
 readme = "README.md"
 authors = [
@@ -24,6 +24,7 @@ classifiers = [
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-benchmark", "pytest-randomly", "pydantic"]
+docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-autoapi"]
 
 
 [tool.scikit-build]
