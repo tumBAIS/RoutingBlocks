@@ -1,8 +1,7 @@
-#include "vrpis/ADPTWEvaluation.h"
+#include <fmt/core.h>
+#include <vrpis/ADPTWEvaluation.h>
 
 #include <iostream>
-
-#include "fmt/core.h"
 
 namespace vrpis {
 

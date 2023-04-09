@@ -6,7 +6,7 @@
 #include <numeric>
 #include <utility>
 
-#include "vrpis/utility/random.h"
+#include "random.h"
 
 namespace vrpis::utility {
     template <class T> class adaptive_priority_list {

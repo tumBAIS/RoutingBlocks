@@ -27,16 +27,15 @@ SOFTWARE.*/
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
+#include <vrpis/Instance.h>
+#include <vrpis/Solution.h>
+#include <vrpis/evaluation.h>
+#include <vrpis/utility/arc_set.h>
+#include <vrpis/utility/random.h>
 
 #include <memory>
 #include <set>
 #include <vector>
-
-#include "Instance.h"
-#include "Solution.h"
-#include "vrpis/interfaces/evaluation.h"
-#include "vrpis/utility/arc_set.h"
-#include "vrpis/utility/random.h"
 
 namespace vrpis {
     struct GeneratorArc {

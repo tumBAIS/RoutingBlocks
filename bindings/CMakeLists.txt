@@ -22,6 +22,8 @@ pybind11_add_module(${PROJECT_NAME} ${sources})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_definitions(${PROJECT_NAME} PUBLIC "VRPIS_MODULE_NAME=${PROJECT_NAME}")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "VRPIS_VERSION=${PROJECT_VERSION}")
+
+# Configure optimization flags
 if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:-O0;-g3>")
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RELEASE>:-O3;>")
@@ -31,6 +33,8 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:/Od>")
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RELEASE>:/O2y>")
 endif ()
+
+# Link to main routing blocks library
 target_link_libraries(${PROJECT_NAME} PUBLIC VRPIS)
 
 check_ipo_supported(RESULT ${PROJECT_NAME}_HAS_LTO)

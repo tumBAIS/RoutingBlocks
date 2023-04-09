@@ -2,12 +2,12 @@
 #ifndef vrpis_REMOVAL_CACHE_H
 #define vrpis_REMOVAL_CACHE_H
 
-#include <concepts>
+#include <vrpis/Instance.h>
+#include <vrpis/Solution.h>
+#include <vrpis/evaluation.h>
+#include <vrpis/types.h>
 
-#include "vrpis/Instance.h"
-#include "vrpis/Solution.h"
-#include "vrpis/interfaces/evaluation.h"
-#include "vrpis/interfaces/types.h"
+#include <concepts>
 
 namespace vrpis::utility {
 

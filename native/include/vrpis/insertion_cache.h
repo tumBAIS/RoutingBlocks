@@ -2,13 +2,13 @@
 #ifndef vrpis_INSERTION_CACHE_H
 #define vrpis_INSERTION_CACHE_H
 
+#include <vrpis/Instance.h>
+#include <vrpis/Solution.h>
+#include <vrpis/evaluation.h>
+#include <vrpis/types.h>
+
 #include <dynamic_bitset/dynamic_bitset.hpp>
 #include <vector>
-
-#include "vrpis/Instance.h"
-#include "vrpis/Solution.h"
-#include "vrpis/interfaces/evaluation.h"
-#include "vrpis/interfaces/types.h"
 
 namespace vrpis::utility {
     struct insertion_move {

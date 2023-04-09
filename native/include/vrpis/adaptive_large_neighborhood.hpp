@@ -1,12 +1,12 @@
 #pragma once
 
+#include <vrpis/Solution.h>
+#include <vrpis/operators.h>
+#include <vrpis/utility/adaptive_priority_list.h>
+#include <vrpis/utility/random.h>
+
 #include <type_traits>
 #include <vector>
-
-#include "vrpis/Solution.h"
-#include "vrpis/operators.h"
-#include "vrpis/utility/adaptive_priority_list.h"
-#include "vrpis/utility/random.h"
 
 namespace vrpis {
     class adaptive_large_neighborhood {

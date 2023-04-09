@@ -2,14 +2,14 @@
 #ifndef vrpis_INSTANCE_H
 #define vrpis_INSTANCE_H
 
+#include <vrpis/arc.h>
+#include <vrpis/utility/iterator_pair.h>
+#include <vrpis/vertex.h>
+
 #include <cassert>
 #include <memory>
 #include <ostream>
 #include <vector>
-
-#include "vrpis/interfaces/arc.h"
-#include "vrpis/interfaces/vertex.h"
-#include "vrpis/utility/iterator_pair.h"
 
 namespace vrpis {
     class Instance {

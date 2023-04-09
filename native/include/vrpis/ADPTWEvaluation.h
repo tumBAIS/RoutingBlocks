@@ -2,14 +2,14 @@
 #ifndef vrpis_ADPTWEVALUATION_H
 #define vrpis_ADPTWEVALUATION_H
 
+#include <vrpis/FRVCP.h>
+#include <vrpis/evaluation.h>
+#include <vrpis/types.h>
+
 #include <array>
 #include <dynamic_bitset/dynamic_bitset.hpp>
 #include <optional>
 #include <vector>
-
-#include "FRVCP.h"
-#include "vrpis/interfaces/evaluation.h"
-#include "vrpis/interfaces/types.h"
 
 namespace vrpis {
     struct ADPTWVertexData {

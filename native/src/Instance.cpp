@@ -1,7 +1,6 @@
-#include "vrpis/Instance.h"
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <vrpis/Instance.h>
 
 #include <algorithm>
 #include <iostream>

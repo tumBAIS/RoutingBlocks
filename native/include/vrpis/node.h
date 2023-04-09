@@ -2,14 +2,14 @@
 #ifndef _VRPIS_NODE_H
 #define _VRPIS_NODE_H
 
+#include <vrpis/arc.h>
+#include <vrpis/types.h>
+#include <vrpis/vertex.h>
+
 #include <concepts>
 #include <memory>
 #include <span>
 #include <vector>
-
-#include "arc.h"
-#include "types.h"
-#include "vertex.h"
 
 namespace vrpis {
 

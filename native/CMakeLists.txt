@@ -31,6 +31,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC DYNAMIC_BITSET)
 target_link_libraries(${PROJECT_NAME} PUBLIC SMALL_VECTOR)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20 POSITION_INDEPENDENT_CODE ON)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
+# TODO Include lib directories
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${public_headers}")
 
 target_include_directories(

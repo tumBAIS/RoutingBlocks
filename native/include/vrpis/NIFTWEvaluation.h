@@ -1,10 +1,10 @@
 
 #ifndef vrpis_NIFTWEVALUATION_H
 #define vrpis_NIFTWEVALUATION_H
-#include <array>
+#include <vrpis/evaluation.h>
+#include <vrpis/types.h>
 
-#include "vrpis/interfaces/evaluation.h"
-#include "vrpis/interfaces/types.h"
+#include <array>
 
 namespace vrpis {
 

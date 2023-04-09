@@ -1,9 +1,7 @@
-#include "vrpis/lns_operators.h"
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-
-#include "vrpis/Solution.h"
+#include <vrpis/Solution.h>
+#include <vrpis/lns_operators.h>
 
 namespace vrpis::lns::operators {
 

@@ -2,10 +2,10 @@
 
 #include <pybind11/stl.h>
 
+#include "vrpis/insertion_cache.h"
 #include "vrpis/lns_operators.h"
-#include "vrpis/utility/insertion_cache.h"
+#include "vrpis/removal_cache.h"
 #include "vrpis/utility/random.h"
-#include "vrpis/utility/removal_cache.h"
 
 namespace vrpis::bindings {
     void bind_removal_cache(pybind11::module_& m) {

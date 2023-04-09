@@ -1,6 +1,5 @@
-#include "vrpis/interfaces/node.h"
-
-#include "vrpis/interfaces/evaluation.h"
+#include <vrpis/evaluation.h>
+#include <vrpis/node.h>
 
 namespace vrpis {
 

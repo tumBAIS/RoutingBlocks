@@ -2,11 +2,11 @@
 #ifndef vrpis_REMOVESTATIONOPERATOR_H
 #define vrpis_REMOVESTATIONOPERATOR_H
 
-#include "vrpis/Instance.h"
-#include "vrpis/LocalSearch.h"
-#include "vrpis/Solution.h"
-#include "vrpis/interfaces/evaluation.h"
-#include "vrpis/operators/InsertStationOperator.h"
+#include <vrpis/Instance.h>
+#include <vrpis/LocalSearch.h>
+#include <vrpis/Solution.h>
+#include <vrpis/evaluation.h>
+#include <vrpis/operators/InsertStationOperator.h>
 
 namespace vrpis {
     class RemoveStationOperator;

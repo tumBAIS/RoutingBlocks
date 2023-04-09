@@ -1,4 +1,4 @@
-#include "vrpis/Solution.h"
+#include <vrpis/Solution.h>
 
 #include <numeric>
 

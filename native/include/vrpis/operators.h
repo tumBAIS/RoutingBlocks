@@ -2,12 +2,12 @@
 #ifndef vrpis_OPERATORS_H
 #define vrpis_OPERATORS_H
 
+#include <vrpis/evaluation.h>
+#include <vrpis/types.h>
+#include <vrpis/vertex.h>
+
 #include <memory>
 #include <vector>
-
-#include "vrpis/interfaces/evaluation.h"
-#include "vrpis/interfaces/types.h"
-#include "vrpis/interfaces/vertex.h"
 
 namespace vrpis {
 

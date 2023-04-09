@@ -4,7 +4,7 @@
 
 #include "vrpis/ADPTWEvaluation.h"
 #include "vrpis/NIFTWEvaluation.h"
-#include "vrpis/interfaces/evaluation.h"
+#include "vrpis/evaluation.h"
 #include "vrpis_bindings/binding_helpers.hpp"
 
 namespace vrpis::bindings {

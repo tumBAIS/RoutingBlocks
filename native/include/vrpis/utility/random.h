@@ -1,12 +1,12 @@
 #pragma once
 
+#include <xoshiro/xoshiro.h>
+
 #include <algorithm>
 #include <concepts>
 #include <ctime>
 #include <limits>
 #include <random>
-
-#include "xoshiro/xoshiro.h"
 
 namespace vrpis::utility {
     class random {

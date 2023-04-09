@@ -2,10 +2,10 @@
 #ifndef vrpis_SWAPOPERATOR_H
 #define vrpis_SWAPOPERATOR_H
 
-#include "vrpis/Instance.h"
-#include "vrpis/LocalSearch.h"
-#include "vrpis/Solution.h"
-#include "vrpis/interfaces/evaluation.h"
+#include <vrpis/Instance.h>
+#include <vrpis/LocalSearch.h>
+#include <vrpis/Solution.h>
+#include <vrpis/evaluation.h>
 
 namespace vrpis {
 

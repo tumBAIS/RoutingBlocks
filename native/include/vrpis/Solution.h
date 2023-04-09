@@ -2,14 +2,14 @@
 #ifndef vrpis_SOLUTION_H
 #define vrpis_SOLUTION_H
 
+#include <vrpis/ADPTWEvaluation.h>
+#include <vrpis/evaluation.h>
+#include <vrpis/utility/algorithms.h>
+
 #include <any>
 #include <atomic>
 #include <concepts>
 #include <numeric>
-
-#include "ADPTWEvaluation.h"
-#include "vrpis/interfaces/evaluation.h"
-#include "vrpis/utility/algorithms.h"
 
 namespace {
     template <class Iterator> constexpr bool has_efficient_size() {
