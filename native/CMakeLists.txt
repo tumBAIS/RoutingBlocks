@@ -14,7 +14,7 @@ CPMAddPackage(
         NAME fmt
         GIT_TAG 8.1.1
         GITHUB_REPOSITORY fmtlib/fmt
-        OPTIONS "FMT_INSTALL YES" # create an installable target
+        OPTIONS "FMT_INSTALL NO"
 )
 set_target_properties(fmt PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
