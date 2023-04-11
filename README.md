@@ -30,6 +30,7 @@ instead.
 * Framework for ALNS-based metaheuristics
 * Efficient native implementations of numerous destroy, repair, and local search operators
 * Move caches implemented in native code to allow high-performance operator implementations in Python
+* Support for custom [native extensions](https://github.com/tumBAIS/routingblocks-native-extension-example)
 
 ## Usage
 
