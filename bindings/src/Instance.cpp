@@ -7,23 +7,10 @@
 
 #include <routingblocks_bindings/binding_helpers.hpp>
 
-namespace {
-    template <class data_t> routingblocks::Vertex vertex_constructor(size_t vid, std::string name,
-                                                                     bool is_station, bool is_depot,
-                                                                     data_t user_data) {
-        return routingblocks::Vertex(vid, name, is_station, is_depot,
-                                     std::make_shared<data_t>(std::move(user_data)));
-    }
-
-    template <class data_t> routingblocks::Arc arc_constructor(data_t user_data) {
-        return routingblocks::Arc(std::make_shared<data_t>(std::move(user_data)));
-    }
-}  // namespace
-
 namespace routingblocks::bindings {
     template <class VertexData> auto bind_vertex(pybind11::module& m, std::string_view name) {
         return pybind11::class_<routingblocks::Vertex>(m, name.data())
-            .def(pybind11::init(&vertex_constructor<VertexData>))
+            .def(pybind11::init(&::bindings::helpers::vertex_constructor<VertexData>))
             .def_readonly("id", &routingblocks::Vertex::id)
             .def_readonly("vertex_id", &routingblocks::Vertex::id)
             .def_readonly("str_id", &routingblocks::Vertex::str_id)
@@ -36,17 +23,17 @@ namespace routingblocks::bindings {
 
     template <class ArcData> auto bind_arc(pybind11::module& m, std::string_view name) {
         return pybind11::class_<routingblocks::Arc>(m, name.data())
-            .def(pybind11::init<>(&arc_constructor<ArcData>));
+            .def(pybind11::init<>(&::bindings::helpers::arc_constructor<ArcData>));
     }
 
     void bind_routingblocks_instance(pybind11::module& m) {
         bind_vertex<pybind11::object>(m, "Vertex");
-        m.def("create_adptw_vertex", &vertex_constructor<ADPTWVertexData>);
-        m.def("create_niftw_vertex", &vertex_constructor<NIFTWVertexData>);
+        m.def("create_adptw_vertex", &::bindings::helpers::vertex_constructor<ADPTWVertexData>);
+        m.def("create_niftw_vertex", &::bindings::helpers::vertex_constructor<NIFTWVertexData>);
 
         bind_arc<pybind11::object>(m, "Arc");
-        m.def("create_adptw_arc", &arc_constructor<ADPTWArcData>);
-        m.def("create_niftw_arc", &arc_constructor<NIFTWArcData>);
+        m.def("create_adptw_arc", &::bindings::helpers::arc_constructor<ADPTWArcData>);
+        m.def("create_niftw_arc", &::bindings::helpers::arc_constructor<NIFTWArcData>);
 
         pybind11::class_<routingblocks::ADPTWVertexData>(m, "ADPTWVertexData")
             .def(pybind11::init<float, float, resource_t, resource_t, resource_t, resource_t>());

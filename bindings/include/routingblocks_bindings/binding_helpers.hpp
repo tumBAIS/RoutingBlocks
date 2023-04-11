@@ -45,6 +45,17 @@ namespace bindings::helpers {
         return pybind11::make_iterator(std::begin(range), std::end(range));
     }
 
+    template <class data_t> routingblocks::Vertex vertex_constructor(size_t vid, std::string name,
+                                                                     bool is_station, bool is_depot,
+                                                                     data_t user_data) {
+        return routingblocks::Vertex(vid, name, is_station, is_depot,
+                                     std::make_shared<data_t>(std::move(user_data)));
+    }
+
+    template <class data_t> routingblocks::Arc arc_constructor(data_t user_data) {
+        return routingblocks::Arc(std::make_shared<data_t>(std::move(user_data)));
+    }
+
 }  // namespace bindings::helpers
 
 #endif

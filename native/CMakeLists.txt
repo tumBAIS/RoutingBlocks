@@ -65,6 +65,8 @@ if (${${PROJECT_NAME}_BUILD_TESTS})
     add_subdirectory(test)
 endif ()
 
-INSTALL(TARGETS ${PROJECT_NAME}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/routingblocks
-        )
+# Install native library
+INSTALL(TARGETS ${PROJECT_NAME})
+# Install include/ directory and libs
+INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks DESTINATION routingblocks/include/)
+INSTALL(TARGETS DYNAMIC_BITSET XOSHIRO SMALL_VECTOR)

@@ -53,3 +53,6 @@ endif ()
 # Set the compiler standard
 #
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+
+INSTALL(TARGETS routingblocks DESTINATION routingblocks)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks_bindings/binding_helpers.hpp DESTINATION routingblocks/include/routingblocks/)
