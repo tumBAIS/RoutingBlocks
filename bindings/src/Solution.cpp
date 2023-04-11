@@ -5,6 +5,23 @@
 
 #include <routingblocks_bindings/binding_helpers.hpp>
 
+namespace {
+    template <typename RouteIter>
+        requires std::contiguous_iterator<RouteIter>
+    auto _to_iter(std::variant<routingblocks::Route*, size_t> route_or_index, RouteIter begin,
+                  RouteIter end) {
+        if (auto** route = std::get_if<routingblocks::Route*>(&route_or_index); route != nullptr) {
+            if (*route >= &*end || *route < &*begin) {
+                throw std::out_of_range("Route is not part of the solution");
+            }
+            return std::next(begin, *route - &*begin);
+        } else {
+            auto x = *std::get_if<size_t>(&route_or_index);
+            return std::next(begin, x);
+        }
+    }
+}  // namespace
+
 namespace routingblocks::bindings {
 
     void bind_node(pybind11::module& m) {
@@ -265,15 +282,20 @@ namespace routingblocks::bindings {
                  "Finds locations where the given vertex occurs in the solution.")
             .def(
                 "exchange_segment",
-                [](Solution& solution, size_t route_index, size_t begin_pos, size_t end_pos,
-                   size_t other_route_index, size_t other_begin_pos, size_t other_end_pos) {
-                    auto route = std::next(solution.begin(), route_index);
-                    auto other = std::next(solution.begin(), other_route_index);
-                    auto begin = std::next(route->begin(), begin_pos);
-                    auto end = std::next(route->begin(), end_pos);
-                    auto other_begin = std::next(other->begin(), other_begin_pos);
-                    auto other_end = std::next(other->begin(), other_end_pos);
-                    solution.exchange_segment(route, begin, end, other, other_begin, other_end);
+                [](Solution& solution, std::variant<Route*, size_t> route_or_index,
+                   size_t begin_pos, size_t end_pos,
+                   std::variant<Route*, size_t> other_route_or_index, size_t other_begin_pos,
+                   size_t other_end_pos) {
+                    auto route_iter = _to_iter(route_or_index, solution.begin(), solution.end());
+                    auto other_route_iter
+                        = _to_iter(other_route_or_index, solution.begin(), solution.end());
+
+                    auto begin = std::next(route_iter->begin(), begin_pos);
+                    auto end = std::next(route_iter->begin(), end_pos);
+                    auto other_begin = std::next(other_route_iter->begin(), other_begin_pos);
+                    auto other_end = std::next(other_route_iter->begin(), other_end_pos);
+                    solution.exchange_segment(route_iter, begin, end, other_route_iter, other_begin,
+                                              other_end);
                 },
                 "Exchanges the given segments between the given routes.")
             .def(
@@ -322,7 +344,7 @@ namespace routingblocks::bindings {
                     auto route_iter = std::find(sol.begin(), sol.end(), route);
                     sol.remove_route(route_iter);
                 },
-                "Removes the route at the given index from the solution")
+                "Removes the given route from the solution")
             .def(
                 "add_route",
                 [](Solution& sol, std::optional<const Route*> route = std::nullopt) {
