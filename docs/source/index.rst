@@ -24,7 +24,7 @@ Welcome to RoutingBlock's documentation!
     :maxdepth: 1
     :caption: Further Reading
 
-    extensions
+    extension
     examples
     development
     routingblocks
