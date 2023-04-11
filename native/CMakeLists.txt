@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(VRPIS VERSION 0.1 LANGUAGES CXX)
+project(routingblocks VERSION 0.1 LANGUAGES CXX)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CPM.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools.cmake)
@@ -10,28 +10,17 @@ option(${PROJECT_NAME}_ENABLE_ASAN off)
 option(${PROJECT_NAME}_BUILD_NATIVE off)
 option(${PROJECT_NAME}_ENABLE_LTO on)
 
-CPMAddPackage(
-        NAME fmt
-        GIT_TAG 8.1.1
-        GITHUB_REPOSITORY fmtlib/fmt
-        OPTIONS "FMT_INSTALL YES" # create an installable target
-)
-set_target_properties(fmt PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
 add_subdirectory(lib)
 
-file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/vrpis/*.h")
-file(GLOB_RECURSE public_headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/vrpis/interfaces/*.h")
+file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
-add_library(${PROJECT_NAME} ${headers} ${sources})
-target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
+add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
 target_link_libraries(${PROJECT_NAME} PUBLIC XOSHIRO)
 target_link_libraries(${PROJECT_NAME} PUBLIC DYNAMIC_BITSET)
 target_link_libraries(${PROJECT_NAME} PUBLIC SMALL_VECTOR)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20 POSITION_INDEPENDENT_CODE ON)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${public_headers}")
 
 target_include_directories(
         ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -76,6 +65,8 @@ if (${${PROJECT_NAME}_BUILD_TESTS})
     add_subdirectory(test)
 endif ()
 
-INSTALL(TARGETS ${PROJECT_NAME}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/vrpis
-        )
+# Install native library
+INSTALL(TARGETS ${PROJECT_NAME})
+# Install include/ directory and libs
+INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks DESTINATION routingblocks/include/)
+INSTALL(TARGETS DYNAMIC_BITSET XOSHIRO SMALL_VECTOR)

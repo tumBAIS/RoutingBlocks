@@ -14,14 +14,16 @@ FIND_PACKAGE(pybind11 CONFIG REQUIRED)
 
 option(${PROJECT_NAME_UPPER}_ENABLE_STUB_GEN "Generate python stub files for the bindings generated." ON)
 
-file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/vrpis_bindings/*.h")
+file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks_bindings/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 pybind11_add_module(${PROJECT_NAME} ${sources})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_compile_definitions(${PROJECT_NAME} PUBLIC "VRPIS_MODULE_NAME=${PROJECT_NAME}")
-target_compile_definitions(${PROJECT_NAME} PUBLIC "VRPIS_VERSION=${PROJECT_VERSION}")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "routingblocks_MODULE_NAME=${PROJECT_NAME}")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "routingblocks_VERSION=${PROJECT_VERSION}")
+
+# Configure optimization flags
 if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:-O0;-g3>")
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RELEASE>:-O3;>")
@@ -31,7 +33,9 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:/Od>")
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RELEASE>:/O2y>")
 endif ()
-target_link_libraries(${PROJECT_NAME} PUBLIC VRPIS)
+
+# Link to main routing blocks library
+target_link_libraries(${PROJECT_NAME} PUBLIC routingblocks)
 
 check_ipo_supported(RESULT ${PROJECT_NAME}_HAS_LTO)
 if (${${PROJECT_NAME}_HAS_LTO})
@@ -49,3 +53,6 @@ endif ()
 # Set the compiler standard
 #
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+
+INSTALL(TARGETS routingblocks DESTINATION routingblocks)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks_bindings/binding_helpers.hpp DESTINATION routingblocks/include/routingblocks/)

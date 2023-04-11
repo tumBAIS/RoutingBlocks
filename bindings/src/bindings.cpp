@@ -1,29 +1,29 @@
 #include <pybind11/pybind11.h>
+#include <routingblocks_bindings/Evaluation.h>
+#include <routingblocks_bindings/Labeling.h>
+#include <routingblocks_bindings/LocalSearch.h>
+#include <routingblocks_bindings/Operators.h>
+#include <routingblocks_bindings/Solution.h>
+#include <routingblocks_bindings/large_neighborhood.h>
+#include <routingblocks_bindings/utility.h>
 
-#include "vrpis_bindings/Evaluation.h"
-#include "vrpis_bindings/Instance.hpp"
-#include "vrpis_bindings/Labeling.h"
-#include "vrpis_bindings/LocalSearch.h"
-#include "vrpis_bindings/Operators.h"
-#include "vrpis_bindings/Solution.h"
-#include "vrpis_bindings/large_neighborhood.h"
-#include "vrpis_bindings/utility.h"
+#include <routingblocks_bindings/Instance.hpp>
 
-using namespace vrpis::bindings;
+using namespace routingblocks::bindings;
 
 #define STRINGIFY(x) #x
 #define PREPROCESSOR_TO_STRING(x) STRINGIFY(x)
 
-#ifndef VRPIS_VERSION
-#    define VRPIS_VERSION "dev"
+#ifndef routingblocks_VERSION
+#    define routingblocks_VERSION "dev"
 #endif
 
-PYBIND11_MODULE(VRPIS_MODULE_NAME, m) {
-    m.attr("__version__") = PREPROCESSOR_TO_STRING(VRPIS_VERSION);
+PYBIND11_MODULE(routingblocks_MODULE_NAME, m) {
+    m.attr("__version__") = PREPROCESSOR_TO_STRING(routingblocks_VERSION);
 
     bind_utility(m);
     // Bind classes
-    bind_vrpis_instance(m);
+    bind_routingblocks_instance(m);
 
     // Evaluation
     bind_evaluation(m);
@@ -43,6 +43,6 @@ PYBIND11_MODULE(VRPIS_MODULE_NAME, m) {
     // Labeling
     bind_labeling(m);
 
-    // vrpis
+    // routingblocks
     bind_large_neighborhood(m);
 }

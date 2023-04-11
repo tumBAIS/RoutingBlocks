@@ -1,70 +1,72 @@
-#include "vrpis_bindings/Operators.h"
+#include <routingblocks/LocalSearch.h>
+#include <routingblocks/operators/InsertStationOperator.h>
+#include <routingblocks/operators/InterRouteTwoOptOperator.h>
+#include <routingblocks/operators/RemoveStationOperator.h>
+#include <routingblocks/operators/SwapOperator.h>
+#include <routingblocks_bindings/Operators.h>
 
-#include <vrpis/LocalSearch.h>
-#include <vrpis/operators/InsertStationOperator.h>
-#include <vrpis/operators/InterRouteTwoOptOperator.h>
-#include <vrpis/operators/RemoveStationOperator.h>
+#include <routingblocks_bindings/binding_helpers.hpp>
 
-#include "vrpis/operators/SwapOperator.h"
-#include "vrpis_bindings/binding_helpers.hpp"
+namespace routingblocks::bindings {
 
-namespace vrpis::bindings {
-
-    class PyOperator : public vrpis::Operator {
-        using vrpis::Operator::Operator;
+    class PyOperator : public routingblocks::Operator {
+        using routingblocks::Operator::Operator;
 
       public:
         void prepare_search(const Solution& solution) override {
-            PYBIND11_OVERLOAD_PURE(void, vrpis::Operator, prepare_search, solution);
+            PYBIND11_OVERLOAD_PURE(void, routingblocks::Operator, prepare_search, solution);
         }
         std::shared_ptr<Move> find_next_improving_move(eval_t& evaluation, const Solution& solution,
                                                        const Move* previous_move) override {
-            PYBIND11_OVERLOAD_PURE(std::shared_ptr<Move>, vrpis::Operator, find_next_improving_move,
-                                   evaluation, solution, previous_move);
+            PYBIND11_OVERLOAD_PURE(std::shared_ptr<Move>, routingblocks::Operator,
+                                   find_next_improving_move, evaluation, solution, previous_move);
         }
         void finalize_search() override {
-            PYBIND11_OVERLOAD_PURE(void, vrpis::Operator, finalize_search);
+            PYBIND11_OVERLOAD_PURE(void, routingblocks::Operator, finalize_search);
         }
     };
 
-    class PyMove : public vrpis::Move {
-        using vrpis::Move::Move;
+    class PyMove : public routingblocks::Move {
+        using routingblocks::Move::Move;
 
       public:
         cost_t get_cost_delta(Evaluation& evaluation, const Instance& instance,
                               const Solution& solution) const override {
-            PYBIND11_OVERLOAD_PURE(cost_t, vrpis::Move, get_cost_delta, evaluation, instance,
-                                   solution);
+            PYBIND11_OVERLOAD_PURE(cost_t, routingblocks::Move, get_cost_delta, evaluation,
+                                   instance, solution);
         }
 
         void apply(const Instance& instance, Solution& solution) const override {
-            PYBIND11_OVERRIDE_PURE(void, vrpis::Move, apply, instance, solution);
+            PYBIND11_OVERRIDE_PURE(void, routingblocks::Move, apply, instance, solution);
         }
     };
 
     auto bind_operator_interface(pybind11::module_& m) {
-        return pybind11::class_<vrpis::Operator, PyOperator, std::shared_ptr<vrpis::Operator>>(
-                   m, "Operator")
+        return pybind11::class_<routingblocks::Operator, PyOperator,
+                                std::shared_ptr<routingblocks::Operator>>(m, "Operator")
             .def(pybind11::init<>())
-            .def("prepare_search", &vrpis::Operator::prepare_search,
+            .def("prepare_search", &routingblocks::Operator::prepare_search,
                  "Prepare the operator for "
                  "searching for a move.")
-            .def("find_next_improving_move", &vrpis::Operator::find_next_improving_move,
+            .def("find_next_improving_move", &routingblocks::Operator::find_next_improving_move,
                  "Find the next improving move.")
-            .def("finalize_search", &vrpis::Operator::finalize_search, "Finalize the search.");
+            .def("finalize_search", &routingblocks::Operator::finalize_search,
+                 "Finalize the search.");
     }
 
     auto bind_move_interface(pybind11::module_& m) {
-        return pybind11::class_<vrpis::Move, PyMove, std::shared_ptr<vrpis::Move>>(m, "Move")
+        return pybind11::class_<routingblocks::Move, PyMove, std::shared_ptr<routingblocks::Move>>(
+                   m, "Move")
             .def(pybind11::init<>())
-            .def("get_cost_delta", &vrpis::Move::get_cost_delta, "Get the cost of the move.")
-            .def("apply", &vrpis::Move::apply, "Apply the move to the solution.");
+            .def("get_cost_delta", &routingblocks::Move::get_cost_delta,
+                 "Get the cost of the move.")
+            .def("apply", &routingblocks::Move::apply, "Apply the move to the solution.");
     }
 
     template <size_t OriginSegmentSize, size_t TargetSegmentSize>
     void bind_swap_operator(pybind11::module_& m, auto& operator_interface, auto& move_interface) {
-        using operator_t = vrpis::SwapOperator<OriginSegmentSize, TargetSegmentSize>;
-        using operator_move_t = vrpis::SwapMove<OriginSegmentSize, TargetSegmentSize>;
+        using operator_t = routingblocks::SwapOperator<OriginSegmentSize, TargetSegmentSize>;
+        using operator_move_t = routingblocks::SwapMove<OriginSegmentSize, TargetSegmentSize>;
 
         std::stringstream base_name;
         base_name << "SwapOperator"
@@ -98,63 +100,66 @@ namespace vrpis::bindings {
 
     void bind_inter_route_two_opt(pybind11::module_& m, auto& operator_interface,
                                   auto& move_interface) {
-        pybind11::class_<vrpis::InterRouteTwoOptOperator,
-                         std::shared_ptr<vrpis::InterRouteTwoOptOperator>>(
+        pybind11::class_<routingblocks::InterRouteTwoOptOperator,
+                         std::shared_ptr<routingblocks::InterRouteTwoOptOperator>>(
             m, "InterRouteTwoOptOperator", operator_interface,
             "Considers two-opt moves between distinct routes. Tries to integrate the "
             "generator arc into the solution.")
             .def(pybind11::init<const Instance&, const utility::arc_set*>(),
                  pybind11::keep_alive<1, 3>())
-            .def("prepare_search", &vrpis::InterRouteTwoOptOperator::prepare_search)
+            .def("prepare_search", &routingblocks::InterRouteTwoOptOperator::prepare_search)
             .def("find_next_improving_move",
-                 &vrpis::InterRouteTwoOptOperator::find_next_improving_move)
-            .def("finalize_search", &vrpis::InterRouteTwoOptOperator::finalize_search)
-            .def("create_move", &vrpis::InterRouteTwoOptOperator::create_move,
+                 &routingblocks::InterRouteTwoOptOperator::find_next_improving_move)
+            .def("finalize_search", &routingblocks::InterRouteTwoOptOperator::finalize_search)
+            .def("create_move", &routingblocks::InterRouteTwoOptOperator::create_move,
                  "Create a move that represents a given generator arc.");
 
-        pybind11::class_<vrpis::InterRouteTwoOptMove, std::shared_ptr<vrpis::InterRouteTwoOptMove>>(
+        pybind11::class_<routingblocks::InterRouteTwoOptMove,
+                         std::shared_ptr<routingblocks::InterRouteTwoOptMove>>(
             m, "InterRouteTwoOptMove", move_interface)
             .def(pybind11::init<NodeLocation, NodeLocation>())
-            .def("get_cost_delta", &vrpis::InterRouteTwoOptMove::get_cost_delta)
-            .def("apply", &vrpis::InterRouteTwoOptMove::apply);
+            .def("get_cost_delta", &routingblocks::InterRouteTwoOptMove::get_cost_delta)
+            .def("apply", &routingblocks::InterRouteTwoOptMove::apply);
     }
 
     void bind_station_in_operator(pybind11::module_& m, auto& operator_interface,
                                   auto& move_interface) {
-        pybind11::class_<vrpis::InsertStationOperator,
-                         std::shared_ptr<vrpis::InsertStationOperator>>(
+        pybind11::class_<routingblocks::InsertStationOperator,
+                         std::shared_ptr<routingblocks::InsertStationOperator>>(
             m, "InsertStationOperator", operator_interface,
             "Considers station insertions between consecutive vertices.")
             .def(pybind11::init<const Instance&>())
-            .def("prepare_search", &vrpis::InsertStationOperator::prepare_search)
+            .def("prepare_search", &routingblocks::InsertStationOperator::prepare_search)
             .def("find_next_improving_move",
-                 &vrpis::InsertStationOperator::find_next_improving_move)
-            .def("finalize_search", &vrpis::InsertStationOperator::finalize_search);
+                 &routingblocks::InsertStationOperator::find_next_improving_move)
+            .def("finalize_search", &routingblocks::InsertStationOperator::finalize_search);
 
-        pybind11::class_<vrpis::InsertStationMove, std::shared_ptr<vrpis::InsertStationMove>>(
+        pybind11::class_<routingblocks::InsertStationMove,
+                         std::shared_ptr<routingblocks::InsertStationMove>>(
             m, "StationInsertionMove", move_interface)
             .def(pybind11::init<NodeLocation, VertexID>())
-            .def("get_cost_delta", &vrpis::InsertStationMove::get_cost_delta)
-            .def("apply", &vrpis::InsertStationMove::apply);
+            .def("get_cost_delta", &routingblocks::InsertStationMove::get_cost_delta)
+            .def("apply", &routingblocks::InsertStationMove::apply);
     }
 
     void bind_station_out_operator(pybind11::module_& m, auto& operator_interface,
                                    auto& move_interface) {
-        pybind11::class_<vrpis::RemoveStationOperator,
-                         std::shared_ptr<vrpis::RemoveStationOperator>>(
+        pybind11::class_<routingblocks::RemoveStationOperator,
+                         std::shared_ptr<routingblocks::RemoveStationOperator>>(
             m, "RemoveStationOperator", operator_interface,
             "Considers station removals between consecutive vertices.")
             .def(pybind11::init<const Instance&>())
-            .def("prepare_search", &vrpis::RemoveStationOperator::prepare_search)
+            .def("prepare_search", &routingblocks::RemoveStationOperator::prepare_search)
             .def("find_next_improving_move",
-                 &vrpis::RemoveStationOperator::find_next_improving_move)
-            .def("finalize_search", &vrpis::RemoveStationOperator::finalize_search);
+                 &routingblocks::RemoveStationOperator::find_next_improving_move)
+            .def("finalize_search", &routingblocks::RemoveStationOperator::finalize_search);
 
-        pybind11::class_<vrpis::RemoveStationMove, std::shared_ptr<vrpis::RemoveStationMove>>(
-            m, "StationRemovalMove", move_interface)
+        pybind11::class_<routingblocks::RemoveStationMove,
+                         std::shared_ptr<routingblocks::RemoveStationMove>>(m, "StationRemovalMove",
+                                                                            move_interface)
             .def(pybind11::init<NodeLocation>())
-            .def("get_cost_delta", &vrpis::RemoveStationMove::get_cost_delta)
-            .def("apply", &vrpis::RemoveStationMove::apply);
+            .def("get_cost_delta", &routingblocks::RemoveStationMove::get_cost_delta)
+            .def("apply", &routingblocks::RemoveStationMove::apply);
     }
 
     void bind_arc_set(pybind11::module_& m) {
@@ -189,4 +194,4 @@ namespace vrpis::bindings {
         bind_swap_operator<3, 3>(m, operator_interface, move_interface);
     }
 
-}  // namespace vrpis::bindings
+}  // namespace routingblocks::bindings
