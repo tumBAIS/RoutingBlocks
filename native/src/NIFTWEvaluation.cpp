@@ -1,4 +1,3 @@
-#include <fmt/core.h>
 #include <routingblocks/NIFTWEvaluation.h>
 
 #include <iostream>

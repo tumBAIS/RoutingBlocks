@@ -1,5 +1,3 @@
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <routingblocks/Solution.h>
 #include <routingblocks/lns_operators.h>
 

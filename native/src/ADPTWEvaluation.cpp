@@ -1,4 +1,3 @@
-#include <fmt/core.h>
 #include <routingblocks/ADPTWEvaluation.h>
 
 #include <iostream>

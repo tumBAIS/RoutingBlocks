@@ -1,5 +1,3 @@
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <routingblocks/Instance.h>
 
 #include <algorithm>
@@ -20,9 +18,8 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
     for (next_vertex = std::next(next_vertex), next_vertex_id = 1; !next_vertex->is_station;
          ++next_vertex, ++next_vertex_id) {
         if (next_vertex->is_depot || next_vertex->is_station || next_vertex->id != next_vertex_id) {
-            throw std::runtime_error(fmt::format(
-                "expected vertex {} to have id {} and to be a customer (not a station or depot)",
-                *next_vertex, next_vertex_id));
+            throw std::runtime_error(
+                "Wrong vertex ordering! Expected order: depot, customers, stations");
         }
     }
 
@@ -34,8 +31,7 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
         if (next_vertex->is_depot || !next_vertex->is_station
             || next_vertex_id != next_vertex->id) {
             throw std::runtime_error(
-                fmt::format("expected vertex {} to have id {} and to be a station", *next_vertex,
-                            next_vertex_id));
+                "Wrong vertex ordering! Expected order: depot, customers, stations");
         }
     }
 

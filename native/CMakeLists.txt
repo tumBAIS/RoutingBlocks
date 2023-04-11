@@ -10,29 +10,17 @@ option(${PROJECT_NAME}_ENABLE_ASAN off)
 option(${PROJECT_NAME}_BUILD_NATIVE off)
 option(${PROJECT_NAME}_ENABLE_LTO on)
 
-CPMAddPackage(
-        NAME fmt
-        GIT_TAG 8.1.1
-        GITHUB_REPOSITORY fmtlib/fmt
-        OPTIONS "FMT_INSTALL NO"
-)
-set_target_properties(fmt PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
 add_subdirectory(lib)
 
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
-add_library(${PROJECT_NAME} ${headers} ${sources})
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
 target_link_libraries(${PROJECT_NAME} PUBLIC XOSHIRO)
 target_link_libraries(${PROJECT_NAME} PUBLIC DYNAMIC_BITSET)
 target_link_libraries(${PROJECT_NAME} PUBLIC SMALL_VECTOR)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20 POSITION_INDEPENDENT_CODE ON)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
-# TODO Include lib directories
-set(public_headers ${headers})
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${public_headers}")
 
 target_include_directories(
         ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
