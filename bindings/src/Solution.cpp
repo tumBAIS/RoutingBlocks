@@ -1,35 +1,37 @@
-#include "vrpis_bindings/Solution.h"
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <routingblocks/Solution.h>
+#include <routingblocks_bindings/Solution.h>
 
-#include "vrpis/Solution.h"
-#include "vrpis_bindings/binding_helpers.hpp"
+#include <routingblocks_bindings/binding_helpers.hpp>
 
-namespace vrpis::bindings {
+namespace routingblocks::bindings {
 
     void bind_node(pybind11::module& m) {
-        pybind11::class_<vrpis::Node>(m, "Node")
-            .def(pybind11::init([](const vrpis::Vertex& vertex, pybind11::object fwd_label,
+        pybind11::class_<routingblocks::Node>(m, "Node")
+            .def(pybind11::init([](const routingblocks::Vertex& vertex, pybind11::object fwd_label,
                                    pybind11::object bwd_label) {
-                     return vrpis::Node{vertex,
-                                        {std::make_shared<pybind11::object>(std::move(fwd_label))},
-                                        {std::make_shared<pybind11::object>(std::move(bwd_label))}};
+                     return routingblocks::Node{
+                         vertex,
+                         {std::make_shared<pybind11::object>(std::move(fwd_label))},
+                         {std::make_shared<pybind11::object>(std::move(bwd_label))}};
                  }),
                  "Creates a node tracking the given vertex and initializes forward and backward"
                  "labels.")
-            .def("update_forward", &vrpis::Node::update_forward,
+            .def("update_forward", &routingblocks::Node::update_forward,
                  "Updates the forward label of this node using the given predecessor node and arc.")
-            .def("update_backward", &vrpis::Node::update_backward,
+            .def("update_backward", &routingblocks::Node::update_backward,
                  "Updates the backward label of this node using the given successor node and arc.")
-            .def_property_readonly("vertex_id", &vrpis::Node::vertex_id, "The vertex ID")
-            .def_property_readonly("vertex_strid", &vrpis::Node::vertex_strid, "The vertex StrID")
-            .def_property_readonly("vertex", &vrpis::Node::vertex,
+            .def_property_readonly("vertex_id", &routingblocks::Node::vertex_id, "The vertex ID")
+            .def_property_readonly("vertex_strid", &routingblocks::Node::vertex_strid,
+                                   "The vertex StrID")
+            .def_property_readonly("vertex", &routingblocks::Node::vertex,
                                    "The vertex associated with this node")
-            .def("cost", &vrpis::Node::cost, "The total route cost up to this node")
-            .def("cost_components", &vrpis::Node::cost_components,
+            .def("cost", &routingblocks::Node::cost, "The total route cost up to this node")
+            .def("cost_components", &routingblocks::Node::cost_components,
                  "The cost components of the route up to this node")
-            .def("feasible", &vrpis::Node::feasible, "Whether the route up to the node is feasible")
+            .def("feasible", &routingblocks::Node::feasible,
+                 "Whether the route up to the node is feasible")
             .def_property_readonly(
                 "forward_label",
                 [](const Node& node) -> const pybind11::object& {
@@ -42,34 +44,37 @@ namespace vrpis::bindings {
                     return node.backward_label().get<pybind11::object>();
                 },
                 "Backward label at the node", pybind11::return_value_policy::reference_internal)
-            .def_property_readonly("__str__", &vrpis::Node::vertex_strid);
+            .def_property_readonly("__str__", &routingblocks::Node::vertex_strid);
     }
 
     void bind_route(pybind11::module& m) {
-        pybind11::class_<vrpis::Route>(m, "Route")
+        pybind11::class_<routingblocks::Route>(m, "Route")
             .def(pybind11::init<std::shared_ptr<Evaluation>, const Instance&>(),
                  "Creates an empty route.")
-            .def_property_readonly("cost", &vrpis::Route::cost, "The cost of the route.")
-            .def_property_readonly("cost_components", &vrpis::Route::cost_components,
+            .def_property_readonly("cost", &routingblocks::Route::cost, "The cost of the route.")
+            .def_property_readonly("cost_components", &routingblocks::Route::cost_components,
                                    "The cost components of the route.")
-            .def_property_readonly("feasible", &vrpis::Route::feasible,
+            .def_property_readonly("feasible", &routingblocks::Route::feasible,
                                    "Whether the route is feasible.")
-            .def_property_readonly("empty", &vrpis::Route::empty, "Whether the route is empty.")
-            .def_property_readonly("modification_timestamp", &vrpis::Route::modification_timestamp,
+            .def_property_readonly("empty", &routingblocks::Route::empty,
+                                   "Whether the route is empty.")
+            .def_property_readonly("modification_timestamp",
+                                   &routingblocks::Route::modification_timestamp,
                                    "The route modification_timestamp. May be used for caching.")
-            .def("__len__", &vrpis::Route::size, "The number of vertices in the route.")
+            .def("__len__", &routingblocks::Route::size, "The number of vertices in the route.")
             .def("__copy__", [](const Route& r) { return Route(r); })
             .def("__deepcopy__", [](const Route& r, const pybind11::dict&) { return Route(r); })
             .def_property_readonly(
-                "end_depot", [](const Route& r) -> const vrpis::Node& { return *r.end_depot(); },
+                "end_depot",
+                [](const Route& r) -> const routingblocks::Node& { return *r.end_depot(); },
                 "The depot at the end of the route.",
                 pybind11::return_value_policy::reference_internal)
             .def_property_readonly(
-                "depot", [](const Route& r) -> const vrpis::Node& { return *r.begin(); },
+                "depot", [](const Route& r) -> const routingblocks::Node& { return *r.begin(); },
                 "Starting depot of the route.", pybind11::return_value_policy::reference_internal)
             .def(
                 "__getitem__",
-                [](const vrpis::Route& route, size_t pos) -> const vrpis::Node& {
+                [](const routingblocks::Route& route, size_t pos) -> const routingblocks::Node& {
                     return *std::next(route.begin(), pos);
                 },
                 "The node at the given index.", pybind11::return_value_policy::reference_internal)
@@ -79,8 +84,8 @@ namespace vrpis::bindings {
                     return pybind11::make_iterator(route.begin(), route.end());
                 },
                 pybind11::return_value_policy::reference_internal)
-            .def("__str__", ::bindings::helpers::ostream_to_string<vrpis::Route>)
-            .def("__repr__", ::bindings::helpers::ostream_to_string<vrpis::Route>)
+            .def("__str__", ::bindings::helpers::ostream_to_string<routingblocks::Route>)
+            .def("__repr__", ::bindings::helpers::ostream_to_string<routingblocks::Route>)
             .def(
                 "remove_segment",
                 [](Route& route, size_t begin_pos, size_t end_pos) {
@@ -130,19 +135,20 @@ namespace vrpis::bindings {
                          return route.exchange_segments(begin, end, other_begin, other_end);
                      }
                  })
-            .def("update", pybind11::overload_cast<>(&vrpis::Route::update), "Updates the route.")
-            .def("__eq__", &vrpis::Route::operator==, "Whether the routes are equal.")
-            .def("__ne__", &vrpis::Route::operator!=, "Whether the routes are not equal.");
+            .def("update", pybind11::overload_cast<>(&routingblocks::Route::update),
+                 "Updates the route.")
+            .def("__eq__", &routingblocks::Route::operator==, "Whether the routes are equal.")
+            .def("__ne__", &routingblocks::Route::operator!=, "Whether the routes are not equal.");
 
-        m.def("create_route", &vrpis::create_route_from_vector,
+        m.def("create_route", &routingblocks::create_route_from_vector,
               "Creates a route from the given vertices.");
     }
 
     void bind_node_location(pybind11::module_& m) {
-        pybind11::class_<vrpis::NodeLocation>(m, "NodeLocation")
+        pybind11::class_<routingblocks::NodeLocation>(m, "NodeLocation")
             .def(pybind11::init<unsigned int, unsigned int>())
             .def("__getitem__",
-                 [](const vrpis::NodeLocation& location, size_t pos) {
+                 [](const routingblocks::NodeLocation& location, size_t pos) {
                      switch (pos) {
                          case 0:
                              return location.route;
@@ -152,32 +158,34 @@ namespace vrpis::bindings {
                              throw std::out_of_range("Index out of range");
                      }
                  })
-            .def("__len__", [](const vrpis::NodeLocation&) { return 2; })
-            .def_readwrite("route", &vrpis::NodeLocation::route, "The route index.")
-            .def_readwrite("position", &vrpis::NodeLocation::position, "The position in the route.")
-            .def("__eq__", &vrpis::NodeLocation::operator==,
+            .def("__len__", [](const routingblocks::NodeLocation&) { return 2; })
+            .def_readwrite("route", &routingblocks::NodeLocation::route, "The route index.")
+            .def_readwrite("position", &routingblocks::NodeLocation::position,
+                           "The position in the route.")
+            .def("__eq__", &routingblocks::NodeLocation::operator==,
                  "Whether the node locations are equal.")
-            .def("__ne__", &vrpis::NodeLocation::operator!=,
+            .def("__ne__", &routingblocks::NodeLocation::operator!=,
                  "Whether the node locations are not equal.")
-            .def("__lt__", &vrpis::NodeLocation::operator<,
+            .def("__lt__", &routingblocks::NodeLocation::operator<,
                  "Whether the node locations compare lexicographically smaller. Route index is "
                  "ordered before node position.")
-            .def("__str__", ::bindings::helpers::ostream_to_string<vrpis::NodeLocation>)
-            .def("__repr__", ::bindings::helpers::ostream_to_string<vrpis::NodeLocation>);
+            .def("__str__", ::bindings::helpers::ostream_to_string<routingblocks::NodeLocation>)
+            .def("__repr__", ::bindings::helpers::ostream_to_string<routingblocks::NodeLocation>);
     }
 
     void bind_solution(pybind11::module_& m) {
         bind_node_location(m);
 
-        pybind11::class_<vrpis::Solution>(m, "Solution")
+        pybind11::class_<routingblocks::Solution>(m, "Solution")
             .def(pybind11::init<std::shared_ptr<Evaluation>, const Instance&, size_t>(),
                  "Creates an empty solution with the specified number of routes.")
             .def(pybind11::init<std::shared_ptr<Evaluation>, const Instance&, std::vector<Route>>(),
                  "Creates a solution from the specified routes.")
-            .def_property_readonly("cost", &vrpis::Solution::cost, "The cost of the solution.")
-            .def_property_readonly("cost_components", &vrpis::Solution::cost_components,
+            .def_property_readonly("cost", &routingblocks::Solution::cost,
+                                   "The cost of the solution.")
+            .def_property_readonly("cost_components", &routingblocks::Solution::cost_components,
                                    "The cost components of the solution.")
-            .def_property_readonly("feasible", &vrpis::Solution::feasible,
+            .def_property_readonly("feasible", &routingblocks::Solution::feasible,
                                    "Whether the solution is "
                                    "feasible.")
             .def("__copy__", [](const Solution& s) { return Solution(s); })
@@ -196,20 +204,20 @@ namespace vrpis::bindings {
                 },
                 "Iterator over the routes in the solution.",
                 pybind11::return_value_policy::reference_internal)
-            .def("__len__", &vrpis::Solution::size, "The number of routes in the solution.")
+            .def("__len__", &routingblocks::Solution::size, "The number of routes in the solution.")
             .def_property_readonly(
                 "number_of_non_depot_nodes",
-                [](const Solution& sol) { return vrpis::number_of_nodes(sol, false); },
+                [](const Solution& sol) { return routingblocks::number_of_nodes(sol, false); },
                 "The number of non-depot nodes in the solution.")
             .def_property_readonly(
                 "number_of_insertion_points",
-                [](const Solution& sol) { return vrpis::number_of_nodes(sol, true); },
+                [](const Solution& sol) { return routingblocks::number_of_nodes(sol, true); },
                 "The number of possible insertion points in the solution.")
             .def_property_readonly(
                 "insertion_points",
                 [](const Solution& sol) {
                     std::vector<NodeLocation> locations;
-                    locations.reserve(vrpis::number_of_nodes(sol, true));
+                    locations.reserve(routingblocks::number_of_nodes(sol, true));
                     size_t route_index = 0;
                     for (auto route = sol.begin(); route != sol.end(); ++route, ++route_index) {
                         size_t node_position = 0;
@@ -226,7 +234,7 @@ namespace vrpis::bindings {
                 "non_depot_nodes",
                 [](const Solution& sol) {
                     std::vector<NodeLocation> locations;
-                    locations.reserve(vrpis::number_of_nodes(sol, true));
+                    locations.reserve(routingblocks::number_of_nodes(sol, true));
                     size_t route_index = 0;
                     for (auto route = sol.begin(); route != sol.end(); ++route, ++route_index) {
                         size_t node_position = 1;
@@ -241,7 +249,7 @@ namespace vrpis::bindings {
                 "Returns a list of all non-depot nodes in the solution.")
             .def(
                 "__getitem__",
-                [](const Solution& solution, size_t pos) -> const vrpis::Route& {
+                [](const Solution& solution, size_t pos) -> const routingblocks::Route& {
                     return *std::next(solution.begin(), pos);
                 },
                 "The route at the given index.", pybind11::return_value_policy::reference_internal)
@@ -253,7 +261,7 @@ namespace vrpis::bindings {
                 pybind11::return_value_policy::reference_internal,
                 "Get the node at the given "
                 "location.")
-            .def("find", &vrpis::Solution::find,
+            .def("find", &routingblocks::Solution::find,
                  "Finds locations where the given vertex occurs in the solution.")
             .def(
                 "exchange_segment",
@@ -325,38 +333,40 @@ namespace vrpis::bindings {
                     }
                 },
                 pybind11::arg("route") = std::nullopt, "Adds an empty route to the solution.")
-            .def("__str__", &::bindings::helpers::ostream_to_string<vrpis::Solution>)
-            .def("__eq__", &vrpis::Solution::operator==, "Whether the solutions are equal.")
-            .def("__ne__", &vrpis::Solution::operator!=, "Whether the solutions are not equal.");
+            .def("__str__", &::bindings::helpers::ostream_to_string<routingblocks::Solution>)
+            .def("__eq__", &routingblocks::Solution::operator==, "Whether the solutions are equal.")
+            .def("__ne__", &routingblocks::Solution::operator!=,
+                 "Whether the solutions are not equal.");
     }
 
     class RouteSegment {
         // TODO
-        friend vrpis::route_segment cast_route_segment(const RouteSegment&);
+        friend routingblocks::route_segment cast_route_segment(const RouteSegment&);
         const Route& route;
         size_t begin;
         size_t end;
 
       public:
-        constexpr RouteSegment(const vrpis::Route& route, size_t begin, size_t end)
+        constexpr RouteSegment(const routingblocks::Route& route, size_t begin, size_t end)
             : route(route), begin(begin), end(end){};
 
-        /*operator vrpis::route_segment<vrpis::Route::const_iterator>() const {
-            return vrpis::route_segment(std::next(route.begin(), begin),
+        /*operator routingblocks::route_segment<routingblocks::Route::const_iterator>() const {
+            return routingblocks::route_segment(std::next(route.begin(), begin),
                                         std::next(route.begin(), end));
         }*/
     };
-}  // namespace vrpis::bindings
+}  // namespace routingblocks::bindings
 
 namespace {
-    vrpis::route_segment cast_route_segment(const vrpis::bindings::RouteSegment& segment) {
+    routingblocks::route_segment cast_route_segment(
+        const routingblocks::bindings::RouteSegment& segment) {
         throw std::runtime_error("Not implemented!");
-        /*return vrpis::route_segment(std::next(segment.route.begin(), segment.begin),
+        /*return routingblocks::route_segment(std::next(segment.route.begin(), segment.begin),
                                     std::next(segment.route.begin(), segment.end));*/
     }
 }  // namespace
 
-namespace vrpis::bindings {
+namespace routingblocks::bindings {
 
     void bind_solution_functions(pybind11::module& m) {
         pybind11::class_<RouteSegment>(m, "RouteSegment")
@@ -393,4 +403,4 @@ namespace vrpis::bindings {
             "Compute the cost of the route resulting from concatenating the route segment ending "
             "at pred with the route segment starting at succ. Shorthand method for concatenate.");
     }
-}  // namespace vrpis::bindings
+}  // namespace routingblocks::bindings

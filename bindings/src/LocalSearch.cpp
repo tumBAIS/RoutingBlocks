@@ -1,17 +1,15 @@
-#include "vrpis_bindings/LocalSearch.h"
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <routingblocks/LocalSearch.h>
+#include <routingblocks/utility/random.h>
+#include <routingblocks_bindings/LocalSearch.h>
+#include <routingblocks_bindings/Operators.h>
 
-#include "vrpis/LocalSearch.h"
-#include "vrpis/utility/random.h"
-#include "vrpis_bindings/Operators.h"
-
-namespace vrpis::bindings {
+namespace routingblocks::bindings {
 
     void bind_local_search(pybind11::module& m) {
-        pybind11::class_<vrpis::LocalSearch>(m, "LocalSearch")
-            .def(pybind11::init<const vrpis::Instance&, std::shared_ptr<Evaluation>,
+        pybind11::class_<routingblocks::LocalSearch>(m, "LocalSearch")
+            .def(pybind11::init<const routingblocks::Instance&, std::shared_ptr<Evaluation>,
                                 std::shared_ptr<Evaluation>>())
             .def(
                 "optimize",
@@ -34,18 +32,22 @@ namespace vrpis::bindings {
                 return GeneratorArc{origin_route_iterator, origin_node_iterator,
                                     target_route_iterator, target_node_iterator};
             }))
-            .def_property_readonly(
-                "origin_route",
-                [](const vrpis::GeneratorArc& arc) -> const Route& { return *arc.origin_route; })
-            .def_property_readonly(
-                "target_route",
-                [](const vrpis::GeneratorArc& arc) -> const Route& { return *arc.target_route; })
-            .def_property_readonly(
-                "origin_node",
-                [](const vrpis::GeneratorArc& arc) -> const Node& { return *arc.origin_node; })
-            .def_property_readonly(
-                "target_node",
-                [](const vrpis::GeneratorArc& arc) -> const Node& { return *arc.target_node; });
+            .def_property_readonly("origin_route",
+                                   [](const routingblocks::GeneratorArc& arc) -> const Route& {
+                                       return *arc.origin_route;
+                                   })
+            .def_property_readonly("target_route",
+                                   [](const routingblocks::GeneratorArc& arc) -> const Route& {
+                                       return *arc.target_route;
+                                   })
+            .def_property_readonly("origin_node",
+                                   [](const routingblocks::GeneratorArc& arc) -> const Node& {
+                                       return *arc.origin_node;
+                                   })
+            .def_property_readonly("target_node",
+                                   [](const routingblocks::GeneratorArc& arc) -> const Node& {
+                                       return *arc.target_node;
+                                   });
     }
 
     void bind_neighborhood_structures(pybind11::module& m) {
@@ -61,4 +63,4 @@ namespace vrpis::bindings {
         });
     }
 
-}  // namespace vrpis::bindings
+}  // namespace routingblocks::bindings

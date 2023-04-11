@@ -1,8 +1,8 @@
-#include "vrpis/Solution.h"
+#include <routingblocks/Solution.h>
 
 #include <numeric>
 
-namespace vrpis {
+namespace routingblocks {
 
     bool NodeLocation::operator==(const NodeLocation& rhs) const {
         return route == rhs.route && position == rhs.position;
@@ -73,4 +73,4 @@ namespace vrpis {
         typename route_t::iterator {
         return this->remove_route_segment(route, position, std::next(position));
     }
-}  // namespace vrpis
+}  // namespace routingblocks

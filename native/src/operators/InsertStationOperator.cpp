@@ -1,6 +1,6 @@
-#include "vrpis/operators/InsertStationOperator.h"
+#include <routingblocks/operators/InsertStationOperator.h>
 
-namespace vrpis {
+namespace routingblocks {
 
     cost_t InsertStationMove::get_cost_delta(Evaluation& evaluation, const Instance& instance,
                                              const Solution& solution) const {
@@ -73,4 +73,4 @@ namespace vrpis {
 
     InsertStationOperator::InsertStationOperator(const Instance& instance) : _instance(instance) {}
 
-}  // namespace vrpis
+}  // namespace routingblocks
