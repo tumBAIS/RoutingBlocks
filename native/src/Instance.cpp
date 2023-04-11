@@ -15,11 +15,14 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
         throw std::runtime_error("Depot is not first vertex");
     }
 
-    for (next_vertex = std::next(next_vertex), next_vertex_id = 1; !next_vertex->is_station;
+    for (next_vertex = std::next(next_vertex), next_vertex_id = 1;
+         !next_vertex->is_station && next_vertex != _vertices.end();
          ++next_vertex, ++next_vertex_id) {
         if (next_vertex->is_depot || next_vertex->is_station || next_vertex->id != next_vertex_id) {
             throw std::runtime_error(
-                "Wrong vertex ordering! Expected order: depot, customers, stations");
+                "Wrong vertex ordering! Expected order: depot, customers, stations with sequential "
+                "id's. Problem: a depot or station vertex is at a position where a customer was "
+                "expected.");
         }
     }
 
@@ -31,7 +34,8 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
         if (next_vertex->is_depot || !next_vertex->is_station
             || next_vertex_id != next_vertex->id) {
             throw std::runtime_error(
-                "Wrong vertex ordering! Expected order: depot, customers, stations");
+                "Wrong vertex ordering! Expected order: depot, customers, stations with sequential "
+                "id's. Problem: A non-station vertex follows customer vertices");
         }
     }
 
