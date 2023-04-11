@@ -10,7 +10,9 @@
 namespace routingblocks {
     std::shared_ptr<Move> LocalSearch::_explore_neighborhood() {
         std::shared_ptr<Move> next_move, best_move;
-        auto best_cost = 0.;
+        // Discard moves that do not have an impact on the objective function to avoid
+        // routing errors.
+        auto best_cost = -1e-2;
         for (auto& next_op : _operators) {
             next_op->prepare_search(_current_solution);
             while (true) {
