@@ -28,17 +28,23 @@ namespace routingblocks::bindings {
 
     void bind_routingblocks_instance(pybind11::module& m) {
         bind_vertex<pybind11::object>(m, "Vertex");
-        m.def("create_adptw_vertex", &::bindings::helpers::vertex_constructor<ADPTWVertexData>);
-        m.def("create_niftw_vertex", &::bindings::helpers::vertex_constructor<NIFTWVertexData>);
-
         bind_arc<pybind11::object>(m, "Arc");
-        m.def("create_adptw_arc", &::bindings::helpers::arc_constructor<ADPTWArcData>);
-        m.def("create_niftw_arc", &::bindings::helpers::arc_constructor<NIFTWArcData>);
 
-        pybind11::class_<routingblocks::ADPTWVertexData>(m, "ADPTWVertexData")
+        auto adptw = m.def_submodule("adptw");
+        pybind11::class_<routingblocks::ADPTWVertexData>(adptw, "ADPTWVertexData")
             .def(pybind11::init<float, float, resource_t, resource_t, resource_t, resource_t>());
-        pybind11::class_<routingblocks::ADPTWArcData>(m, "ADPTWArcData")
+        pybind11::class_<routingblocks::ADPTWArcData>(adptw, "ADPTWArcData")
             .def(pybind11::init<resource_t, resource_t, resource_t>());
+        adptw.def("create_adptw_vertex", &::bindings::helpers::vertex_constructor<ADPTWVertexData>);
+        adptw.def("create_adptw_arc", &::bindings::helpers::arc_constructor<ADPTWArcData>);
+
+        auto niftw = m.def_submodule("niftw");
+        pybind11::class_<routingblocks::NIFTWVertexData>(niftw, "NIFTWVertexData")
+            .def(pybind11::init<float, float, resource_t, resource_t, resource_t, resource_t>());
+        pybind11::class_<routingblocks::NIFTWArcData>(niftw, "NIFTWArcData")
+            .def(pybind11::init<resource_t, resource_t, resource_t>());
+        niftw.def("create_niftw_vertex", &::bindings::helpers::vertex_constructor<NIFTWVertexData>);
+        niftw.def("create_niftw_arc", &::bindings::helpers::arc_constructor<NIFTWArcData>);
 
         pybind11::class_<routingblocks::Instance>(m, "Instance")
             .def(pybind11::init<std::vector<routingblocks::Vertex>,

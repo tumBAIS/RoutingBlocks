@@ -11,21 +11,22 @@ except ModuleNotFoundError:
 
 
 def create_cpp_vertex(vertex: Vertex, vertex_id: int, data_factory: Callable[[Vertex], Any]) -> evrptw.Vertex:
-    return evrptw.create_adptw_vertex(
+    return evrptw.adptw.create_adptw_vertex(
         vertex_id, vertex.vertex_id, vertex.is_station, vertex.is_depot, data_factory(vertex))
 
 
 def create_cpp_arc(arc: Arc, data_factory: Callable[[Arc], Any]) -> evrptw.Arc:
-    return evrptw.create_adptw_arc(data_factory(arc))
+    return evrptw.adptw.create_adptw_arc(data_factory(arc))
 
 
-def adptw_vertex_data_factory(vertex: Vertex) -> evrptw.ADPTWVertexData:
-    return evrptw.ADPTWVertexData(vertex.x_coord, vertex.y_coord, vertex.demand, vertex.ready_time, vertex.due_date,
-                                  vertex.service_time)
+def adptw_vertex_data_factory(vertex: Vertex) -> evrptw.adptw.ADPTWVertexData:
+    return evrptw.adptw.ADPTWVertexData(vertex.x_coord, vertex.y_coord, vertex.demand, vertex.ready_time,
+                                        vertex.due_date,
+                                        vertex.service_time)
 
 
-def adptw_arc_data_factory(arc: Arc) -> evrptw.ADPTWArcData:
-    return evrptw.ADPTWArcData(arc.distance, arc.consumption, arc.travel_time)
+def adptw_arc_data_factory(arc: Arc) -> evrptw.adptw.ADPTWArcData:
+    return evrptw.adptw.ADPTWArcData(arc.distance, arc.consumption, arc.travel_time)
 
 
 def create_cpp_instance(instance: Instance) -> evrptw.Instance:
