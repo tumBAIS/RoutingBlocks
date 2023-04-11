@@ -42,6 +42,11 @@ namespace routingblocks::bindings {
 
         pybind11::class_<routingblocks::Instance>(m, "Instance")
             .def(pybind11::init<std::vector<routingblocks::Vertex>,
+                                std::vector<std::vector<routingblocks::Arc>>>())
+            .def(pybind11::init<std::vector<routingblocks::Vertex>,
+                                std::vector<std::vector<routingblocks::Arc>>, int>())
+            .def(pybind11::init<routingblocks::Vertex, std::vector<routingblocks::Vertex>,
+                                std::vector<routingblocks::Vertex>,
                                 std::vector<std::vector<routingblocks::Arc>>, int>())
             .def_property_readonly("fleet_size", &routingblocks::Instance::FleetSize)
             .def_property_readonly("number_of_customers",

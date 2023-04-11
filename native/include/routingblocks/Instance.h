@@ -28,7 +28,11 @@ namespace routingblocks {
         int _fleet_size;
 
       public:
+        Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> arcs);
         Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> arcs, int fleetSize);
+        Instance(Vertex depot, const std::vector<Vertex>& customers,
+                 const std::vector<Vertex>& stations, std::vector<std::vector<Arc>> arcs,
+                 int fleetSize);
 
         [[nodiscard]] const Vertex& getVertex(size_t id) const {
             assert(id < _vertices.size());

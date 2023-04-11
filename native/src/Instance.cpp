@@ -5,6 +5,21 @@
 
 using namespace routingblocks;
 
+namespace {
+    std::vector<Vertex> _join_vertices(Vertex depot, const std::vector<Vertex>& customers,
+                                       const std::vector<Vertex>& stations) {
+        std::vector<Vertex> vertices;
+        vertices.reserve(customers.size() + stations.size() + 1);
+        vertices.push_back(std::move(depot));
+        vertices.insert(vertices.end(), customers.begin(), customers.end());
+        vertices.insert(vertices.end(), stations.begin(), stations.end());
+        return vertices;
+    }
+}  // namespace
+
+Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> arcs)
+    : Instance(std::move(vertices), std::move(arcs), 0) {}
+
 Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> arcs, int fleetSize)
     : _vertices(std::move(vertices)), _arcs(std::move(arcs)), _fleet_size(fleetSize) {
     // vertices should be ordered as [depot, cust_1, ..., cust_n, station_1, ..., station_n]
@@ -39,7 +54,12 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
         }
     }
 
-    if (_fleet_size <= 0) {
+    // Set the fleet size if not specified
+    if (_fleet_size == 0) {
+        _fleet_size = _number_of_customers;
+    }
+
+    if (_fleet_size < 0) {
         throw std::runtime_error(
             "fleet size, vehicle capacity, and vehicle battery capacity must be greater than 0");
     }
@@ -49,4 +69,10 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
     _stations_begin = std::next(_vertices.begin(), station_offset);
     _stations_end = std::next(_vertices.begin(), station_offset + _number_of_stations);
 }
+
+Instance::Instance(Vertex depot, const std::vector<Vertex>& customers,
+                   const std::vector<Vertex>& stations, std::vector<std::vector<Arc>> arcs,
+                   int fleetSize)
+    : Instance(_join_vertices(std::move(depot), customers, stations), std::move(arcs), fleetSize) {}
+
 Arc::Arc(Arc::data_t data) : data(std::move(data)) {}
