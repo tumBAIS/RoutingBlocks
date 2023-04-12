@@ -21,7 +21,7 @@ except ModuleNotFoundError:
 
 def test_random_removal_apply(adptw_instance, mock_evaluation, random_solution_factory, randgen):
     instance: evrptw.Instance = adptw_instance
-    operator = alns.RandomRemoveOperator(randgen)
+    operator = alns.operators.RandomRemovalOperator(randgen)
     evaluation = mock_evaluation
     # Throws if removing more customers than are in the solution
     solution = random_solution_factory(instance, evaluation, [next(instance.customers)], n_routes=1)

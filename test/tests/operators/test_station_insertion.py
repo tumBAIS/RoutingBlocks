@@ -37,7 +37,7 @@ def test_insert_station_operator_search(large_instance):
     route = solution[0]
     assert not route.feasible
     assert route.cost_components[evrptw.niftw.OverchargeCostComponent] > 0
-    station_insertion_operator = evrptw.InsertStationOperator(instance)
+    station_insertion_operator = evrptw.operators.InsertStationOperator(instance)
     ls = evrptw.LocalSearch(instance, evaluation, None)
     ls.optimize(solution, [station_insertion_operator])
     # Charge penalty should be 0.

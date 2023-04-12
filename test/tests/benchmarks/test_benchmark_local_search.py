@@ -28,11 +28,11 @@ def run_local_search(local_search: alns.LocalSearch, solution: alns.Solution, op
 
 def create_operators(instance):
     return [
-        alns.SwapOperator_0_1(instance, None),
-        alns.SwapOperator_0_2(instance, None),
-        alns.SwapOperator_1_1(instance, None),
-        alns.SwapOperator_1_2(instance, None),
-        alns.InterRouteTwoOptOperator(instance, None)
+        alns.operators.SwapOperator_0_1(instance, None),
+        alns.operators.SwapOperator_0_2(instance, None),
+        alns.operators.SwapOperator_1_1(instance, None),
+        alns.operators.SwapOperator_1_2(instance, None),
+        alns.operators.InterRouteTwoOptOperator(instance, None)
     ]
 
 

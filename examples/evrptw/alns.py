@@ -16,7 +16,8 @@ from .parameters import ALNSParams
 import routingblocks
 
 
-def create_reduced_arc_set(instance: routingblocks.Instance, py_instance: ADPTWInstance, n_neighbours: int) -> routingblocks.ArcSet:
+def create_reduced_arc_set(instance: routingblocks.Instance, py_instance: ADPTWInstance,
+                           n_neighbours: int) -> routingblocks.ArcSet:
     arc_set = routingblocks.ArcSet(instance.number_of_vertices)
     for i in range(1, instance.number_of_vertices):
         sorted_arcs = sorted(
@@ -50,7 +51,8 @@ class CostComponentTracker:
 
 
 class ALNS:
-    def __init__(self, evaluation: routingblocks.Evaluation, py_instance: ADPTWInstance, cpp_instance: routingblocks.Instance,
+    def __init__(self, evaluation: routingblocks.Evaluation, py_instance: ADPTWInstance,
+                 cpp_instance: routingblocks.Instance,
                  params: ALNSParams, seed: int):
         self._evaluation = evaluation
         self._py_instance = py_instance
@@ -62,7 +64,7 @@ class ALNS:
 
         # Create and configure algorithmic components
         self._adaptive_large_neighborhood = routingblocks.AdaptiveLargeNeighborhood(self._random,
-                                                                            self._params.adaptive_smoothing_factor)
+                                                                                    self._params.adaptive_smoothing_factor)
         self._local_search = routingblocks.LocalSearch(self._cpp_instance, evaluation, None)
         self._local_search.set_use_best_improvement(self._params.use_best_improvement)
 
@@ -103,17 +105,18 @@ class ALNS:
 
     def _configure_local_search_operators(self):
         self._operators = [
-            routingblocks.SwapOperator_0_1(self._cpp_instance, self._reduced_arc_set),
-            routingblocks.SwapOperator_0_2(self._cpp_instance, self._reduced_arc_set),
-            routingblocks.SwapOperator_0_3(self._cpp_instance, self._reduced_arc_set),
-            routingblocks.SwapOperator_1_1(self._cpp_instance, self._reduced_arc_set),
-            routingblocks.InterRouteTwoOptOperator(self._cpp_instance, self._reduced_arc_set),
-            routingblocks.InsertStationOperator(self._cpp_instance),
-            routingblocks.RemoveStationOperator(self._cpp_instance)
+            routingblocks.operators.SwapOperator_0_1(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.operators.SwapOperator_0_2(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.operators.SwapOperator_0_3(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.operators.SwapOperator_1_1(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.operators.InterRouteTwoOptOperator(self._cpp_instance, self._reduced_arc_set),
+            routingblocks.operators.InsertStationOperator(self._cpp_instance),
+            routingblocks.operators.RemoveStationOperator(self._cpp_instance)
         ]
 
     def _configure_destroy_operators(self):
-        self._adaptive_large_neighborhood.add_destroy_operator(routingblocks.RandomRemoveOperator(self._random))
+        self._adaptive_large_neighborhood.add_destroy_operator(
+            routingblocks.operators.RandomRemovalOperator(self._random))
         self._adaptive_large_neighborhood.add_destroy_operator(RouteRemoveOperator(self._random))
         self._adaptive_large_neighborhood.add_destroy_operator(
             create_related_remove_operator(self._py_instance, self._cpp_instance, self._random,
@@ -128,7 +131,8 @@ class ALNS:
                                                         self._random)))
 
     def _configure_repair_operators(self):
-        self._adaptive_large_neighborhood.add_repair_operator(routingblocks.RandomInsertionOperator(self._random))
+        self._adaptive_large_neighborhood.add_repair_operator(
+            routingblocks.operators.RandomInsertionOperator(self._random))
         self._adaptive_large_neighborhood.add_repair_operator(
             best_insert.BestInsertionOperator(self._cpp_instance, first_move_selector))
         self._adaptive_large_neighborhood.add_repair_operator(
@@ -138,19 +142,21 @@ class ALNS:
 
     def _apply_dp(self, _solution: routingblocks.Solution) -> routingblocks.Solution:
         optimized_routes = [routingblocks.create_route(self._evaluation, self._cpp_instance,
-                                               self._frvcp.optimize([x.vertex_id for x in route])[1:-1]) for route
+                                                       self._frvcp.optimize([x.vertex_id for x in route])[1:-1]) for
+                            route
                             in
                             _solution]
         return routingblocks.Solution(self._evaluation, self._cpp_instance,
-                              [route for route in optimized_routes if not route.empty or not _solution.feasible])
+                                      [route for route in optimized_routes if
+                                       not route.empty or not _solution.feasible])
 
     def _generate_random_solution(self):
         customers = [x.vertex_id for x in self._cpp_instance.customers]
         while True:
             sol = routingblocks.Solution(self._evaluation, self._cpp_instance,
-                                 [routingblocks.create_route(self._evaluation, self._cpp_instance, r) for r in
-                                  distribute_randomly(customers, self._cpp_instance.fleet_size,
-                                                      self._random)])
+                                         [routingblocks.create_route(self._evaluation, self._cpp_instance, r) for r in
+                                          distribute_randomly(customers, self._cpp_instance.fleet_size,
+                                                              self._random)])
             self._local_search.optimize(sol, self._operators)
             yield self._apply_dp(sol)
 

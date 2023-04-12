@@ -22,6 +22,7 @@ def create_random_solution(evaluation: rb.Evaluation, instance: rb.Instance):
 
 
 def perturb(solution: rb.Solution, max_exchanges: int) -> rb.Solution:
+    assert sum(1 for r in solution if not r.empty) > 1, "Cannot perturb a solution with only one route."
     # Create a new solution by copying the current solution
     new_solution = copy.copy(solution)
 
@@ -29,10 +30,11 @@ def perturb(solution: rb.Solution, max_exchanges: int) -> rb.Solution:
     num_exchanges = random.randint(0, max_exchanges)
     for _ in range(num_exchanges):
         # Select two random routes
-        route_1 = random.choice(new_solution)
-        route_2 = random.choice(new_solution)
-        if route_1 is route_2:
-            continue
+        while True:
+            route_1 = random.choice(new_solution)
+            route_2 = random.choice(new_solution)
+            if route_1 is not route_2 and not route_1.empty and not route_2.empty:
+                break
         # Select a random sequence of customers in route 1 that does not include the depot
         start_index_1 = random.randint(1, len(route_1) - 2)
         # end_index is exclusive
@@ -48,8 +50,12 @@ def perturb(solution: rb.Solution, max_exchanges: int) -> rb.Solution:
     return new_solution
 
 
-def iterated_local_search(instance: rb.Instance, vehicle_storage_capacity: float, vehicle_battery_capacity_time: float):
+def iterated_local_search(instance: rb.Instance, vehicle_storage_capacity: float, vehicle_battery_capacity_time: float,
+                          number_of_iterations: int = 100):
     evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
+    # Set the penalty factors used to penalize violations of the time window, the
+    # vehicle capacity, and the charge constraints
+    evaluation.penalty_factors = [1., 100., 100., 100.]
 
     local_search = rb.LocalSearch(instance, evaluation, None)
     # Configure the local search to use a best-improvement pivoting rule
@@ -59,20 +65,20 @@ def iterated_local_search(instance: rb.Instance, vehicle_storage_capacity: float
 
     # Create a set of operators that will be used later when calling the local search
     operators = [
-        rb.SwapOperator_0_1(instance, arc_set),
-        rb.SwapOperator_1_1(instance, arc_set),
-        rb.InsertStationOperator(instance),
-        rb.RemoveStationOperator(instance),
+        rb.operators.SwapOperator_0_1(instance, arc_set),
+        rb.operators.SwapOperator_1_1(instance, arc_set),
+        rb.operators.InsertStationOperator(instance),
+        rb.operators.RemoveStationOperator(instance),
     ]
 
     best_solution = create_random_solution(evaluation, instance)
     current_solution = copy.copy(best_solution)
-    for i in range(10):
+    for i in range(number_of_iterations):
         # Search the neighborhood of the current solution. This modifies the solution in-place.
         local_search.optimize(current_solution, operators)
         if current_solution.cost < best_solution.cost:
             best_solution = current_solution
-            print(f"New best solution found: {best_solution.cost}")
+            print(f"New best solution found: {best_solution.cost} ({best_solution.feasible})")
 
         # Perturb the current solution
         current_solution = perturb(current_solution, len(current_solution) // 2)
