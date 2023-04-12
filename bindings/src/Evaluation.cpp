@@ -241,6 +241,7 @@ namespace routingblocks::bindings {
             .def("propagate_backward", &PyConcatenationBasedEvaluation::py_propagate_backward)
             .def("concatenate", &PyConcatenationBasedEvaluation::py_concatenate)
             .def("compute_cost", &PyConcatenationBasedEvaluation::py_compute_cost)
+            .def("get_cost_components", &PyConcatenationBasedEvaluation::py_get_cost_components)
             .def("is_feasible", &PyConcatenationBasedEvaluation::py_is_feasible)
             .def("create_forward_label", &PyConcatenationBasedEvaluation::py_create_forward_label)
             .def("create_backward_label",
