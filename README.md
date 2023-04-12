@@ -41,7 +41,8 @@ algorithm for
 the [EVRPTW-PR](https://research.sabanciuniv.edu/id/eprint/26033/1/WP_EVRPTW-Partial_Recharge_KeskinCatay.pdf) as part
 of this repository.
 
-Further documentation is available at [readthedocs](https://routingblocks.readthedocs.io/en/latest/).
+Further documentation is available
+at [readthedocs](https://routingblocks.readthedocs.io/en/latest/getting_started.html).
 
 ## Contributing
 
