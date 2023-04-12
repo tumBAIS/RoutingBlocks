@@ -2,7 +2,9 @@
 
 This directory contains examples of how to use `routingblocks`:
 
-* evrptw: An example implementation of an ALNS-based algorithm for the EVRPTW-PR problem.
+* ils: A simple ILS for the EVRP-TW-PR.
+* alns: A simple ALNS for the EVRP-TW-PR.
+* evrptw: An example implementation of a more sophisticated ALNS-based algorithm for the EVRP-TW-PR problem.
 
 ## Running
 

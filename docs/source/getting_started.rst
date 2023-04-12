@@ -80,7 +80,7 @@ Next, we create a RoutingBlocks Instance object from the parsed data:
             vertex_data = rb.adptw.ADPTWVertexData(vertex['x'], vertex['y'], vertex['demand'], vertex['ReadyTime'],
                                                    vertex['DueDate'],
                                                    vertex['ServiceTime'])
-            # Register the vertex depending on it's type
+            # Register the vertex dependinx for x in self._move_selector(related_vertices)g on it's type
             if vertex['Type'] == 'd':
                 instance_builder.set_depot(vertex['StringID'], vertex_data)
             elif vertex['Type'] == 'c':
@@ -109,7 +109,7 @@ Having created the instance, we can now implement the ILS algorithm. We start by
 
 .. note::
 
-        It is possible to implement a custom Evaluation class for custom problem settings (See `Custom problem settings<_custom_problem_settings>`_)
+        It is possible to implement a custom Evaluation class for custom problem settings (See `Custom problem settings <_custom_problem_settings>`_)
 
 .. code-block:: python
 
@@ -119,6 +119,9 @@ Having created the instance, we can now implement the ILS algorithm. We start by
     vehicle_battery_capacity_time = params['Q'] * params['g']
     # Create an evaluation object
     evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
+    # Set the penalty factors used to penalize violations of the time window, the
+    # vehicle capacity, and the charge constraints
+    evaluation.penalty_factors = [1., 100., 100., 100.]
 
 .. note::
 
@@ -160,10 +163,10 @@ Next, we create and configure the local search solver:
 
     # Create a set of operators that will be used later when calling the local search
     operators = [
-        rb.SwapOperator_0_1(instance, arc_set),
-        rb.SwapOperator_1_1(instance, arc_set),
-        rb.InsertStationOperator(instance),
-        rb.RemoveStationOperator(instance),
+        rb.operators.SwapOperator_0_1(instance, arc_set),
+        rb.operators.SwapOperator_1_1(instance, arc_set),
+        rb.operators.InsertStationOperator(instance),
+        rb.operators.RemoveStationOperator(instance),
     ]
 
 
@@ -184,6 +187,7 @@ The final procedure to implement is the perturbation function. This function per
 .. code-block:: python
 
     def perturb(solution: rb.Solution, max_exchanges: int) -> rb.Solution:
+        assert sum(1 for r in solution if not r.empty) > 1, "Cannot perturb a solution with only one route."
         # Create a new solution by copying the current solution
         new_solution = copy.copy(solution)
 
@@ -191,10 +195,11 @@ The final procedure to implement is the perturbation function. This function per
         num_exchanges = random.randint(0, max_exchanges)
         for _ in range(num_exchanges):
             # Select two random routes
-            route_1 = random.choice(new_solution)
-            route_2 = random.choice(new_solution)
-            if route_1 is route_2:
-                continue
+            while True:
+                route_1 = random.choice(new_solution)
+                route_2 = random.choice(new_solution)
+                if route_1 is not route_2 and not route_1.empty and not route_2.empty:
+                    break
             # Select a random sequence of customers in route 1 that does not include the depot
             start_index_1 = random.randint(1, len(route_1) - 2)
             # end_index is exclusive
@@ -207,8 +212,7 @@ The final procedure to implement is the perturbation function. This function per
             # Exchange the sequences
             new_solution.exchange_segment(route_1, start_index_1, end_index_1,
                                           route_2, start_index_2, end_index_2)
-        return new_solution
-
+        return new_solutio
 
 We can now implement the main loop of the ILS algorithm:
 
@@ -216,7 +220,7 @@ We can now implement the main loop of the ILS algorithm:
 
     best_solution = create_random_solution(evaluation, instance)
     current_solution = copy.copy(best_solution)
-    for i in range(10):
+    for i in range(number_of_iterations):
         # Search the neighborhood of the current solution. This modifies the solution in-place.
         local_search.optimize(current_solution, operators)
         if current_solution.cost < best_solution.cost:
@@ -239,6 +243,9 @@ Putting everything together, we arrive at the following code:
         vehicle_battery_capacity_time = params['Q'] * params['g']
 
         evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
+        # Set the penalty factors used to penalize violations of the time window, the
+        # vehicle capacity, and the charge constraints
+        evaluation.penalty_factors = [1., 100., 100., 100.]
 
         local_search = rb.LocalSearch(instance, evaluation, None)
         # Configure the local search to use a best-improvement pivoting rule
@@ -248,10 +255,10 @@ Putting everything together, we arrive at the following code:
 
         # Create a set of operators that will be used later when calling the local search
         operators = [
-            rb.SwapOperator_0_1(instance, arc_set),
-            rb.SwapOperator_1_1(instance, arc_set),
-            rb.InsertStationOperator(instance),
-            rb.RemoveStationOperator(instance),
+            rb.operators.SwapOperator_0_1(instance, arc_set),
+            rb.operators.SwapOperator_1_1(instance, arc_set),
+            rb.operators.InsertStationOperator(instance),
+            rb.operators.RemoveStationOperator(instance),
         ]
 
         best_solution = create_random_solution(evaluation, instance)
@@ -261,7 +268,7 @@ Putting everything together, we arrive at the following code:
             local_search.optimize(current_solution, operators)
             if current_solution.cost < best_solution.cost:
                 best_solution = current_solution
-                print(f"New best solution found: {best_solution.cost}")
+                print(f"New best solution found: {best_solution.cost} ({best_solution.feasible})")
 
             # Perturb the current solution
             current_solution = perturb(current_solution, len(current_solution) // 2)
@@ -275,7 +282,103 @@ Extending the algorithm to an ALNS
 ------------------------------------
 .. _alns_extension:
 
-The ILS does not perform well on the EVRP-TW-PR, as it is not able to find good solutions in a reasonable amount of time. To improve the performance, we can extend the algorithm to an `ALNS <https://en.wikipedia.org/wiki/Adaptive_large_neighborhood_search>`_.
+A simple ILS algorithm is often not sufficient to compete on problem settings such as the EVRP-TW-PR. Here, state of the art algorithm base on `ALNS <https://en.wikipedia.org/wiki/Adaptive_large_neighborhood_search>`_. ALNS utilizes a set of destroy and repair operators to perturb the current solution. The destroy operators remove a part of the solution, while the repair operators try to repair the solution by inserting the removed customers into the solution again. Selecting the operators is done probabilistically, with the probability of selecting an operator being proportional to the operator's performance, which is estimated based the number of times a operator improved the solution.
+
+RoutingBlocks provides a ALNS solver and several destroy and repair operators out of the box. Implementing ALNS is thus straightforward:
+
+.. code-block:: python
+    :linenos:
+
+    def alns(instance: rb.Instance, vehicle_storage_capacity: float, vehicle_battery_capacity_time: float,
+             number_of_iterations: int = 100, min_vertex_removal_factor: float = 0.2,
+             max_vertex_removal_factor: float = 0.4):
+        evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
+        # Set the penalty factors used to penalize violations of the time window, the
+        # vehicle capacity, and the charge constraints
+        evaluation.penalty_factors = [1., 100., 100., 100.]
+
+        local_search = rb.LocalSearch(instance, evaluation, None)
+        # Configure the local search to use a best-improvement pivoting rule
+        local_search.set_use_best_improvement(True)
+        # Create a set of allowed arcs
+        arc_set = rb.ArcSet(instance.number_of_vertices)
+
+        # Create a set of operators that will be used later when calling the local search
+        operators = [
+            rb.operators.SwapOperator_0_1(instance, arc_set),
+            rb.operators.SwapOperator_1_1(instance, arc_set),
+            rb.operators.InsertStationOperator(instance),
+            rb.operators.RemoveStationOperator(instance),
+        ]
+        #############################################################################################
+        # End of the code that is identical to the ILS algorithm
+        #############################################################################################
+
+        # Create a random engine and seed it with the current time
+        randgen = rb.Random(time.time_ns())
+        # Create an ALNS solver.
+        # Smoothing factor determines the weight of historic performance when selecting an operator.
+        smoothing_factor = 0.4
+        alns = rb.AdaptiveLargeNeighborhood(randgen, smoothing_factor)
+
+        # Register some operators with the ALNS solver
+        alns.add_repair_operator(rb.operators.RandomInsertionOperator(randgen))
+        alns.add_repair_operator(rb.operators.BestInsertionOperator(instance,
+                                                                    rb.operators.blink_selector_factory(
+                                                                        blink_probability=0.1, randgen=randgen)))
+        alns.add_destroy_operator(rb.operators.RandomRemovalOperator(randgen))
+        alns.add_destroy_operator(rb.operators.WorstRemovalOperator(instance,
+                                                                    rb.operators.blink_selector_factory(
+                                                                        blink_probability=0.1, randgen=randgen)))
+
+We start from the boilerplate code developed for the ILS and only add a few lines to create and configure the ALNS solver. This class is responsible for operator selection and weight adaption. It takes as arguments a random engine and a smoothing factor. The smoothing factor determines the weight of historic performance when selecting an operator. Next, we create and register destroy and repair operators with the ALNS solver. RoutingBlocks provides a `set of standard operators <alns_operators>`_ out of the box. Here, we use RandomInsertion, BestInsertion, RandomRemoval, and WorstRemoval. We configure BestInsertion and WorstRemoval to select insertion/removal spots using a blink selection criterion.
+
+We can now utilize the ALNS solver to perturb the current solution in the main loop:
+
+.. code-block:: python
+
+        # Generate a random starting solution
+        best_solution = create_random_solution(evaluation, instance)
+        for i in range(number_of_iterations):
+            current_solution = copy.copy(best_solution)
+            # Perturb the current solution
+            number_of_vertices_to_remove = int(random.uniform(min_vertex_removal_factor, max_vertex_removal_factor) * sum(
+                len(route) - 2 for route in current_solution))
+            picked_operators = alns.generate(evaluation, current_solution, number_of_vertices_to_remove)
+
+            # Search the neighborhood of the current solution. This modifies the solution in-place.
+            local_search.optimize(current_solution, operators)
+
+            if current_solution.cost < best_solution.cost:
+                best_solution = current_solution
+                print(f"New best solution found: {best_solution.cost} ({best_solution.feasible})")
+                # Update the ALNS solver with the performance of the operators used in the last iteration
+                # We assign a score of '4' to the operators that were used to improve the solution
+                alns.collect_score(*picked_operators, 4)
+            else:
+                # Update the ALNS solver with the performance of the operators used in the last iteration
+                # We assign a score of '0' to the operators that were not used to improve the solution
+                alns.collect_score(*picked_operators, 0)
+
+            # Calculate new operator weights based on the last period
+            if i % 20 == 0:
+                alns.adapt_operator_weights()
+
+        return best_solution
+
+We utilize three fundamental methods of the ALNS solver:
+1. alns.generate, which selects and applies a destroy and a repair operator to the current solution, modifying it in-place. The method returns a tuple of the selected operators.
+2. alns.collect_score, which collects scores for the passed operators. The method takes as arguments the selected operators and a score.
+3. alns.adapt_operator_weights, which adapts the weights of the operators based on the scores collected in the last period.
+
+For more details on the ALNS solver, see the `documentation <alns>`_. The full code of the ALNS algorithm is available `here <alns_code>`_. A more sophisticated ALNS-based algorithm can be found in the `main repository <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/evrptw>`_.
+
+Implementing custom operators
+------------------------------------
+
+* Too many routes
+* Need way to reduce number of routes
+* Add ALNS route remove operator
 
 Adapting to custom problem settings
 ------------------------------------
