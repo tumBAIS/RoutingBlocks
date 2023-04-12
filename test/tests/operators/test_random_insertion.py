@@ -22,7 +22,7 @@ except ModuleNotFoundError:
 def test_random_insertion_apply(adptw_instance, mock_evaluation, randgen):
     instance: evrptw.Instance = adptw_instance
     evaluation = mock_evaluation
-    operator = alns.RandomInsertionOperator(randgen)
+    operator = alns.operators.RandomInsertionOperator(randgen)
     # Inserts customers at random positions
     customers = list(instance.customers)
     missing_customers = customers[1:]

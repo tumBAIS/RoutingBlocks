@@ -35,7 +35,7 @@ def recreate_solution(evaluation: evrptw.Evaluation, instance: evrptw.Instance, 
 
 def build_solution(evaluation: routingblocks.Evaluation, instance: routingblocks.Instance, raw_routes: List[List[int]]):
     return routingblocks.Solution(evaluation, instance,
-                          [routingblocks.create_route(evaluation, instance, route) for route in raw_routes])
+                                  [routingblocks.create_route(evaluation, instance, route) for route in raw_routes])
 
 
 def to_propagated_arcs(forward_propagation_sequence: List[routingblocks.Node]) -> List[Tuple[int, int]]:
@@ -71,11 +71,11 @@ def generate_neigborhood(solution: evrptw.Solution, origin_segment_length: int, 
     [[], [1, 7, 2, 6, 6, 3, 8]]
 ])
 @pytest.mark.parametrize("move_type,origin_segment_length,target_segment_length", [
-    (routingblocks.SwapOperatorMove_0_1, 0, 1),
-    (routingblocks.SwapOperatorMove_0_2, 0, 2),
-    (routingblocks.SwapOperatorMove_1_1, 1, 1),
-    (routingblocks.SwapOperatorMove_1_2, 1, 2),
-    (routingblocks.SwapOperatorMove_2_1, 2, 1),
+    (routingblocks.operators.SwapOperatorMove_0_1, 0, 1),
+    (routingblocks.operators.SwapOperatorMove_0_2, 0, 2),
+    (routingblocks.operators.SwapOperatorMove_1_1, 1, 1),
+    (routingblocks.operators.SwapOperatorMove_1_2, 1, 2),
+    (routingblocks.operators.SwapOperatorMove_2_1, 2, 1),
 ])
 def test_swap_interroute_apply(adptw_instance: evrptw.Instance, mock_evaluation, move_type, origin_segment_length,
                                target_segment_length, raw_routes):
@@ -128,11 +128,11 @@ def test_swap_interroute_apply(adptw_instance: evrptw.Instance, mock_evaluation,
     [[1]]
 ])
 @pytest.mark.parametrize("move_type,origin_segment_length,target_segment_length", [
-    (routingblocks.SwapOperatorMove_0_1, 0, 1),
-    (routingblocks.SwapOperatorMove_0_2, 0, 2),
-    (routingblocks.SwapOperatorMove_1_1, 1, 1),
-    (routingblocks.SwapOperatorMove_1_2, 1, 2),
-    (routingblocks.SwapOperatorMove_2_1, 2, 1),
+    (routingblocks.operators.SwapOperatorMove_0_1, 0, 1),
+    (routingblocks.operators.SwapOperatorMove_0_2, 0, 2),
+    (routingblocks.operators.SwapOperatorMove_1_1, 1, 1),
+    (routingblocks.operators.SwapOperatorMove_1_2, 1, 2),
+    (routingblocks.operators.SwapOperatorMove_2_1, 2, 1),
 ])
 def test_swap_intraroute_apply(mock_evaluation, adptw_instance: evrptw.Instance, move_type, origin_segment_length,
                                target_segment_length, raw_routes):
@@ -190,11 +190,11 @@ def test_swap_intraroute_apply(mock_evaluation, adptw_instance: evrptw.Instance,
     [[], [1, 7, 2, 6, 6, 3, 8]]
 ])
 @pytest.mark.parametrize("move_type,origin_segment_length,target_segment_length", [
-    (routingblocks.SwapOperatorMove_0_1, 0, 1),
-    (routingblocks.SwapOperatorMove_0_2, 0, 2),
-    (routingblocks.SwapOperatorMove_1_1, 1, 1),
-    (routingblocks.SwapOperatorMove_1_2, 1, 2),
-    (routingblocks.SwapOperatorMove_2_1, 2, 1),
+    (routingblocks.operators.SwapOperatorMove_0_1, 0, 1),
+    (routingblocks.operators.SwapOperatorMove_0_2, 0, 2),
+    (routingblocks.operators.SwapOperatorMove_1_1, 1, 1),
+    (routingblocks.operators.SwapOperatorMove_1_2, 1, 2),
+    (routingblocks.operators.SwapOperatorMove_2_1, 2, 1),
 ])
 def test_swap_interroute_evaluation(mock_evaluation, adptw_instance, move_type, origin_segment_length,
                                     target_segment_length, raw_routes):
@@ -262,11 +262,11 @@ def test_swap_interroute_evaluation(mock_evaluation, adptw_instance, move_type, 
     [[1]]
 ])
 @pytest.mark.parametrize("move_type,origin_segment_length,target_segment_length", [
-    (routingblocks.SwapOperatorMove_0_1, 0, 1),
-    (routingblocks.SwapOperatorMove_0_2, 0, 2),
-    (routingblocks.SwapOperatorMove_1_1, 1, 1),
-    (routingblocks.SwapOperatorMove_1_2, 1, 2),
-    (routingblocks.SwapOperatorMove_2_1, 2, 1),
+    (routingblocks.operators.SwapOperatorMove_0_1, 0, 1),
+    (routingblocks.operators.SwapOperatorMove_0_2, 0, 2),
+    (routingblocks.operators.SwapOperatorMove_1_1, 1, 1),
+    (routingblocks.operators.SwapOperatorMove_1_2, 1, 2),
+    (routingblocks.operators.SwapOperatorMove_2_1, 2, 1),
 ])
 def test_swap_intraroute_evaluation(mock_evaluation, adptw_instance: evrptw.Instance, move_type, origin_segment_length,
                                     target_segment_length, raw_routes):
@@ -338,11 +338,11 @@ class RecordedMove:
     [[], [1, 7, 2, 6, 3, 8]]
 ])
 @pytest.mark.parametrize("move_type,origin_segment_length,target_segment_length", [
-    (routingblocks.SwapOperatorMove_0_1, 0, 1),
-    (routingblocks.SwapOperatorMove_0_2, 0, 2),
-    (routingblocks.SwapOperatorMove_1_1, 1, 1),
-    (routingblocks.SwapOperatorMove_1_2, 1, 2),
-    (routingblocks.SwapOperatorMove_2_1, 2, 1),
+    (routingblocks.operators.SwapOperatorMove_0_1, 0, 1),
+    (routingblocks.operators.SwapOperatorMove_0_2, 0, 2),
+    (routingblocks.operators.SwapOperatorMove_1_1, 1, 1),
+    (routingblocks.operators.SwapOperatorMove_1_2, 1, 2),
+    (routingblocks.operators.SwapOperatorMove_2_1, 2, 1),
 ])
 def test_swap_symmetry(mock_evaluation, large_adptw_instance: evrptw.Instance, move_type, origin_segment_length,
                        target_segment_length, raw_routes):

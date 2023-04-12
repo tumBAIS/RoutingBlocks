@@ -7,3 +7,4 @@ from .cluster_removal import ClusterRemovalOperator, DistanceBasedClusterMemberS
     SeedSelector
 from .station_vicinity_removal import StationVicinityRemovalOperator, StationSeedSelector
 from .related_removal import RelatedRemovalOperator, RelatednessComputer, MoveSelector
+from .._routingblocks.operators import *

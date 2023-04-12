@@ -176,22 +176,23 @@ namespace routingblocks::bindings {
 
         bind_arc_set(m);
 
-        bind_inter_route_two_opt(m, operator_interface, move_interface);
-        bind_station_in_operator(m, operator_interface, move_interface);
-        bind_station_out_operator(m, operator_interface, move_interface);
+        auto operator_module = m.def_submodule("operators");
+        bind_inter_route_two_opt(operator_module, operator_interface, move_interface);
+        bind_station_in_operator(operator_module, operator_interface, move_interface);
+        bind_station_out_operator(operator_module, operator_interface, move_interface);
 
-        bind_swap_operator<0, 1>(m, operator_interface, move_interface);
-        bind_swap_operator<0, 2>(m, operator_interface, move_interface);
-        bind_swap_operator<0, 3>(m, operator_interface, move_interface);
-        bind_swap_operator<1, 1>(m, operator_interface, move_interface);
-        bind_swap_operator<1, 2>(m, operator_interface, move_interface);
-        bind_swap_operator<1, 3>(m, operator_interface, move_interface);
-        bind_swap_operator<2, 1>(m, operator_interface, move_interface);
-        bind_swap_operator<2, 2>(m, operator_interface, move_interface);
-        bind_swap_operator<2, 3>(m, operator_interface, move_interface);
-        bind_swap_operator<3, 1>(m, operator_interface, move_interface);
-        bind_swap_operator<3, 2>(m, operator_interface, move_interface);
-        bind_swap_operator<3, 3>(m, operator_interface, move_interface);
+        bind_swap_operator<0, 1>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<0, 2>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<0, 3>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<1, 1>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<1, 2>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<1, 3>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<2, 1>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<2, 2>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<2, 3>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<3, 1>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<3, 2>(operator_module, operator_interface, move_interface);
+        bind_swap_operator<3, 3>(operator_module, operator_interface, move_interface);
     }
 
 }  // namespace routingblocks::bindings
