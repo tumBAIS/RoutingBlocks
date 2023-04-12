@@ -18,12 +18,22 @@ namespace routingblocks::bindings {
             .def_readonly("is_depot", &routingblocks::Vertex::is_depot)
             .def_property_readonly("is_customer",
                                    [](const Vertex& v) { return !v.is_station && !v.is_depot; })
+            .def_property_readonly(
+                "data",
+                [](const Vertex& v) -> pybind11::object { return v.get_data<pybind11::object>(); },
+                "Get the vertex data. Note that this function is well-defined only for VertexData "
+                "classes defined in Python.")
             .def("__str__", &::bindings::helpers::ostream_to_string<routingblocks::Vertex>);
     }
 
     template <class ArcData> auto bind_arc(pybind11::module& m, std::string_view name) {
         return pybind11::class_<routingblocks::Arc>(m, name.data())
-            .def(pybind11::init<>(&::bindings::helpers::arc_constructor<ArcData>));
+            .def(pybind11::init<>(&::bindings::helpers::arc_constructor<ArcData>))
+            .def_property_readonly(
+                "data",
+                [](const Arc& a) -> pybind11::object { return a.get_data<pybind11::object>(); },
+                "Get the arc data. Note that this function is well-defined only for ArcData "
+                "classes defined in Python.");
     }
 
     void bind_routingblocks_instance(pybind11::module& m) {
