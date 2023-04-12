@@ -55,7 +55,7 @@ def test_empty_construction(adptw_instance: evrptw.Instance, mock_evaluation):
 
 def test_construction_from_routes(adptw_instance: evrptw.Instance, mock_evaluation):
     instance: evrptw.Instance = adptw_instance
-    route = evrptw.create_route(mock_evaluation, instance, [x.id for x in instance.customers])
+    route = evrptw.create_route(mock_evaluation, instance, [x.vertex_id for x in instance.customers])
 
     routes = [route,
               *[evrptw.Route(mock_evaluation, instance) for _ in range(instance.fleet_size - 1)]]
@@ -162,7 +162,7 @@ def test_vertex_lookup(adptw_instance: evrptw.Instance, random_routes_factory, m
 
     assert_positions_correct(solution, expected_locations)
 
-    assert solution.find(missing_station.id) == []
+    assert solution.find(missing_station.vertex_id) == []
 
 
 def create_full_solution(instance: evrptw.Instance, routes: List[evrptw.Route], evaluation: evrptw.Evaluation):
@@ -179,15 +179,17 @@ def test_interroute_exchange(adptw_instance: evrptw.Instance, mock_evaluation):
     route_1_vertices = [customers[0], stations[0], customers[1]]
     route_2_vertices = [customers[2], customers[3], stations[1], customers[4]]
 
-    route_1 = evrptw.create_route(mock_evaluation, instance, [x.id for x in route_1_vertices])
-    route_2 = evrptw.create_route(mock_evaluation, instance, [x.id for x in route_2_vertices])
+    route_1 = evrptw.create_route(mock_evaluation, instance, [x.vertex_id for x in route_1_vertices])
+    route_2 = evrptw.create_route(mock_evaluation, instance, [x.vertex_id for x in route_2_vertices])
     solution = create_full_solution(instance, [route_1, route_2], mock_evaluation)
 
     # exchange customers[0] with [customers[2], customers[3]]
     solution.exchange_segment(0, 1, 2, 1, 1, 3)
-    assert [x.vertex_id for x in solution[0]][1:-1] == [customers[2].id, customers[3].id, stations[0].id,
-                                                        customers[1].id]
-    assert [x.vertex_id for x in solution[1]][1:-1] == [customers[0].id, stations[1].id, customers[4].id]
+    assert [x.vertex_id for x in solution[0]][1:-1] == [customers[2].vertex_id, customers[3].vertex_id,
+                                                        stations[0].vertex_id,
+                                                        customers[1].vertex_id]
+    assert [x.vertex_id for x in solution[1]][1:-1] == [customers[0].vertex_id, stations[1].vertex_id,
+                                                        customers[4].vertex_id]
 
     # Locations should be updated as well. Will not be correct for depot vertices
     assert_positions_correct(solution)
@@ -201,15 +203,16 @@ def test_interroute_move(adptw_instance: evrptw.Instance, mock_evaluation: evrpt
     route_1_vertices = [customers[0], stations[0], customers[1]]
     route_2_vertices = [customers[2], customers[3], stations[1], customers[4]]
 
-    route_1 = evrptw.create_route(mock_evaluation, instance, [x.id for x in route_1_vertices])
-    route_2 = evrptw.create_route(mock_evaluation, instance, [x.id for x in route_2_vertices])
+    route_1 = evrptw.create_route(mock_evaluation, instance, [x.vertex_id for x in route_1_vertices])
+    route_2 = evrptw.create_route(mock_evaluation, instance, [x.vertex_id for x in route_2_vertices])
     solution = create_full_solution(instance, [route_1, route_2], mock_evaluation)
 
     # exchange customers[0] with [] at position 1, effectively inserting customers[0] after the depot
     solution.exchange_segment(0, 1, 2, 1, 1, 1)
-    assert [x.vertex_id for x in solution[0]][1:-1] == [stations[0].id, customers[1].id]
-    assert [x.vertex_id for x in solution[1]][1:-1] == [customers[0].id, customers[2].id, customers[3].id,
-                                                        stations[1].id, customers[4].id]
+    assert [x.vertex_id for x in solution[0]][1:-1] == [stations[0].vertex_id, customers[1].vertex_id]
+    assert [x.vertex_id for x in solution[1]][1:-1] == [customers[0].vertex_id, customers[2].vertex_id,
+                                                        customers[3].vertex_id,
+                                                        stations[1].vertex_id, customers[4].vertex_id]
 
     # Locations should be updated as well. Will not be correct for depot vertices
     assert_positions_correct(solution)
@@ -265,7 +268,7 @@ def test_intraroute_exchange(adptw_instance: evrptw.Instance, mock_evaluation: e
     instance: evrptw.Instance = adptw_instance
     customers = list(instance.customers)
     route_vertices = [customers[0], customers[1], customers[2]]
-    route = evrptw.create_route(mock_evaluation, instance, [x.id for x in route_vertices])
+    route = evrptw.create_route(mock_evaluation, instance, [x.vertex_id for x in route_vertices])
     solution = create_full_solution(instance, [route], mock_evaluation)
 
     # Test special case of exchaging [customers[0]] with [customers[1], customers[2]].
@@ -275,7 +278,8 @@ def test_intraroute_exchange(adptw_instance: evrptw.Instance, mock_evaluation: e
     begin_2 = 2
     end_2 = 4
     solution.exchange_segment(0, begin_1, end_1, 0, begin_2, end_2)
-    assert [x.vertex_id for x in solution[0]][1:-1] == [customers[1].id, customers[2].id, customers[0].id]
+    assert [x.vertex_id for x in solution[0]][1:-1] == [customers[1].vertex_id, customers[2].vertex_id,
+                                                        customers[0].vertex_id]
 
     assert_cost_correct(solution)
     assert_positions_correct(solution)
@@ -307,7 +311,7 @@ def test_vertex_removal(mock_evaluation: evrptw.Evaluation, adptw_instance: evrp
     while True:
         node_positions = set(
             (route_id, pos) for route_id, route in enumerate(routes) for pos, x in enumerate(route) if
-            x.vertex_id != instance.depot.id)
+            x.vertex_id != instance.depot.vertex_id)
         if len(node_positions) == 0:
             break
 

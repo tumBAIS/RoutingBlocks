@@ -66,14 +66,14 @@ def test_route_empty_construction(adptw_instance: evrptw.Instance, mock_evaluati
     route = evrptw.Route(mock_evaluation, instance)
     assert route.empty
     assert len(route) == 2
-    assert [x.vertex_id for x in route] == [instance.depot.id, instance.depot.id]
+    assert [x.vertex_id for x in route] == [instance.depot.vertex_id, instance.depot.vertex_id]
     assert route.modification_timestamp == 0
     assert_updated(mock_evaluation, instance, route)
 
 
 def test_route_get_item(adptw_instance: evrptw.Instance, mock_evaluation):
     instance = adptw_instance
-    vertex_ids = [x.id for x in instance.customers]
+    vertex_ids = [x.vertex_id for x in instance.customers]
     route = evrptw.create_route(mock_evaluation, instance, vertex_ids)
 
     for i, node in enumerate(route):
@@ -92,14 +92,14 @@ def test_route_depot_property(mock_evaluation, adptw_instance):
 def test_route_construction_from_route(adptw_instance: evrptw.Instance,
                                        mock_evaluation):
     instance = adptw_instance
-    vertex_ids = [x.id for x in instance.customers] + [x.id for x in instance.stations]
+    vertex_ids = [x.vertex_id for x in instance.customers] + [x.vertex_id for x in instance.stations]
     random.shuffle(vertex_ids)
 
     route = evrptw.create_route(mock_evaluation, instance, vertex_ids)
 
     assert not route.empty
 
-    expected_vertex_ids = [instance.depot.id, *vertex_ids, instance.depot.id]
+    expected_vertex_ids = [instance.depot.vertex_id, *vertex_ids, instance.depot.vertex_id]
     assert len(route) == len(expected_vertex_ids)
     assert [x.vertex_id for x in route] == expected_vertex_ids
     # Is updated?
@@ -125,12 +125,12 @@ def create_segments(sequence):
 
 def test_route_removal(mock_evaluation, adptw_instance):
     instance: evrptw.Instance = adptw_instance
-    vertex_ids = [x.id for x in instance.customers] + [x.id for x in instance.stations]
+    vertex_ids = [x.vertex_id for x in instance.customers] + [x.vertex_id for x in instance.stations]
     random.shuffle(vertex_ids)
 
     route = evrptw.create_route(mock_evaluation, instance, vertex_ids)
 
-    expected_vertices = [instance.depot.id, *vertex_ids, instance.depot.id]
+    expected_vertices = [instance.depot.vertex_id, *vertex_ids, instance.depot.vertex_id]
     while len(expected_vertices) > 2:
         # Choose a subrange
         start, end = pick_segment(route)
@@ -167,7 +167,7 @@ def assert_exchange_works(evaluation: evrptw.Evaluation, instance: evrptw.Instan
 
 def test_route_exchange_segment(mock_evaluation, adptw_instance: evrptw.Instance):
     instance: evrptw.Instance = adptw_instance
-    vertex_ids = [x.id for x in instance.customers] + [x.id for x in instance.stations]
+    vertex_ids = [x.vertex_id for x in instance.customers] + [x.vertex_id for x in instance.stations]
     random.shuffle(vertex_ids)
 
     route_a_vertices = vertex_ids[:len(vertex_ids) // 2]
@@ -220,7 +220,7 @@ def assert_intraroute_exchange(evaluation: evrptw.Evaluation, instance: evrptw.I
 
 def test_route_intraroute_exchange_segment(mock_evaluation, adptw_instance: evrptw.Instance):
     instance: evrptw.Instance = adptw_instance
-    vertex_ids = [x.id for x in instance.customers] + [x.id for x in instance.stations]
+    vertex_ids = [x.vertex_id for x in instance.customers] + [x.vertex_id for x in instance.stations]
     random.shuffle(vertex_ids)
 
     def assert_correct(segment, other_segment):
@@ -268,7 +268,7 @@ def test_route_copy(random_route):
 
 def test_route_equality(mock_evaluation, adptw_instance: evrptw.Instance):
     instance: evrptw.Instance = adptw_instance
-    vertex_ids = [x.id for x in instance.customers] + [x.id for x in instance.stations]
+    vertex_ids = [x.vertex_id for x in instance.customers] + [x.vertex_id for x in instance.stations]
     random.shuffle(vertex_ids)
 
     # Empty routes are equal
@@ -294,7 +294,7 @@ def test_route_equality(mock_evaluation, adptw_instance: evrptw.Instance):
 def test_route_remove_vertices(mock_evaluation, sorted: bool, adptw_instance: evrptw.Instance):
     instance: evrptw.Instance = adptw_instance
     customers = list(instance.customers)
-    route = evrptw.create_route(mock_evaluation, instance, [x.id for x in customers])
+    route = evrptw.create_route(mock_evaluation, instance, [x.vertex_id for x in customers])
     # [0, 1, 2, 3, 4, 5, 0]
     positions = [evrptw.NodeLocation(0, pos) for pos in range(1, len(route) - 1, 2)]
     if not sorted:
@@ -311,17 +311,18 @@ def test_route_insert_vertices(mock_evaluation, sorted_locations: bool, adptw_in
     instance: evrptw.Instance = adptw_instance
     customers = list(instance.customers)
     route = evrptw.create_route(mock_evaluation, instance,
-                                [customers[0].id, customers[1].id, customers[2].id])
+                                [customers[0].vertex_id, customers[1].vertex_id, customers[2].vertex_id])
     # [0, 1, 2, 3, 0]
-    to_insert = [customers[3].id, customers[4].id]
+    to_insert = [customers[3].vertex_id, customers[4].vertex_id]
     insertion_positions = [evrptw.NodeLocation(0, 0), evrptw.NodeLocation(0, 1)]
     if sorted_locations:
         insertion_positions.reverse()
         to_insert.reverse()
 
     expected_route = evrptw.create_route(mock_evaluation, instance,
-                                         [customers[3].id, customers[0].id, customers[4].id, customers[1].id,
-                                          customers[2].id])
+                                         [customers[3].vertex_id, customers[0].vertex_id, customers[4].vertex_id,
+                                          customers[1].vertex_id,
+                                          customers[2].vertex_id])
     prev_modification_timestamp = route.modification_timestamp
     route.insert_vertices_after(zip(to_insert, insertion_positions))
     assert expected_route == route

@@ -33,7 +33,7 @@ class MockEvaluation(routingblocks.PyConcatenationBasedEvaluation):
         vertex: routingblocks.Vertex
 
         def __str__(self):
-            return f"{self.vertex.id}"
+            return f"{self.vertex.vertex_id}"
 
     @dataclass
     class ForwardEvaluationCall:
@@ -43,7 +43,7 @@ class MockEvaluation(routingblocks.PyConcatenationBasedEvaluation):
         arc: routingblocks.Arc
 
         def __str__(self):
-            return f"{self.pred_vertex.id} -> {self.vertex.id}"
+            return f"{self.pred_vertex.vertex_id} -> {self.vertex.vertex_id}"
 
     @dataclass
     class BackwardEvaluationCall:
@@ -53,7 +53,7 @@ class MockEvaluation(routingblocks.PyConcatenationBasedEvaluation):
         arc: routingblocks.Arc
 
         def __str__(self):
-            return f"{self.vertex.id} -> {self.succ_vertex.id}"
+            return f"{self.vertex.vertex_id} -> {self.succ_vertex.vertex_id}"
 
     @dataclass
     class CreateForwardLabelCall:
@@ -125,16 +125,16 @@ def assert_forward_propagations(operations, expected_propagations):
 
     error_message = "Unexpected number of forward propagations:\n" \
                     f"Expected: {expected_propagations}\n" \
-                    f"Actual: {[(x.pred_vertex.id, x.vertex.id) for x in forward_propagations]}"
+                    f"Actual: {[(x.pred_vertex.vertex_id, x.vertex.vertex_id) for x in forward_propagations]}"
 
     assert len(forward_propagations) == len(expected_propagations), error_message
     for actual, expected in zip(forward_propagations, expected_propagations):
-        assert actual.pred_vertex.id == expected[0], error_message
-        assert actual.vertex.id == expected[1], error_message
+        assert actual.pred_vertex.vertex_id == expected[0], error_message
+        assert actual.vertex.vertex_id == expected[1], error_message
 
 
 def assert_concatenations(operations, expected_concatenations):
     concatenations = [x for x in operations if isinstance(x, MockEvaluation.ConcatenationCall)]
     assert len(concatenations) == len(expected_concatenations)
     for actual, expected in zip(concatenations, expected_concatenations):
-        assert actual.vertex.id == expected
+        assert actual.vertex.vertex_id == expected

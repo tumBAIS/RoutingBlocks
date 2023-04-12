@@ -11,9 +11,8 @@ namespace routingblocks::bindings {
     template <class VertexData> auto bind_vertex(pybind11::module& m, std::string_view name) {
         return pybind11::class_<routingblocks::Vertex>(m, name.data())
             .def(pybind11::init(&::bindings::helpers::vertex_constructor<VertexData>))
-            .def_readonly("id", &routingblocks::Vertex::id)
-            .def_readonly("vertex_id", &routingblocks::Vertex::id)
-            .def_readonly("str_id", &routingblocks::Vertex::str_id)
+            .def_readonly("vertex_id", &routingblocks::Vertex::id, "The id of the vertex.")
+            .def_readonly("str_id", &routingblocks::Vertex::str_id, "The name of the vertex.")
             .def_readonly("is_station", &routingblocks::Vertex::is_station)
             .def_readonly("is_depot", &routingblocks::Vertex::is_depot)
             .def_property_readonly("is_customer",
@@ -64,12 +63,13 @@ namespace routingblocks::bindings {
             .def(pybind11::init<routingblocks::Vertex, std::vector<routingblocks::Vertex>,
                                 std::vector<routingblocks::Vertex>,
                                 std::vector<std::vector<routingblocks::Arc>>, int>())
-            .def_property_readonly("fleet_size", &routingblocks::Instance::FleetSize)
+            .def_property_readonly("fleet_size", &routingblocks::Instance::FleetSize, "The number of "
+                                                                                     "vehicles available.")
             .def_property_readonly("number_of_customers",
                                    &routingblocks::Instance::NumberOfCustomers)
             .def_property_readonly("number_of_stations", &routingblocks::Instance::NumberOfStations)
             .def_property_readonly("number_of_vertices", &routingblocks::Instance::NumberOfVertices)
-            .def_property_readonly("depot", &routingblocks::Instance::Depot)
+            .def_property_readonly("depot", &routingblocks::Instance::Depot, "The depot vertex.")
             .def_property_readonly("stations",
                                    [](const routingblocks::Instance& inst) {
                                        auto stations = inst.Stations();

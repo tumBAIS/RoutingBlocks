@@ -27,7 +27,7 @@ def create_node(vertex, evaluation):
 def test_node_construction(adptw_instance, mock_evaluation):
     for vertex in adptw_instance:
         node = create_node(vertex, mock_evaluation)
-        assert node.vertex_id == vertex.id
+        assert node.vertex_id == vertex.vertex_id
 
 
 def test_node_forward_update(adptw_instance, mock_evaluation):
@@ -35,7 +35,7 @@ def test_node_forward_update(adptw_instance, mock_evaluation):
     depot_node = create_node(instance.depot, mock_evaluation)
 
     vertex = instance.get_customer(0)
-    arc = instance.get_arc(depot_node.vertex_id, vertex.id)
+    arc = instance.get_arc(depot_node.vertex_id, vertex.vertex_id)
     node = create_node(vertex, mock_evaluation)
 
     expected_forward_label = mock_evaluation.propagate_forward(depot_node.forward_label, instance.depot,
@@ -50,7 +50,7 @@ def test_node_backward_update(adptw_instance, mock_evaluation):
     depot_node = create_node(instance.depot, mock_evaluation)
 
     vertex = instance.get_customer(0)
-    arc = instance.get_arc(depot_node.vertex_id, vertex.id)
+    arc = instance.get_arc(depot_node.vertex_id, vertex.vertex_id)
     node = create_node(vertex, mock_evaluation)
 
     expected_forward_label = mock_evaluation.propagate_backward(depot_node.backward_label, instance.depot,

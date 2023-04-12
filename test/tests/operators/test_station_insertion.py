@@ -17,7 +17,7 @@ def create_solution(evaluation, instance: evrptw.Instance, routes: List[evrptw.R
 
 def recreate_solution(evaluation, instance: evrptw.Instance):
     customers = list(instance.customers)
-    route_a = evrptw.create_route(evaluation, instance, [x.id for x in customers])
+    route_a = evrptw.create_route(evaluation, instance, [x.vertex_id for x in customers])
     return create_solution(evaluation=evaluation, instance=instance,
                            routes=[route_a])
 
