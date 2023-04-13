@@ -1,10 +1,10 @@
-Auxilliary algorithms and data structures
-========================================
+Auxiliary algorithms and data structures
+==========================================
 
 Algorithms
 ----------
 
-.. autoapifunction:: routingblocks.sample_positions
+.. autoapifunction:: routingblocks.utility.sample_positions
 
 InsertionCache
 --------------

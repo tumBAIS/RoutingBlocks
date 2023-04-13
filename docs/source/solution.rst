@@ -1,5 +1,5 @@
 Solution representation
-=====================
+========================
 
 Node class
 ----------

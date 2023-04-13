@@ -121,7 +121,9 @@ Having created the instance, we can now implement the ILS algorithm. We start by
     evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
     # Set the penalty factors used to penalize violations of the time window, the
     # vehicle capacity, and the charge constraints
-    evaluation.penalty_factors = [1., 100., 100., 100.]
+    evaluation.overload_penalty_factor = 100.
+    evaluation.overcharge_penalty_factor = 100.
+    evaluation.time_shift_penalty_factor = 100.
 
 .. note::
 
@@ -245,7 +247,9 @@ Putting everything together, we arrive at the following code:
         evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
         # Set the penalty factors used to penalize violations of the time window, the
         # vehicle capacity, and the charge constraints
-        evaluation.penalty_factors = [1., 100., 100., 100.]
+        evaluation.overload_penalty_factor = 100.
+        evaluation.overcharge_penalty_factor = 100.
+        evaluation.time_shift_penalty_factor = 100.
 
         local_search = rb.LocalSearch(instance, evaluation, None)
         # Configure the local search to use a best-improvement pivoting rule
@@ -294,7 +298,9 @@ RoutingBlocks provides a ALNS solver and several destroy and repair operators ou
         evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
         # Set the penalty factors used to penalize violations of the time window, the
         # vehicle capacity, and the charge constraints
-        evaluation.penalty_factors = [1., 100., 100., 100.]
+        evaluation.overload_penalty_factor = 100.
+        evaluation.overcharge_penalty_factor = 100.
+        evaluation.time_shift_penalty_factor = 100.
 
         local_search = rb.LocalSearch(instance, evaluation, None)
         # Configure the local search to use a best-improvement pivoting rule
