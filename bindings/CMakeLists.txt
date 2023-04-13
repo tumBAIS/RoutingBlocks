@@ -54,7 +54,7 @@ function(cat IN_FILE OUT_FILE)
     file(APPEND ${OUT_FILE} "${CONTENTS}")
 endfunction()
 # Prepare a temporary file to "cat" to:
-file(WRITE _routingblocks.pyi.in "")
+file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi.in "")
 
 # Call the "cat" function for each input file
 foreach (STUB_FILE ${stub_files})
@@ -62,8 +62,9 @@ foreach (STUB_FILE ${stub_files})
 endforeach ()
 
 # Copy the temporary file to the final location
-configure_file(_routingblocks.pyi.in _routingblocks.pyi COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi.in ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi COPYONLY)
+message(STATUS "Created stub file: ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi")
 
 INSTALL(TARGETS routingblocks DESTINATION routingblocks)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks_bindings/binding_helpers.hpp DESTINATION routingblocks/include/routingblocks/)
-INSTALL(FILES ${CMAKE_BINARY_DIR}/_routingblocks.pyi DESTINATION routingblocks/)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi DESTINATION routingblocks/)
