@@ -55,7 +55,9 @@ def iterated_local_search(instance: rb.Instance, vehicle_storage_capacity: float
     evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
     # Set the penalty factors used to penalize violations of the time window, the
     # vehicle capacity, and the charge constraints
-    evaluation.penalty_factors = [1., 100., 100., 100.]
+    evaluation.overload_penalty_factor = 100.
+    evaluation.overcharge_penalty_factor = 100.0
+    evaluation.time_shift_penalty_factor = 100.0
 
     local_search = rb.LocalSearch(instance, evaluation, None)
     # Configure the local search to use a best-improvement pivoting rule

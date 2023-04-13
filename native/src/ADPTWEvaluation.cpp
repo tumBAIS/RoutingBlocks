@@ -55,8 +55,8 @@ namespace routingblocks {
     cost_t ADPTWEvaluation::_compute_cost(resource_t distance, resource_t overload,
                                           resource_t overcharge, resource_t time_shift) const {
         return static_cast<cost_t>(static_cast<double>(distance)
-                                   + static_cast<double>(overload) * _overload_penalty_factor
-                                   + static_cast<double>(time_shift) * _time_shift_penalty_factor
-                                   + static_cast<double>(overcharge) * _overcharge_penalty_factor);
+                                   + static_cast<double>(overload) * overload_penalty_factor
+                                   + static_cast<double>(time_shift) * time_shift_penalty_factor
+                                   + static_cast<double>(overcharge) * overcharge_penalty_factor);
     }
 }  // namespace routingblocks

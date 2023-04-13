@@ -79,7 +79,7 @@ class ALNS:
             CostComponentTracker(self._params.penalty_period_length)
 
         # Set the initial penalty factors
-        self._evaluation.penalty_factors = [1., *self._params.initial_penalties]
+        self._update_penalty_factors(*self._params.initial_penalties)
 
         # Initialize state
         self._current_solution: routingblocks.Solution = None
@@ -139,6 +139,11 @@ class ALNS:
             best_insert.BestInsertionOperator(self._cpp_instance,
                                               blink_selector_factory(self._params.best_insertion_blink_probability,
                                                                      self._random)))
+
+    def _update_penalty_factors(self, overload_penalty: float, overcharge_penalty: float, time_shift_penalty: float):
+        self._evaluation.overload_penalty_factor = overload_penalty
+        self._evaluation.overcharge_penalty_factor = overcharge_penalty
+        self._evaluation.time_shift_penalty_factor = time_shift_penalty
 
     def _apply_dp(self, _solution: routingblocks.Solution) -> routingblocks.Solution:
         optimized_routes = [routingblocks.create_route(self._evaluation, self._cpp_instance,
@@ -306,20 +311,22 @@ class ALNS:
             # Adapt penalties
             if self._iters % self._params.penalty_period_length == 0:
                 feasibility_rations = self._cost_component_tracker.window_feasibility_ratios
-                new_factors = [1.] + [max(0.1, min(10000., penalty *
-                                                   (
-                                                       self._params.penalty_increase_factor if actual < target
-                                                       else self._params.penalty_decrease_factor)))
-                                      for actual, target, penalty in
-                                      zip(feasibility_rations,
-                                          self._params.target_feasibility_ratios,
-                                          self._evaluation.penalty_factors[1:])
-                                      ]
-                new_factors[-1] = max(new_factors[-1], new_factors[-2])
-                new_factors[-2] = new_factors[-1]
-                self._evaluation.penalty_factors = new_factors
+                new_factors = [max(0.1, min(10000., penalty *
+                                            (
+                                                self._params.penalty_increase_factor if actual < target
+                                                else self._params.penalty_decrease_factor)))
+                               for actual, target, penalty in
+                               zip(feasibility_rations,
+                                   self._params.target_feasibility_ratios,
+                                   [self._evaluation.overload_penalty_factor,
+                                    self._evaluation.overcharge_penalty_factor,
+                                    self._evaluation.time_shift_penalty_factor])
+                               ]
+                self._update_penalty_factors(overload_penalty=new_factors[0],
+                                             overcharge_penalty=max(new_factors[1], new_factors[2]),
+                                             time_shift_penalty=max(new_factors[1], new_factors[2]))
 
-            # Trigger the vehicle minimization procedure
+                # Trigger the vehicle minimization procedure
             if not self._reached_vehicle_lb:
                 if (self._iters - self._last_vehicle_decrease_iter > self._params.vehicle_decrease_period_length) \
                         and (self._best_feasible_solution is not None):
@@ -330,8 +337,8 @@ class ALNS:
                     if len(self._best_feasible_solution) > self._vehicle_lb:
                         while len(self._current_solution) > len(self._best_feasible_solution) - 1:
                             self._remove_vehicle(self._current_solution)
-                        self._best_solution = self._current_solution
-                        print(f"Decreased max number of vehicles to {len(self._best_feasible_solution) - 1}")
+                    self._best_solution = self._current_solution
+                    print(f"Decreased max number of vehicles to {len(self._best_feasible_solution) - 1}")
             else:
                 if len(self._best_feasible_solution) > len(
                         self._current_solution) and (
@@ -341,6 +348,7 @@ class ALNS:
                     self._boosted_penalties = False
                     self._best_solution = copy.deepcopy(self._best_feasible_solution)
                     print(f"Increased max number of vehicles to {len(self._current_solution)}")
+
         if self._best_feasible_solution is not None:
             return self._best_feasible_solution
         else:

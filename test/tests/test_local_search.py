@@ -19,9 +19,9 @@ try:
     from routingblocks import adptw
 
 
-    class MockLSOperator(evrptw.Operator):
+    class MockLSOperator(evrptw.LocalSearchOperator):
         def __init__(self):
-            evrptw.Operator.__init__(self)
+            evrptw.LocalSearchOperator.__init__(self)
             self.ops = []
 
         def finalize_search(self) -> None:

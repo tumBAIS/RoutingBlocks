@@ -4,20 +4,27 @@ Problem instance
 Vertex
 -------
 
-.. autoclass:: routingblocks.Vertex
+.. autoapiclass:: routingblocks.Vertex
     :members:
     :undoc-members:
 
 Arc
 ----
 
-.. autoclass:: routingblocks.Arc
+.. autoapiclass:: routingblocks.Arc
     :members:
     :undoc-members:
 
 Instance
 --------
 
-.. autoclass:: routingblocks.Instance
+.. autoapiclass:: routingblocks.Instance
+    :members:
+    :undoc-members:
+
+InstanceBuilder
+---------------
+
+.. autoapiclass:: routingblocks.utility.InstanceBuilder
     :members:
     :undoc-members:
