@@ -113,8 +113,11 @@ namespace routingblocks::bindings {
                 "Removes the segment of the route between the given iterators.")
             .def(
                 "remove_vertices",
-                [](Route& route, const std::vector<NodeLocation>& vertices) {
-                    route.remove_vertices(vertices.begin(), vertices.end());
+                [](Route& route, const std::vector<int>& vertices) {
+                    std::vector<NodeLocation> locations;
+                    std::transform(vertices.begin(), vertices.end(), std::back_inserter(locations),
+                                   [](int v) { return NodeLocation(0, v); });
+                    route.remove_vertices(locations.begin(), locations.end());
                 },
                 "Removes the given vertices from the route.")
             .def(
@@ -146,10 +149,10 @@ namespace routingblocks::bindings {
                      auto other_end = std::next(other.begin(), other_end_pos);
                      if (&route != &other) {
                          // Inter-route exchange
-                         return route.exchange_segments(begin, end, other_begin, other_end, other);
+                         route.exchange_segments(begin, end, other_begin, other_end, other);
                      } else {
                          // Intra-route exchange
-                         return route.exchange_segments(begin, end, other_begin, other_end);
+                         route.exchange_segments(begin, end, other_begin, other_end);
                      }
                  })
             .def("update", pybind11::overload_cast<>(&routingblocks::Route::update),
