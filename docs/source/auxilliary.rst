@@ -1,6 +1,9 @@
 Auxilliary algorithms and data structures
 ========================================
 
+InsertionCache
+--------------
+
 .. autoapiclass:: routingblocks.InsertionMove
     :members:
     :undoc-members:
@@ -9,6 +12,8 @@ Auxilliary algorithms and data structures
     :members:
     :undoc-members:
 
+RemovalCache
+------------
 
 .. autoapiclass:: routingblocks.RemovalMove
     :members:
@@ -17,6 +22,9 @@ Auxilliary algorithms and data structures
 .. autoapiclass:: routingblocks.RemovalCache
     :members:
     :undoc-members:
+
+Miscellaneous
+-------------
 
 .. autoapiclass:: routingblocks.Random
     :members:
