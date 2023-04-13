@@ -1,7 +1,5 @@
 from typing import Any, List, Tuple
 
-AnyForwardLabel = Any
-AnyBackwardLabel = Any
 
 class Evaluation:
     def __init__(self) -> None: ...
