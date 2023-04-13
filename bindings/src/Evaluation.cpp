@@ -11,13 +11,15 @@ namespace routingblocks::bindings {
     class PyEvaluation : public routingblocks::Evaluation {
       protected:
         using py_type = pybind11::object;
+        // A tuple of (vertex, forward_label, backward_label)
         using py_segment_node_type = std::tuple<const Vertex*, py_type, py_type>;
         using py_segment_type = std::vector<py_segment_node_type>;
 
       public:
         using routingblocks::Evaluation::Evaluation;
 
-        virtual cost_t py_evaluate(const Instance& instance, std::vector<py_segment_type> segments)
+        virtual cost_t py_evaluate(const Instance& instance,
+                                   const std::vector<py_segment_type>& segments)
             = 0;
 
         virtual cost_t py_compute_cost(const py_type& label) const = 0;
@@ -54,7 +56,7 @@ namespace routingblocks::bindings {
                                               });
                                return segment_nodes;
                            });
-            return py_evaluate(instance, std::move(py_segments));
+            return py_evaluate(instance, py_segments);
         }
 
       private:
@@ -228,6 +230,53 @@ namespace routingblocks::bindings {
         }
     };
 
+    class PyEvaluationTramboline : public PyEvaluation {
+        using PyEvaluation::PyEvaluation;
+
+      public:
+        cost_t py_evaluate(const Instance& instance,
+                           const std::vector<py_segment_type>& segments) override {
+            PYBIND11_OVERRIDE_PURE_NAME(cost_t, PyEvaluation, "evaluate", py_evaluate, instance);
+        }
+
+        bool py_is_feasible(const py_type& label) const override {
+            PYBIND11_OVERRIDE_PURE_NAME(bool, PyEvaluation, "is_feasible", is_feasible, label);
+        }
+
+        cost_t py_compute_cost(const py_type& label) const override {
+            PYBIND11_OVERRIDE_PURE_NAME(cost_t, PyEvaluation, "compute_cost", py_compute_cost,
+                                        label);
+        }
+
+        py_type py_propagate_forward(const py_type& pred_label, const Vertex& pred_vertex,
+                                     const Vertex& vertex, const Arc& arc) const override {
+            PYBIND11_OVERRIDE_PURE_NAME(py_type, PyEvaluation, "propagate_forward",
+                                        py_propagate_forward, pred_label, pred_vertex, vertex, arc);
+        }
+
+        py_type py_propagate_backward(const py_type& succ_label, const Vertex& succ_vertex,
+                                      const Vertex& vertex, const Arc& arc) const override {
+            PYBIND11_OVERRIDE_PURE_NAME(py_type, PyEvaluation, "propagate_backward",
+                                        py_propagate_backward, succ_label, succ_vertex, vertex,
+                                        arc);
+        }
+
+        py_type py_create_forward_label(const Vertex& vertex) override {
+            PYBIND11_OVERRIDE_PURE_NAME(py_type, PyEvaluation, "create_forward_label",
+                                        py_create_forward_label, vertex);
+        }
+
+        py_type py_create_backward_label(const Vertex& vertex) override {
+            PYBIND11_OVERRIDE_PURE_NAME(py_type, PyEvaluation, "create_backward_label",
+                                        py_create_backward_label, vertex);
+        }
+
+        std::vector<resource_t> py_get_cost_components(const py_type& label) const override {
+            PYBIND11_OVERRIDE_PURE_NAME(std::vector<resource_t>, PyEvaluation,
+                                        "get_cost_components", get_cost_components, label);
+        }
+    };
+
     auto bind_evaluation_interface(pybind11::module& m) {
         return pybind11::class_<Evaluation, std::shared_ptr<Evaluation>>(m, "Evaluation");
     }
@@ -246,9 +295,22 @@ namespace routingblocks::bindings {
             .def("create_forward_label", &PyConcatenationBasedEvaluation::py_create_forward_label)
             .def("create_backward_label",
                  &PyConcatenationBasedEvaluation::py_create_backward_label);
+
+        pybind11::class_<PyEvaluation, PyEvaluationTramboline, std::shared_ptr<PyEvaluation>>(
+            m, "PyEvaluation", evaluation_interface)
+            .def(pybind11::init<>())
+            .def("propagate_forward", &PyEvaluation::py_propagate_forward)
+            .def("propagate_backward", &PyEvaluation::py_propagate_backward)
+            .def("concatenate", &PyEvaluation::py_evaluate)
+            .def("compute_cost", &PyEvaluation::py_compute_cost)
+            .def("get_cost_components", &PyEvaluation::py_get_cost_components)
+            .def("is_feasible", &PyEvaluation::py_is_feasible)
+            .def("create_forward_label", &PyEvaluation::py_create_forward_label)
+            .def("create_backward_label", &PyEvaluation::py_create_backward_label);
     }
 
-    template <class T, class Binding> auto bind_evaluation(Binding& evaluation) {
+    template <class T, class Binding>
+    auto bind_concatenation_evaluation_specialization(Binding& evaluation) {
         using fwd_label_t = typename T::fwd_label_t;
         using bwd_label_t = typename T::bwd_label_t;
         return evaluation.def("propagate_forward", &T::propagate_forward)
@@ -266,37 +328,24 @@ namespace routingblocks::bindings {
         bind_py_evaluation(m, evaluation_interface);
 
         auto adptw_module = m.def_submodule("adptw");
-        bind_evaluation<ADPTWEvaluation>(
+        bind_concatenation_evaluation_specialization<ADPTWEvaluation>(
             pybind11::class_<ADPTWEvaluation, std::shared_ptr<ADPTWEvaluation>>(
                 adptw_module, "Evaluation", evaluation_interface)
                 .def(pybind11::init<resource_t, resource_t>()))
-            .def_property("penalty_factors", &ADPTWEvaluation::get_penalty_factors,
-                          &ADPTWEvaluation::set_penalty_factors);
-        adptw_module.attr("DistanceCostComponent")
-            = pybind11::int_(static_cast<int>(ADPTWEvaluation::CostComponent::DIST_INDEX));
-        adptw_module.attr("OverchargeCostComponent")
-            = pybind11::int_(static_cast<int>(ADPTWEvaluation::CostComponent::OVERCHARGE_INDEX));
-        adptw_module.attr("OverloadCostComponent")
-            = pybind11::int_(static_cast<int>(ADPTWEvaluation::CostComponent::OVERLOAD_INDEX));
-        adptw_module.attr("TimeShiftCostComponent")
-            = pybind11::int_(static_cast<int>(ADPTWEvaluation::CostComponent::TIME_SHIFT_INDEX));
+            .def_readwrite("overload_penalty_factor", &ADPTWEvaluation::overload_penalty_factor)
+            .def_readwrite("overcharge_penalty_factor", &ADPTWEvaluation::overcharge_penalty_factor)
+            .def_readwrite("time_shift_penalty_factor",
+                           &ADPTWEvaluation::time_shift_penalty_factor);
 
         auto niftw_module = m.def_submodule("niftw");
-        bind_evaluation<NIFTWEvaluation>(
+        bind_concatenation_evaluation_specialization<NIFTWEvaluation>(
             pybind11::class_<routingblocks::NIFTWEvaluation, std::shared_ptr<NIFTWEvaluation>>(
                 niftw_module, "Evaluation", evaluation_interface)
                 .def(pybind11::init<resource_t, resource_t, resource_t>()))
-            .def_property("penalty_factors", &NIFTWEvaluation::get_penalty_factors,
-                          &NIFTWEvaluation::set_penalty_factors);
-
-        niftw_module.attr("DistanceCostComponent")
-            = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::DIST_INDEX));
-        niftw_module.attr("OverchargeCostComponent")
-            = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::OVERCHARGE_INDEX));
-        niftw_module.attr("OverloadCostComponent")
-            = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::OVERLOAD_INDEX));
-        niftw_module.attr("TimeShiftCostComponent")
-            = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::TIME_SHIFT_INDEX));
+            .def_readwrite("overload_penalty_factor", &NIFTWEvaluation::overload_penalty_factor)
+            .def_readwrite("overcharge_penalty_factor", &NIFTWEvaluation::overcharge_penalty_factor)
+            .def_readwrite("time_shift_penalty_factor",
+                           &NIFTWEvaluation::time_shift_penalty_factor);
     }
 
 }  // namespace routingblocks::bindings

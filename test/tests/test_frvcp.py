@@ -73,7 +73,7 @@ def test_frvcp_route_with_existing_stations(instance):
     stations = list(adptw_instance.stations)
     unoptimized_vertex_ids = [0, stations[0].vertex_id, 0]
     optimized_vertex_ids = frvcp.optimize(unoptimized_vertex_ids)
-    assert optimized_vertex_ids == [adptw_instance.depot.id, adptw_instance.depot.id]
+    assert optimized_vertex_ids == [adptw_instance.depot.vertex_id, adptw_instance.depot.vertex_id]
 
 
 def test_frvcp_empty_route(instance):
@@ -108,7 +108,7 @@ def test_frvcp_routes(large_instance):
     start_time = time.process_time()
     timeout = lambda: (time.process_time() - start_time) >= 30
     while True:
-        picked_customers = random.choices([x.id for x in customers], k=random.randint(1, 10))
+        picked_customers = random.choices([x.vertex_id for x in customers], k=random.randint(1, 10))
 
         local_search = evrptw.LocalSearch(instance, evaluation, None)
         sol = evrptw.Solution(evaluation, instance,

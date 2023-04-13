@@ -83,12 +83,6 @@ namespace routingblocks::bindings {
                  "False otherwise.");
     }
 
-    void bind_helpers(pybind11::module_& m) {
-        m.def("sample_positions", &routingblocks::lns::operators::sample_positions,
-              "Samples k positions with replacement from the solution. Can optionally include the "
-              "start depot.");
-    }
-
     auto bind_random_destory_operator(pybind11::module_& m, auto& interface) {
         using _operator = routingblocks::lns::operators::RandomRemoval;
         return pybind11::class_<_operator, std::shared_ptr<_operator>>(m, "RandomRemovalOperator",
@@ -116,7 +110,6 @@ namespace routingblocks::bindings {
         using lns_t = routingblocks::adaptive_large_neighborhood;
         using destroy_operator_t = lns_t::destroy_operator_type;
         using repair_operator_t = lns_t::repair_operator_type;
-        bind_helpers(m);
         pybind11::class_<routingblocks::adaptive_large_neighborhood>(m, "AdaptiveLargeNeighborhood")
             .def(pybind11::init<routingblocks::utility::random, double>())
             .def(

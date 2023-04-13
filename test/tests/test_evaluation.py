@@ -86,7 +86,7 @@ def test_evaluation_lifetime(instance):
 @pytest.mark.skip
 def test_evaluation_concatenation(instance: evrptw.Instance,
                                   execution_number):
-    vertex_ids = [x.id for x in [*instance.customers, *instance.stations]]
+    vertex_ids = [x.vertex_id for x in [*instance.customers, *instance.stations]]
     random.shuffle(vertex_ids)
     route = evrptw.create_route(instance, vertex_ids)
     vertex_ids = [instance.depot, *vertex_ids, instance.depot]

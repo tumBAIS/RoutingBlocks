@@ -17,7 +17,7 @@ def create_solution(evaluation, instance: evrptw.Instance, routes: List[evrptw.R
 
 def recreate_solution(evaluation, instance: evrptw.Instance):
     customers = list(instance.customers)
-    route_a = evrptw.create_route(evaluation, instance, [x.id for x in customers])
+    route_a = evrptw.create_route(evaluation, instance, [x.vertex_id for x in customers])
     return create_solution(evaluation=evaluation, instance=instance,
                            routes=[route_a])
 
@@ -27,18 +27,16 @@ def test_insert_station_operator_search(large_instance):
     evaluation = niftw.Evaluation(py_instance.parameters.battery_capacity_time,
                                   py_instance.parameters.capacity, 0.)
     # Set overcharge penalty sufficiently high to ensure that the operator inserts stations until (charge) feasible.
-    penalties = evaluation.penalty_factors
-    for i in range(len(penalties)):
-        penalties[i] = 0.
-    penalties[evrptw.niftw.OverchargeCostComponent] = 1000.
-    evaluation.penalty_factors = penalties
+    evaluation.overcharge_penalty_factor = 1000.
+    evaluation.overload_penalty_factor = 0.
+    evaluation.time_shift_penalty_factor = 0.
 
     solution = recreate_solution(evaluation=evaluation, instance=instance)
     route = solution[0]
     assert not route.feasible
-    assert route.cost_components[evrptw.niftw.OverchargeCostComponent] > 0
+    assert route.cost_components[2] > 0
     station_insertion_operator = evrptw.operators.InsertStationOperator(instance)
     ls = evrptw.LocalSearch(instance, evaluation, None)
     ls.optimize(solution, [station_insertion_operator])
     # Charge penalty should be 0.
-    assert route.cost_components[evrptw.niftw.OverchargeCostComponent] == 0.
+    assert route.cost_components[2] == 0.

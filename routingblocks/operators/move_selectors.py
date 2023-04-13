@@ -5,7 +5,6 @@ import routingblocks
 
 T = TypeVar('T')
 MoveSelector = Callable[[Iterable[T]], T]
-import routingblocks as alns
 
 
 def first_move_selector(moves: Iterable[T]) -> T:
@@ -44,7 +43,7 @@ def nth_move_selector_factory(n: int) -> MoveSelector[T]:
     return select
 
 
-def blink_selector_factory(blink_probability: float, randgen: alns.Random) -> MoveSelector[T]:
+def blink_selector_factory(blink_probability: float, randgen: routingblocks.Random) -> MoveSelector[T]:
     assert 0 <= blink_probability <= 1
 
     def select(moves: Iterable[T]) -> T:

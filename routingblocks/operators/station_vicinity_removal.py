@@ -12,7 +12,7 @@ class StationSeedSelector:
 
     def _get_station_locations(self, solution: routingblocks.Solution):
         return [
-            y for x in self._stations for y in solution.find(x.id)
+            y for x in self._stations for y in solution.find(x.vertex_id)
         ]
 
     def __call__(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution,

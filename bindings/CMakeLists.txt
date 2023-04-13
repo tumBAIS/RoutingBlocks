@@ -12,8 +12,6 @@ set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 set(PYTHON_LIBS ${Python_LIBS})
 FIND_PACKAGE(pybind11 CONFIG REQUIRED)
 
-option(${PROJECT_NAME_UPPER}_ENABLE_STUB_GEN "Generate python stub files for the bindings generated." ON)
-
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks_bindings/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
@@ -43,16 +41,30 @@ if (${${PROJECT_NAME}_HAS_LTO})
     set_target_properties(${PROJECT_NAME} PROPERTIES INTERPROCEDUAL_OPTIMIZATION TRUE)
 endif ()
 
-if (${PROJECT_NAME_UPPER}_ENABLE_STUB_GEN)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/stubgen.py -m ${PROJECT_NAME} --out ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}> VERBATIM)
-    INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pyi DESTINATION routingblocks)
-endif ()
-
 #
 # Set the compiler standard
 #
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 
+# Create stub file
+file(GLOB stub_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/stubs/*.pyi")
+
+function(cat IN_FILE OUT_FILE)
+    file(READ ${IN_FILE} CONTENTS)
+    file(APPEND ${OUT_FILE} "${CONTENTS}")
+endfunction()
+# Prepare a temporary file to "cat" to:
+file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi.in "")
+
+# Call the "cat" function for each input file
+foreach (STUB_FILE ${stub_files})
+    cat(${STUB_FILE} _routingblocks.pyi.in)
+endforeach ()
+
+# Copy the temporary file to the final location
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi.in ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi COPYONLY)
+message(STATUS "Created stub file: ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi")
+
 INSTALL(TARGETS routingblocks DESTINATION routingblocks)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks_bindings/binding_helpers.hpp DESTINATION routingblocks/include/routingblocks/)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi DESTINATION routingblocks/)

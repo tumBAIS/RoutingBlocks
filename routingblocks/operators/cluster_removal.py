@@ -68,7 +68,7 @@ class DistanceBasedClusterMemberSelector:
         # Cache max distance and radii
         self._max_distance = 0.
         self._distance_list: List[List[DistanceBasedClusterMemberSelector.DistanceListItem]] = [
-            [] for _ in range(0, max(x.id for x in vertices) + 1)
+            [] for _ in range(0, max(x.vertex_id for x in vertices) + 1)
         ]
         for i in vertices:
             for j in vertices:

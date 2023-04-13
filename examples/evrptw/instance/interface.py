@@ -37,10 +37,11 @@ def create_cpp_instance(instance: Instance) -> evrptw.Instance:
     sorted_vertices = [instance.depot, *sorted(instance.customers, key=lambda v: v.vertex_id),
                        *sorted(instance.stations, key=lambda v: v.vertex_id)]
     cpp_vertices = [create_cpp_vertex(v, i, data_factory=vertex_data_factory) for i, v in enumerate(sorted_vertices)]
-    id_map = {cpp_v.id: v for v, cpp_v in zip(sorted_vertices, cpp_vertices)}
+    id_map = {cpp_v.vertex_id: v for v, cpp_v in zip(sorted_vertices, cpp_vertices)}
 
     cpp_arcs = [
-        [create_cpp_arc(instance.arcs[id_map[i.id].vertex_id, id_map[j.id].vertex_id], data_factory=arc_data_factory)
+        [create_cpp_arc(instance.arcs[id_map[i.vertex_id].vertex_id, id_map[j.vertex_id].vertex_id],
+                        data_factory=arc_data_factory)
          for j in cpp_vertices] for i in cpp_vertices]
 
     return evrptw.Instance(cpp_vertices, cpp_arcs, instance.parameters.fleet_size)

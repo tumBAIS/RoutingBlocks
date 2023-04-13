@@ -7,6 +7,8 @@ It provides a set of modular algorithmic components and efficient data structure
 for problem-specific metaheuristic algorithms. These components are tailored specifically to tackle the challenges of
 VRPIS, but can be used for other classes of vehicle routing problems as well.
 
+*This package is under active development. Expect potentially breaking changes.*
+
 ## Installation
 
 The package is available on PyPI and can be installed using `pip`:
@@ -39,7 +41,8 @@ algorithm for
 the [EVRPTW-PR](https://research.sabanciuniv.edu/id/eprint/26033/1/WP_EVRPTW-Partial_Recharge_KeskinCatay.pdf) as part
 of this repository.
 
-Further documentation is available at [readthedocs](https://routingblocks.readthedocs.io/en/latest/).
+Further documentation is available
+at [readthedocs](https://routingblocks.readthedocs.io/en/latest/getting_started.html).
 
 ## Contributing
 

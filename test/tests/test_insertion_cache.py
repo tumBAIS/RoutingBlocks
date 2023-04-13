@@ -31,7 +31,7 @@ def assert_cache_equal(instance: alns.Instance, solution: alns.Solution, cache1:
                 raise e
 
     for vertex in iter_vertices(instance):
-        vertex_id = vertex.id
+        vertex_id = vertex.vertex_id
         assert cache1.tracks_vertex(vertex_id) == cache2.tracks_vertex(vertex_id)
         if not cache1.tracks_vertex(vertex_id):
             continue
@@ -63,7 +63,7 @@ def test_insertion_cache(instance, raw_routes, vertices_to_insert, expected_numb
 
     # Test that the right number of moves is tracked for each vertex
     for vertex in iter_vertices(instance):
-        vertex_id = vertex.id
+        vertex_id = vertex.vertex_id
         if vertex_id in vertices_to_insert:
             assert cache.tracks_vertex(vertex_id)
             assert sum(1 for _ in cache.get_best_insertions_for_vertex(vertex_id)) == expected_number_of_locations
@@ -76,7 +76,7 @@ def test_insertion_cache(instance, raw_routes, vertices_to_insert, expected_numb
         pred.delta_cost <= succ.delta_cost for pred, succ in
         zip(cache.moves_in_order, islice(cache.moves_in_order, 1, None)))
     for vertex in iter_vertices(instance):
-        vertex_id = vertex.id
+        vertex_id = vertex.vertex_id
         if vertex_id not in vertices_to_insert:
             continue
         assert all(
@@ -86,7 +86,7 @@ def test_insertion_cache(instance, raw_routes, vertices_to_insert, expected_numb
 
     # Ensure that the costs are correct
     for vertex in iter_vertices(instance):
-        vertex_id = vertex.id
+        vertex_id = vertex.vertex_id
         if vertex_id not in vertices_to_insert:
             continue
         for move in cache.get_best_insertions_for_vertex(vertex_id):
