@@ -296,7 +296,7 @@ def test_route_remove_vertices(mock_evaluation, sorted: bool, adptw_instance: ev
     customers = list(instance.customers)
     route = evrptw.create_route(mock_evaluation, instance, [x.vertex_id for x in customers])
     # [0, 1, 2, 3, 4, 5, 0]
-    positions = [evrptw.NodeLocation(0, pos) for pos in range(1, len(route) - 1, 2)]
+    positions = [pos for pos in range(1, len(route) - 1, 2)]
     if not sorted:
         positions.reverse()
 

@@ -43,7 +43,7 @@ namespace routingblocks::bindings {
 
     auto bind_operator_interface(pybind11::module_& m) {
         return pybind11::class_<routingblocks::Operator, PyOperator,
-                                std::shared_ptr<routingblocks::Operator>>(m, "Operator")
+                                std::shared_ptr<routingblocks::Operator>>(m, "LocalSearchOperator")
             .def(pybind11::init<>())
             .def("prepare_search", &routingblocks::Operator::prepare_search,
                  "Prepare the operator for "
