@@ -11,6 +11,9 @@ Node class
 Route class
 -----------
 
+.. autoapifunction:: routingblocks.create_route
+
+
 .. autoapiclass:: routingblocks.Route
     :members:
     :undoc-members:

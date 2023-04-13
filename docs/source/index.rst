@@ -22,6 +22,13 @@ Welcome to RoutingBlock's documentation!
 
 .. toctree::
     :maxdepth: 1
+    :caption: Problem settings
+
+    adptw
+    niftw
+
+.. toctree::
+    :maxdepth: 1
     :caption: Further Reading
 
     extension

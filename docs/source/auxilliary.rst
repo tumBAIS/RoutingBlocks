@@ -1,6 +1,11 @@
 Auxilliary algorithms and data structures
 ========================================
 
+Algorithms
+----------
+
+.. autoapifunction:: routingblocks.sample_positions
+
 InsertionCache
 --------------
 

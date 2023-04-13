@@ -21,3 +21,10 @@ Instance
 .. autoapiclass:: routingblocks.Instance
     :members:
     :undoc-members:
+
+InstanceBuilder
+---------------
+
+.. autoapiclass:: routingblocks.utility.InstanceBuilder
+    :members:
+    :undoc-members:
