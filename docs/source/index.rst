@@ -27,7 +27,7 @@ Welcome to RoutingBlock's documentation!
     extension
     examples
     development
-    routingblocks
+    full_api
 
 
 Indices and tables
