@@ -270,33 +270,20 @@ namespace routingblocks::bindings {
             pybind11::class_<ADPTWEvaluation, std::shared_ptr<ADPTWEvaluation>>(
                 adptw_module, "Evaluation", evaluation_interface)
                 .def(pybind11::init<resource_t, resource_t>()))
-            .def_property("penalty_factors", &ADPTWEvaluation::get_penalty_factors,
-                          &ADPTWEvaluation::set_penalty_factors);
-        adptw_module.attr("DistanceCostComponent")
-            = pybind11::int_(static_cast<int>(ADPTWEvaluation::CostComponent::DIST_INDEX));
-        adptw_module.attr("OverchargeCostComponent")
-            = pybind11::int_(static_cast<int>(ADPTWEvaluation::CostComponent::OVERCHARGE_INDEX));
-        adptw_module.attr("OverloadCostComponent")
-            = pybind11::int_(static_cast<int>(ADPTWEvaluation::CostComponent::OVERLOAD_INDEX));
-        adptw_module.attr("TimeShiftCostComponent")
-            = pybind11::int_(static_cast<int>(ADPTWEvaluation::CostComponent::TIME_SHIFT_INDEX));
+            .def_readwrite("overload_penalty_factor", &ADPTWEvaluation::overload_penalty_factor)
+            .def_readwrite("overcharge_penalty_factor", &ADPTWEvaluation::overcharge_penalty_factor)
+            .def_readwrite("time_shift_penalty_factor",
+                           &ADPTWEvaluation::time_shift_penalty_factor);
 
         auto niftw_module = m.def_submodule("niftw");
         bind_evaluation<NIFTWEvaluation>(
             pybind11::class_<routingblocks::NIFTWEvaluation, std::shared_ptr<NIFTWEvaluation>>(
                 niftw_module, "Evaluation", evaluation_interface)
                 .def(pybind11::init<resource_t, resource_t, resource_t>()))
-            .def_property("penalty_factors", &NIFTWEvaluation::get_penalty_factors,
-                          &NIFTWEvaluation::set_penalty_factors);
-
-        niftw_module.attr("DistanceCostComponent")
-            = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::DIST_INDEX));
-        niftw_module.attr("OverchargeCostComponent")
-            = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::OVERCHARGE_INDEX));
-        niftw_module.attr("OverloadCostComponent")
-            = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::OVERLOAD_INDEX));
-        niftw_module.attr("TimeShiftCostComponent")
-            = pybind11::int_(static_cast<int>(NIFTWEvaluation::CostComponent::TIME_SHIFT_INDEX));
+            .def_readwrite("overload_penalty_factor", &NIFTWEvaluation::overload_penalty_factor)
+            .def_readwrite("overcharge_penalty_factor", &NIFTWEvaluation::overcharge_penalty_factor)
+            .def_readwrite("time_shift_penalty_factor",
+                           &NIFTWEvaluation::time_shift_penalty_factor);
     }
 
 }  // namespace routingblocks::bindings

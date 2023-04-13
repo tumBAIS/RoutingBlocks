@@ -12,10 +12,10 @@ from .parameters import ALNSParams
 from .instance import parse_evrptw_instance, create_cpp_instance
 
 
-def compute_initial_penalties(instance: routingblocks.Instance):
-    max_demand = max([customer.demand for customer in instance.customers])
-    max_dist = max(x.cost for x in instance.arcs.values())
-    return [1.0, max_dist / max_demand, 10., 10.]
+def compute_initial_penalties(py_instance):
+    max_demand = max([customer.demand for customer in py_instance.customers])
+    max_dist = max(x.cost for x in py_instance.arcs.values())
+    return (max_dist / max_demand, 10., 10.)
 
 
 def parse_config(config_path: Path):
@@ -62,7 +62,11 @@ def main(instance_path: Path, config_path: Path, output_path: Path, seed: int, t
     evaluation = adptw.Evaluation(py_instance.parameters.battery_capacity_time, py_instance.parameters.capacity)
 
     # Set initial penalties
-    evaluation.penalty_factors = compute_initial_penalties(py_instance)
+    overload_penalty_factor, overcharge_penalty_factor, time_shift_penalty_factor = compute_initial_penalties(
+        py_instance)
+    evaluation.overload_penalty_factor = overload_penalty_factor
+    evaluation.overcharge_penalty_factor = overcharge_penalty_factor
+    evaluation.time_shift_penalty_factor = time_shift_penalty_factor
 
     if seed is None:
         seed = random.randint(0, 10000)

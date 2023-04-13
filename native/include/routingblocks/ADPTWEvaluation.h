@@ -92,45 +92,24 @@ namespace routingblocks {
         const resource_t _battery_capacity;
         const resource_t _storage_capacity;
 
-        double _overcharge_penalty_factor = 1.;
-        double _time_shift_penalty_factor = 1.;
-        double _overload_penalty_factor = 1.;
-
       public:
         using fwd_label_t = routingblocks::ADPTWForwardResourceLabel;
         using bwd_label_t = routingblocks::ADPTWBackwardResourceLabel;
         using vertex_data_t = ADPTWVertexData;
         using arc_data_t = ADPTWArcData;
 
-        ADPTWEvaluation(resource_t batteryCapacity, resource_t storageCapacity);
+        // Exposed by default.
+        double overcharge_penalty_factor = 1.;
+        double time_shift_penalty_factor = 1.;
+        double overload_penalty_factor = 1.;
 
-        enum CostComponent {
-            DIST_INDEX = 0,
-            OVERLOAD_INDEX = 1,
-            OVERCHARGE_INDEX = 2,
-            TIME_SHIFT_INDEX = 3
-        };
+        ADPTWEvaluation(resource_t batteryCapacity, resource_t storageCapacity);
 
       private:
         cost_t _compute_cost(resource_t distance, resource_t overload, resource_t overcharge,
                              resource_t time_shift) const;
 
       public:
-        std::array<double, 4> get_penalty_factors() const {
-            auto vector = std::array<double, 4>();
-            vector[DIST_INDEX] = 1.;
-            vector[OVERLOAD_INDEX] = _overload_penalty_factor;
-            vector[OVERCHARGE_INDEX] = _overcharge_penalty_factor;
-            vector[TIME_SHIFT_INDEX] = _time_shift_penalty_factor;
-            return vector;
-        };
-
-        void set_penalty_factors(const std::array<double, 4>& factors) {
-            _overload_penalty_factor = factors[OVERLOAD_INDEX];
-            _overcharge_penalty_factor = factors[OVERCHARGE_INDEX];
-            _time_shift_penalty_factor = factors[TIME_SHIFT_INDEX];
-        };
-
         double concatenate(const fwd_label_t& fwd, const bwd_label_t& bwd,
                            const routingblocks::Vertex& vertex, const vertex_data_t& vertex_data) {
             using std::max;
