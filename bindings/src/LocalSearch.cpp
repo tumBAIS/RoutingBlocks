@@ -3,7 +3,6 @@
 #include <routingblocks/LocalSearch.h>
 #include <routingblocks/utility/random.h>
 #include <routingblocks_bindings/LocalSearch.h>
-#include <routingblocks_bindings/Operators.h>
 
 namespace routingblocks::bindings {
 
@@ -29,6 +28,15 @@ namespace routingblocks::bindings {
                 auto target_route_iterator = std::next(solution.begin(), target_route);
                 auto origin_node_iterator = std::next(origin_route_iterator->begin(), origin_node);
                 auto target_node_iterator = std::next(target_route_iterator->begin(), target_node);
+                return GeneratorArc{origin_route_iterator, origin_node_iterator,
+                                    target_route_iterator, target_node_iterator};
+            }))
+            .def(pybind11::init([](const Solution& solution, NodeLocation origin_location,
+                                   NodeLocation target_location) {
+                auto [origin_route_iterator, origin_node_iterator]
+                    = routingblocks::to_iter(origin_location, solution);
+                auto [target_route_iterator, target_node_iterator]
+                    = routingblocks::to_iter(target_location, solution);
                 return GeneratorArc{origin_route_iterator, origin_node_iterator,
                                     target_route_iterator, target_node_iterator};
             }))
