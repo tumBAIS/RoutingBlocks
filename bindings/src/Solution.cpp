@@ -361,39 +361,11 @@ namespace routingblocks::bindings {
                  "Whether the solutions are not equal.");
     }
 
-    class RouteSegment {
-        // TODO
-        friend routingblocks::route_segment cast_route_segment(const RouteSegment&);
-        const Route& route;
-        size_t begin;
-        size_t end;
-
-      public:
-        constexpr RouteSegment(const routingblocks::Route& route, size_t begin, size_t end)
-            : route(route), begin(begin), end(end){};
-
-        /*operator routingblocks::route_segment<routingblocks::Route::const_iterator>() const {
-            return routingblocks::route_segment(std::next(route.begin(), begin),
-                                        std::next(route.begin(), end));
-        }*/
-    };
 }  // namespace routingblocks::bindings
-
-namespace {
-    routingblocks::route_segment cast_route_segment(
-        const routingblocks::bindings::RouteSegment& segment) {
-        throw std::runtime_error("Not implemented!");
-        /*return routingblocks::route_segment(std::next(segment.route.begin(), segment.begin),
-                                    std::next(segment.route.begin(), segment.end));*/
-    }
-}  // namespace
 
 namespace routingblocks::bindings {
 
     void bind_solution_functions(pybind11::module& m) {
-        pybind11::class_<RouteSegment>(m, "RouteSegment")
-            .def(pybind11::init<const Route&, size_t, size_t>());
-
         m.def("evaluate_insertion",
               [](Evaluation& evaluation, const Instance& instance, const Route& route,
                  int after_pos, std::variant<VertexID, const Vertex*, const Node*> node) -> cost_t {
