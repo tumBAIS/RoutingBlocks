@@ -47,3 +47,9 @@ test-extras = ["test", "examples"]
 test-skip = ["*universal2:arm64"]
 build = ["cp*-manylinux_x86_64", "cp*-win32", "cp*-win_amd64", "cp*-macosx_*"]
 build-verbosity = 3
+
+[[tool.cibuildwheel.overrides]]
+select = '*-win*'
+test-command = [
+    'python -m pytest {project}/test/tests -m "not benchmark" --randomly-dont-reorganize'
+]
