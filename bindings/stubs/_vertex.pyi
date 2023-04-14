@@ -2,23 +2,58 @@ from typing import Any
 
 
 class Vertex:
+    """
+    A simple vertex object that represents a location vehicles can visit. Vertices can be stations, depots or customers.
+    Each vertex has a unique id and a human-readable string identifier. The vertex also stores additional data transparent
+    to the RoutingBlocks package. This data can be used to store additional information about the vertex, such as time windows,
+    demand, prizes, or any other attribute that is relevant to the problem.
+
+    :ivar vertex_id: The unique identifier of the vertex.
+    :ivar str_id: A human-readable string identifier for the vertex.
+    :ivar is_station: Whether the vertex is a station.
+    :ivar is_depot: Whether the vertex is a depot.
+    """
     vertex_id: int
     str_id: str
     is_station: bool
     is_depot: bool
 
     def __init__(self, vertex_id: int, str_id: str, is_station: bool, is_depot: bool, data: Any) -> None:
-        """Creates a new vertex."""
+        """
+        Initializes a new Vertex object.
+
+        :param vertex_id: The unique identifier of the vertex.
+        :param str_id: A human-readable string identifier for the vertex.
+        :param is_station: Whether the vertex is a station.
+        :param is_depot: Whether the vertex is a depot.
+        :param data: Additional data associated with the vertex.
+        """
         ...
 
     @property
     def is_customer(self) -> bool:
-        """Whether the vertex is a customer."""
+        """
+        Determines if the vertex is a customer.
+
+        :return: True if the vertex is a customer, False otherwise.
+        :rtype: bool
+        """
         ...
 
     @property
     def data(self) -> Any:
-        """The vertex data. Only well-defined for VertexData classes defined in Python."""
-        ...
+        """
+        Retrieves the vertex data.
 
-    def __str__(self) -> str: ...
+        :return: The data associated with the vertex.
+        :rtype: Any
+        """
+
+    def __str__(self) -> str:
+        """
+        Returns a human-readable string representation of the vertex based on the arc's :ivar str_id.
+
+        :return: A string representation of the vertex.
+        :rtype: str
+        """
+        ...

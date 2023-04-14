@@ -40,6 +40,7 @@ autoapi_add_objects_to_toctree = False
 
 autoapi_python_class_content = "class"
 autoapi_member_order = "bysource"
+autodoc_member_order = "bysource"
 
 autodoc_typehints = "description"
 

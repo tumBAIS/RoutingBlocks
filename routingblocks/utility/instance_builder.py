@@ -1,4 +1,4 @@
-from typing import Callable, TypeVar, Protocol
+from typing import Callable, TypeVar, Protocol, Optional
 
 from .. import Instance, Vertex, Arc
 
@@ -32,13 +32,25 @@ class arc_factory(Protocol):
 
 
 class InstanceBuilder:
-    def __init__(self, create_vertex: vertex_factory = Vertex, create_arc: arc_factory = Arc):
+    """
+    A class for building an instance of a vehicle routing problem. The builder provides methods to add vertices (depot,
+    customers, and stations) and arcs with their associated data. Once all the necessary data has been added, the builder
+    can create an instance of the problem.
+    """
+
+    def __init__(self, create_vertex: Optional[vertex_factory] = None, create_arc: Optional[arc_factory] = None):
+        """
+        Initializes a new InstanceBuilder object.
+
+        :param create_vertex: A factory function for creating vertex objects. Defaults to the constructor of the Vertex class.
+        :param create_arc: A factory function for creating arc objects. Defaults to the constructor of the Arc class.
+        """
         self._depot = None
         self._customers = {}
         self._stations = {}
 
-        self._create_vertex = create_vertex
-        self._create_arc = create_arc
+        self._create_vertex = create_vertex if create_vertex is not None else Vertex
+        self._create_arc = create_arc if create_arc is not None else Arc
 
         self.fleet_size = 0
 
@@ -56,28 +68,71 @@ class InstanceBuilder:
             self._customers[str_id] = (str_id, False, False, vertex_data)
 
     def set_depot(self, str_id: str, vertex_data):
+        """
+        Sets the depot for the instance.
+
+        :param str str_id: The string identifier for the depot.
+        :param vertex_data: Additional data associated with the depot vertex.
+        """
         self._add_vertex(str_id, True, False, vertex_data)
 
     def add_customer(self, str_id: str, vertex_data):
+        """
+        Adds a customer to the instance.
+
+        :param str str_id: The string identifier for the customer.
+        :param vertex_data: Additional data associated with the customer vertex.
+        """
         self._add_vertex(str_id, False, False, vertex_data)
 
     def add_station(self, str_id: str, vertex_data):
+        """
+        Adds a station to the instance.
+
+        :param str str_id: The string identifier for the station.
+        :param vertex_data: Additional data associated with the station vertex.
+        """
         self._add_vertex(str_id, False, True, vertex_data)
 
     def add_arc(self, i: str, j: str, arc_data):
+        """
+        Adds an arc between two vertices.
+
+        :param str i: The string identifier for the source vertex.
+        :param str j: The string identifier for the target vertex.
+        :param arc_data: Additional data associated with the arc.
+        """
         self._arcs[i, j] = arc_data
 
     @property
     def number_of_vertices(self):
+        """
+        Retrieves the number of vertices in the instance.
+
+        :return: The number of vertices.
+        :rtype: int
+        """
         return (self._depot is not None) + len(self._customers) + len(self._stations)
 
     def reset(self):
+        """
+        Resets the InstanceBuilder, clearing all stored data.
+        """
         self._depot = None
         self._customers.clear()
         self._stations.clear()
         self._arcs.clear()
 
     def build(self) -> Instance:
+        """
+        Constructs an Instance object based on the vertices and arcs added to the InstanceBuilder.
+        Uses vertex_factory and arc_factory to create the vertices and arcs.
+
+        :return: A new Instance object.
+        :rtype: Instance
+        :raises ValueError: If the InstanceBuilder does not have a depot or at least one customer.
+        :raises ValueError: If not all arcs are defined between vertices.
+        """
         if self._depot is None:
             raise ValueError(f"Instance requires depot")
         if len(self._customers) == 0:

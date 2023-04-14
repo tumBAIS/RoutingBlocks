@@ -2,6 +2,6 @@ NIFTW
 -----
 
 .. autoapimodule:: routingblocks.niftw
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:
