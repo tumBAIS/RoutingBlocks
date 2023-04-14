@@ -1,11 +1,34 @@
-from typing import Callable, TypeVar
+from typing import Callable, TypeVar, Protocol
 
 from .. import Instance, Vertex, Arc
 
 T = TypeVar('T')
 VertexID = int
-vertex_factory = Callable[[VertexID, str, bool, bool, T], Vertex]
-arc_factory = Callable[[T], Arc]
+
+
+class vertex_factory(Protocol):
+    def __call__(self, id: VertexID, str_id: str, is_depot: bool, is_station: bool, data: T) -> Vertex:
+        """
+        Creates a new vertex using the given parameters.
+
+        :param id: Numeric ID of the vertex
+        :param str_id: Name of the vertex
+        :param is_depot: Whether the vertex is a depot
+        :param is_station: Whether the vertex is a station
+        :param data: User-defined data to be stored in the vertex
+        """
+        ...
+
+
+class arc_factory(Protocol):
+    def __call__(self, data: T) -> Arc:
+        """
+        Creates a new arc with the given data.
+
+        :param data: User-defined data to be stored in the arc
+        :return:
+        """
+        ...
 
 
 class InstanceBuilder:
