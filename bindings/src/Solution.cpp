@@ -67,7 +67,7 @@ namespace routingblocks::bindings {
     void bind_route(pybind11::module& m) {
         pybind11::class_<routingblocks::Route>(m, "Route")
             .def(pybind11::init<std::shared_ptr<Evaluation>, const Instance&>(),
-                 "Creates an empty route.")
+                 pybind11::keep_alive<1, 2>(), "Creates an empty route.")
             .def_property_readonly("cost", &routingblocks::Route::cost, "The cost of the route.")
             .def_property_readonly("cost_components", &routingblocks::Route::cost_components,
                                    "The cost components of the route.")

@@ -15,6 +15,7 @@ def parse_instance(instance_path: Path):
             tokens = line.split()
             if len(tokens) == 0:
                 break
+            # Read columns into a dictionary
             vertex = {key: (x if key in str_fields else float(x)) for key, x in zip(fields, tokens)}
             vertices.append(vertex)
         # Parse the parameters
@@ -46,9 +47,9 @@ def create_instance(serialized_vertices, serialized_arcs) -> rb.Instance:
     # Create and register the vertices
     for vertex in serialized_vertices:
         # Create problem-specific data held by vertices
-        vertex_data = rb.adptw.ADPTWVertexData(vertex['x'], vertex['y'], vertex['demand'], vertex['ReadyTime'],
-                                               vertex['DueDate'],
-                                               vertex['ServiceTime'])
+        vertex_data = rb.adptw.VertexData(vertex['x'], vertex['y'], vertex['demand'], vertex['ReadyTime'],
+                                          vertex['DueDate'],
+                                          vertex['ServiceTime'])
         # Register the vertex depending on it's type
         if vertex['Type'] == 'd':
             instance_builder.set_depot(vertex['StringID'], vertex_data)
@@ -60,7 +61,7 @@ def create_instance(serialized_vertices, serialized_arcs) -> rb.Instance:
     # Create and register the arcs
     for (i, j), arc in serialized_arcs.items():
         # Create problem-specific data held by arcs
-        arc_data = rb.adptw.ADPTWArcData(arc['distance'], arc['consumption'], arc['travel_time'])
+        arc_data = rb.adptw.ArcData(arc['distance'], arc['consumption'], arc['travel_time'])
         instance_builder.add_arc(i, j, arc_data)
 
     # Create instance

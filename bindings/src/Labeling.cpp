@@ -94,14 +94,6 @@ namespace routingblocks::bindings {
     }
 
     void bind_labeling(pybind11::module_& m) {
-        auto adptw = m.def_submodule("adptw");
-        pybind11::class_<FRVCP<ADPTWLabel>>(adptw, "FRVCP")
-            .def(pybind11::init<>([](const Instance& instance, resource_t battery_capacity) {
-                return FRVCP<ADPTWLabel>(
-                    instance, std::make_shared<Propagator<ADPTWLabel>>(instance, battery_capacity));
-            }))
-            .def("optimize", &FRVCP<ADPTWLabel>::optimize, "Solve FRVCP for the specified route.");
-
         auto propagator_interface
             = pybind11::class_<PyPropagator, PyPropagatorTramboline, std::shared_ptr<PyPropagator>>(
                   m, "Propagator")
@@ -112,23 +104,6 @@ namespace routingblocks::bindings {
             .def(pybind11::init<const Instance&, std::shared_ptr<PyPropagator>>())
             .def("optimize", &FRVCP<PyPropagator::value_type>::optimize,
                  "Solve FRVCP for the specified route.");
-
-        /*auto propagator_interface
-            = bind_propagator<routingblocks::Propagator, PyPropagator>(m, "Propagator")
-                  .def(pybind11::init<>());
-
-        bind_propagator<routingblocks::ADPTWPropagation>(m, "ADPTWPropagation",
-        propagator_interface) .def(pybind11::init<const routingblocks::Instance&>());
-
-        m.def("create_adptw_propagator", [](const routingblocks::Instance& instance) {
-            return std::make_shared<routingblocks::ADPTWPropagation>(instance);
-        });
-
-        pybind11::class_<routingblocks::Label, std::shared_ptr<routingblocks::Label>>(m, "DPLabel",
-                                                                        pybind11::dynamic_attr())
-            .def(pybind11::init<>());
-
-        */
     }
 
 }  // namespace routingblocks::bindings

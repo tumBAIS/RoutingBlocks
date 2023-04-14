@@ -65,7 +65,7 @@ def alns(instance: rb.Instance, vehicle_storage_capacity: float, vehicle_battery
 
     # Generate a random starting solution
     best_solution = create_random_solution(evaluation, instance)
-    for i in range(number_of_iterations):
+    for i in range(1, number_of_iterations + 1):
         current_solution = copy.copy(best_solution)
         # Perturb the current solution
         number_of_vertices_to_remove = int(random.uniform(min_vertex_removal_factor, max_vertex_removal_factor) * sum(

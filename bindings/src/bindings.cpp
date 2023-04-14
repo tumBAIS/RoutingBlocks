@@ -9,6 +9,9 @@
 
 #include <routingblocks_bindings/Instance.hpp>
 
+#include "routingblocks_bindings/specializations/ADPTW.h"
+#include "routingblocks_bindings/specializations/NIFTW.h"
+
 using namespace routingblocks::bindings;
 
 #define STRINGIFY(x) #x
@@ -43,6 +46,10 @@ PYBIND11_MODULE(routingblocks_MODULE_NAME, m) {
     // Labeling
     bind_labeling(m);
 
-    // routingblocks
+    // ALNS
     bind_large_neighborhood(m);
+
+    // Specializations
+    bind_adptw(m);
+    bind_niftw(m);
 }
