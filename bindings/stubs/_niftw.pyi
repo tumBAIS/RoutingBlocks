@@ -22,4 +22,12 @@ class NIFTWEvaluation(Evaluation):
     overcharge_penalty_factor: float
     time_shift_penalty_factor: float
 
-    def __init__(self, vehicle_battery_capacity: resource_t, vehicle_storage_capacity: resource_t) -> None: ...
+    def __init__(self, vehicle_battery_capacity: resource_t, vehicle_storage_capacity: resource_t,
+                 replenishment_time: resource_t) -> None: ...
+
+
+class NIFTWFRVCP:
+    def __init__(self, instance: Instance, battery_capacity_time: resource_t,
+                 replenishment_time: resource_t) -> None: ...
+
+    def optimize(self, route_vertex_ids: List[VertexID]) -> List[VertexID]: ...

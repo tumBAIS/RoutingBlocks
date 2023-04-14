@@ -77,7 +77,7 @@ Next, we create a RoutingBlocks Instance object from the parsed data:
         # Create and register the vertices
         for vertex in serialized_vertices:
             # Create problem-specific data held by vertices
-            vertex_data = rb.adptw.ADPTWVertexData(vertex['x'], vertex['y'], vertex['demand'], vertex['ReadyTime'],
+            vertex_data = rb.adptw.VertexData(vertex['x'], vertex['y'], vertex['demand'], vertex['ReadyTime'],
                                                    vertex['DueDate'],
                                                    vertex['ServiceTime'])
             # Register the vertex dependinx for x in self._move_selector(related_vertices)g on it's type
@@ -91,7 +91,7 @@ Next, we create a RoutingBlocks Instance object from the parsed data:
         # Create and register the arcs
         for (i, j), arc in serialized_arcs.items():
             # Create problem-specific data held by arcs
-            arc_data = rb.adptw.ADPTWArcData(arc['distance'], arc['consumption'], arc['travel_time'])
+            arc_data = rb.adptw.ArcData(arc['distance'], arc['consumption'], arc['travel_time'])
             instance_builder.add_arc(i, j, arc_data)
 
         # Create instance

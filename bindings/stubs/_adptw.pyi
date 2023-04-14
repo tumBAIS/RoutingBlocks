@@ -22,3 +22,9 @@ class ADPTWEvaluation(Evaluation):
     time_shift_penalty_factor: float
 
     def __init__(self, vehicle_battery_capacity: resource_t, vehicle_storage_capacity: resource_t) -> None: ...
+
+
+class ADPTWFRVCP:
+    def __init__(self, instance: Instance, battery_capacity_time: resource_t) -> None: ...
+
+    def optimize(self, route_vertex_ids: List[VertexID]) -> List[VertexID]: ...

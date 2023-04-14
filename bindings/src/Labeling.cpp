@@ -94,14 +94,6 @@ namespace routingblocks::bindings {
     }
 
     void bind_labeling(pybind11::module_& m) {
-        auto adptw = m.def_submodule("adptw");
-        pybind11::class_<FRVCP<ADPTWLabel>>(adptw, "FRVCP")
-            .def(pybind11::init<>([](const Instance& instance, resource_t battery_capacity) {
-                return FRVCP<ADPTWLabel>(
-                    instance, std::make_shared<Propagator<ADPTWLabel>>(instance, battery_capacity));
-            }))
-            .def("optimize", &FRVCP<ADPTWLabel>::optimize, "Solve FRVCP for the specified route.");
-
         auto propagator_interface
             = pybind11::class_<PyPropagator, PyPropagatorTramboline, std::shared_ptr<PyPropagator>>(
                   m, "Propagator")

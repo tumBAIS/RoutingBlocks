@@ -19,14 +19,14 @@ def create_cpp_arc(arc: Arc, data_factory: Callable[[Arc], Any]) -> evrptw.Arc:
     return evrptw.adptw.create_adptw_arc(data_factory(arc))
 
 
-def adptw_vertex_data_factory(vertex: Vertex) -> evrptw.adptw.ADPTWVertexData:
-    return evrptw.adptw.ADPTWVertexData(vertex.x_coord, vertex.y_coord, vertex.demand, vertex.ready_time,
-                                        vertex.due_time,
-                                        vertex.service_time)
+def adptw_vertex_data_factory(vertex: Vertex) -> evrptw.adptw.VertexData:
+    return evrptw.adptw.VertexData(vertex.x_coord, vertex.y_coord, vertex.demand, vertex.ready_time,
+                                   vertex.due_time,
+                                   vertex.service_time)
 
 
-def adptw_arc_data_factory(arc: Arc) -> evrptw.adptw.ADPTWArcData:
-    return evrptw.adptw.ADPTWArcData(arc.distance, arc.consumption, arc.travel_time)
+def adptw_arc_data_factory(arc: Arc) -> evrptw.adptw.ArcData:
+    return evrptw.adptw.ArcData(arc.distance, arc.consumption, arc.travel_time)
 
 
 def create_cpp_instance(instance: Instance) -> evrptw.Instance:

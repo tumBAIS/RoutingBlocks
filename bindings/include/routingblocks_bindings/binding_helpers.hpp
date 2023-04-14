@@ -56,6 +56,20 @@ namespace bindings::helpers {
         return routingblocks::Arc(std::make_shared<data_t>(std::move(user_data)));
     }
 
+    template <class T, class Binding>
+    auto bind_concatenation_evaluation_specialization(Binding& evaluation) {
+        using fwd_label_t = typename T::fwd_label_t;
+        using bwd_label_t = typename T::bwd_label_t;
+        return evaluation.def("propagate_forward", &T::propagate_forward)
+            .def("propagate_backward", &T::propagate_backward)
+            .def("concatenate", &T::concatenate)
+            .def("compute_cost", &T::compute_cost)
+            .def("is_feasible", &T::is_feasible)
+            .def("get_cost_components", &T::get_cost_components)
+            .def("create_forward_label", &T::create_forward_label)
+            .def("create_backward_label", &T::create_backward_label);
+    }
+
 }  // namespace bindings::helpers
 
 #endif

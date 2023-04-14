@@ -309,43 +309,9 @@ namespace routingblocks::bindings {
             .def("create_backward_label", &PyEvaluation::py_create_backward_label);
     }
 
-    template <class T, class Binding>
-    auto bind_concatenation_evaluation_specialization(Binding& evaluation) {
-        using fwd_label_t = typename T::fwd_label_t;
-        using bwd_label_t = typename T::bwd_label_t;
-        return evaluation.def("propagate_forward", &T::propagate_forward)
-            .def("propagate_backward", &T::propagate_backward)
-            .def("concatenate", &T::concatenate)
-            .def("compute_cost", &T::compute_cost)
-            .def("is_feasible", &T::is_feasible)
-            .def("get_cost_components", &T::get_cost_components)
-            .def("create_forward_label", &T::create_forward_label)
-            .def("create_backward_label", &T::create_backward_label);
-    }
-
     void bind_evaluation(pybind11::module& m) {
         auto evaluation_interface = bind_evaluation_interface(m);
         bind_py_evaluation(m, evaluation_interface);
-
-        auto adptw_module = m.def_submodule("adptw");
-        bind_concatenation_evaluation_specialization<ADPTWEvaluation>(
-            pybind11::class_<ADPTWEvaluation, std::shared_ptr<ADPTWEvaluation>>(
-                adptw_module, "Evaluation", evaluation_interface)
-                .def(pybind11::init<resource_t, resource_t>()))
-            .def_readwrite("overload_penalty_factor", &ADPTWEvaluation::overload_penalty_factor)
-            .def_readwrite("overcharge_penalty_factor", &ADPTWEvaluation::overcharge_penalty_factor)
-            .def_readwrite("time_shift_penalty_factor",
-                           &ADPTWEvaluation::time_shift_penalty_factor);
-
-        auto niftw_module = m.def_submodule("niftw");
-        bind_concatenation_evaluation_specialization<NIFTWEvaluation>(
-            pybind11::class_<routingblocks::NIFTWEvaluation, std::shared_ptr<NIFTWEvaluation>>(
-                niftw_module, "Evaluation", evaluation_interface)
-                .def(pybind11::init<resource_t, resource_t, resource_t>()))
-            .def_readwrite("overload_penalty_factor", &NIFTWEvaluation::overload_penalty_factor)
-            .def_readwrite("overcharge_penalty_factor", &NIFTWEvaluation::overcharge_penalty_factor)
-            .def_readwrite("time_shift_penalty_factor",
-                           &NIFTWEvaluation::time_shift_penalty_factor);
     }
 
 }  // namespace routingblocks::bindings
