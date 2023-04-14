@@ -15,6 +15,7 @@ def parse_instance(instance_path: Path):
             tokens = line.split()
             if len(tokens) == 0:
                 break
+            # Read columns into a dictionary
             vertex = {key: (x if key in str_fields else float(x)) for key, x in zip(fields, tokens)}
             vertices.append(vertex)
         # Parse the parameters

@@ -36,9 +36,11 @@ First, import the library and read the instance
             # Parse the vertices
             vertices = []
             for line in instance_stream:
-                if len(line) == 0:
+                tokens = line.split()
+                if len(tokens) == 0:
                     break
-                vertex = {key: (x if key in str_fields else float(x)) for key, x in zip(fields, line.split())}
+                # Read columns into a dictionary
+                vertex = {key: (x if key in str_fields else float(x)) for key, x in zip(fields, tokens)}
                 vertices.append(vertex)
             # Parse the parameters
             parameters = {}
@@ -47,10 +49,9 @@ First, import the library and read the instance
                 # Remove surrounding / characters and parse the value
                 parameters[key] = float(value[1:-1])
 
-        # Create a matrix of arcs
-        arcs = []
+        # Create a mapping from pairs of vertices to arcs
+        arcs = {}
         for i in vertices:
-            next_row = []
             for j in vertices:
                 # Compute distance
                 distance = sqrt((i['x'] - j['x']) ** 2 + (i['y'] - j['y']) ** 2)
@@ -58,8 +59,8 @@ First, import the library and read the instance
                 travel_time = distance / parameters['v']
                 # Compute consumption (consumption rate * travel time / recharging rate)
                 consumption = parameters['r'] * travel_time / parameters['g']
-                next_row.append(dict(distance=distance, travel_time=travel_time, consumption=consumption))
-            arcs.append(next_row)
+                arcs[i['StringID'], j['StringID']] = dict(distance=distance, travel_time=travel_time,
+                                                          consumption=consumption)
 
         return vertices, arcs, parameters
 
@@ -102,10 +103,9 @@ Next, we create a RoutingBlocks Instance object from the parsed data:
 
     RoutingBlocks does not store parameters in the Instance object.
 
-We use the InstanceBuilder class, which provides a convenient way to build a RoutingBlocks Instance from a set of vertices and arcs. It takes two functions as arguments: a vertex and an arc factory. These create a vertex or an arc object from the data provided by the user. The InstanceBuilder class then takes care of registering the vertices and arcs in the Instance object.
+We utilize the InstanceBuilder class, offering a convenient way to construct a RoutingBlocks Instance from a set of vertices and arcs. It requires two functions as arguments: a vertex and an arc factory. These functions create a vertex or an arc object based on the data provided by the user. The InstanceBuilder class then handles the registration of vertices and arcs within the Instance object.
 
-
-Having created the instance, we can now implement the ILS algorithm. We start by creating an Evaluation object, which will be responsible for cost calculation and efficient move evaluation. RoutingBlocks already provides a Evaluation class for the EVRP-TW-PR, so we can simply use it:
+Once the instance is created, we can proceed to implement the ILS algorithm. We initiate by creating an Evaluation object, which is responsible for cost calculation and efficient move evaluation. RoutingBlocks already includes an Evaluation class for the EVRP-TW-PR, allowing us to easily use it:
 
 .. note::
 
@@ -127,7 +127,7 @@ Having created the instance, we can now implement the ILS algorithm. We start by
 
 .. note::
 
-    The namespace name ``adptw`` refers to the classification introduced in `Schiffer et al. (2017) <https://www.semanticscholar.org/paper/A-solution-framework-for-the-class-of-vehicle-with-Schiffer-Klein/8eff30dda8ba9faf9aa4d814838fea20d7287203>`_.
+    The module's name ``adptw`` refers to the classification introduced in `Schiffer et al. (2017) <https://www.semanticscholar.org/paper/A-solution-framework-for-the-class-of-vehicle-with-Schiffer-Klein/8eff30dda8ba9faf9aa4d814838fea20d7287203>`_.
 
 Being done with the setup, we can start implementing the main ILS algorithm.
 We start by creating a random solution:
@@ -151,9 +151,9 @@ We start by creating a random solution:
         return rb.Solution(evaluation, instance, routes)
 
 
-Here, we start by copying all customers into a single list, which is then shuffled and split at random positions to yield a set of routes. We convert these to routingblocks Route objects using the create_route helper function, which takes as arguments the evaluation function, the instance, and a sequence of vertex ids, and creates a Route object, adding start and end depots accordingly. Finally, we create and return a solution from the list of routes.
+Here, we begin by copying all customers into a single list, which is then shuffled and randomly split at various positions to generate a set of routes. We convert these into RoutingBlocks Route objects using the create_route helper function. This function takes the evaluation function, the instance, and a sequence of vertex IDs as arguments and creates a Route object, adding start and end depots as needed. Finally, we create and return a solution using the list of routes.
 
-Next, we create and configure the local search solver:
+Subsequently, we create and configure the local search solver:
 
 .. code-block:: python
 
@@ -172,19 +172,18 @@ Next, we create and configure the local search solver:
     ]
 
 
-The local search solver takes three arugments. The instance, the evaluation used, and a second evaluation class that is used to verify moves the first evaluation class deems profitable. This is useful for problems like the EVRP-TW-PR, where exact evaluation is expensive. The default ADPTW Evaluation class implements approximate move evaluation. We could either pass a exact evaluation class here, or we could pass None, which will cause the local search to verify moves by applying them to a copy of the solution, evaluation the cost based on forward labels. This is what we do here.
+The local search solver accepts three arguments: the instance, the evaluation used, and a second evaluation object that verifies moves deemed profitable by the first evaluation class. This is beneficial for problems like EVRP-TW-PR, where exact evaluation is costly. By default, the ADPTW Evaluation class implements approximate move evaluation. We can either pass an exact evaluation class here, or we can pass None, which prompts the local search to validate moves by applying them to a solution copy and evaluating the cost based on forward labels. This is what we do here.
 
-We also create a set of operators that will be used later when calling the local search. The implementations provided by RoutingBlocks take a set of allowed arcs as an argument. Only arcs within this set will be considered by the operator. By default, all arcs are allowed.
-
+Additionally, we create a set of operators to be used later when invoking the local search. The implementations provided by RoutingBlocks require a set of allowed arcs as an argument. The operator will only consider arcs within this set. By default, all arcs are allowed.
 Executing the local search procedure is as simple as calling
 
 .. code-block:: python
 
     local_search.optimize(solution, operators)
 
-Note that this will modify the solution object in-place.
+Be aware that this process will modify the solution object in-place.
 
-The final procedure to implement is the perturbation function. This function perturbs the local minimum found by the local search to escape local optima. We implement a simple perturbation function that exchanges a random number of segments between randomly selected routes in the solution:
+The last procedure to implement is the perturbation function. This function disturbs the local minimum identified by the local search in order to escape local optima. We implement a straightforward perturbation function that swaps a random number of segments between randomly chosen routes within the solution:
 
 .. code-block:: python
 
@@ -286,9 +285,9 @@ Extending the algorithm to an ALNS
 ------------------------------------
 .. _alns_extension:
 
-A simple ILS algorithm is often not sufficient to compete on problem settings such as the EVRP-TW-PR. Here, state of the art algorithm base on `ALNS <https://en.wikipedia.org/wiki/Adaptive_large_neighborhood_search>`_. ALNS utilizes a set of destroy and repair operators to perturb the current solution. The destroy operators remove a part of the solution, while the repair operators try to repair the solution by inserting the removed customers into the solution again. Selecting the operators is done probabilistically, with the probability of selecting an operator being proportional to the operator's performance, which is estimated based the number of times a operator improved the solution.
+A simple ILS algorithm often falls short in competitive problem settings such as the EVRP-TW-PR. In these cases, state-of-the-art algorithms rely on ALNS. ALNS employs a set of destroy and repair operators to perturb the current solution. Destroy operators remove a portion of the solution, while repair operators attempt to fix the solution by reinserting the removed customers. Operator selection is done probabilistically, with the probability of selecting an operator being proportional to its performance, which is estimated based on the number of times an operator has improved the solution.
 
-RoutingBlocks provides a ALNS solver and several destroy and repair operators out of the box. Implementing ALNS is thus straightforward:
+RoutingBlocks offers an ALNS solver and several destroy and repair operators out of the box, making the implementation of ALNS fairly straightforward:
 
 .. code-block:: python
 
@@ -336,15 +335,17 @@ RoutingBlocks provides a ALNS solver and several destroy and repair operators ou
                                                                     rb.operators.blink_selector_factory(
                                                                         blink_probability=0.1, randgen=randgen)))
 
-We start from the boilerplate code developed for the ILS and only add a few lines to create and configure the ALNS solver. This class is responsible for operator selection and weight adaption. It takes as arguments a random engine and a smoothing factor. The smoothing factor determines the weight of historic performance when selecting an operator. Next, we create and register destroy and repair operators with the ALNS solver. RoutingBlocks provides a `set of standard operators <alns_operators>`_ out of the box. Here, we use RandomInsertion, BestInsertion, RandomRemoval, and WorstRemoval. We configure BestInsertion and WorstRemoval to select insertion/removal spots using a blink selection criterion.
 
-We can now utilize the ALNS solver to perturb the current solution in the main loop:
+We begin with the boilerplate code established for the ILS and add just a few lines to create and configure the ALNS solver. This class is responsible for operator selection and weight adaptation. It takes a random engine and a smoothing factor as arguments. The smoothing factor determines the weight of historical performance when selecting an operator. Next, we create and register destroy and repair operators with the ALNS solver. RoutingBlocks provides a `set of standard operators <alns_operators>`_ out of the box. In this case, we use RandomInsertion, BestInsertion, RandomRemoval, and WorstRemoval. We configure BestInsertion and WorstRemoval to select insertion/removal spots using a blink selection criterion.
+
+We can now employ the ALNS solver to perturb the current solution within the main loop:
+
 
 .. code-block:: python
 
         # Generate a random starting solution
         best_solution = create_random_solution(evaluation, instance)
-        for i in range(number_of_iterations):
+        for i in range(1, number_of_iterations+1):
             current_solution = copy.copy(best_solution)
             # Perturb the current solution
             number_of_vertices_to_remove = int(random.uniform(min_vertex_removal_factor, max_vertex_removal_factor) * sum(
@@ -371,10 +372,11 @@ We can now utilize the ALNS solver to perturb the current solution in the main l
 
         return best_solution
 
-We utilize three fundamental methods of the ALNS solver:
-1. alns.generate, which selects and applies a destroy and a repair operator to the current solution, modifying it in-place. The method returns a tuple of the selected operators.
-2. alns.collect_score, which collects scores for the passed operators. The method takes as arguments the selected operators and a score.
-3. alns.adapt_operator_weights, which adapts the weights of the operators based on the scores collected in the last period.
+We employ three essential methods of the ALNS solver:
+
+1. alns.generate: This method selects and applies a destroy and a repair operator to the current solution, modifying it in-place. It returns a tuple of the chosen operators.
+2. alns.collect_score: This method gathers scores for the provided operators. It requires the selected operators and a score as arguments.
+3. alns.adapt_operator_weights: This method adjusts the weights of the operators based on the scores collected during the last period.
 
 For more details on the ALNS solver, see the `documentation <alns>`_. The full code of the ALNS algorithm is available `here <alns_code>`_. A more sophisticated ALNS-based algorithm can be found in the `main repository <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/evrptw>`_.
 
