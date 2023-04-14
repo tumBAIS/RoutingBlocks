@@ -63,12 +63,28 @@ def create_niftw_arc(data: NIFTWArcData) -> Arc:
 
 
 class NIFTWEvaluation(Evaluation):
+    """
+    Evaluation for NIFTW problems. Works only with arcs and vertices created using :ref:`create_niftw_arc` and :ref:`create_niftw_vertex`.
+    Uses a set of penalty factors to penalize infeasible solutions.
+
+    :var overload_penalty_factor: The penalty factor for overloading the vehicle.
+    :var overcharge_penalty_factor: The penalty factor for overcharging the vehicle.
+    :var time_shift_penalty_factor: The penalty factor for time shifts.
+    """
     overload_penalty_factor: float
     overcharge_penalty_factor: float
     time_shift_penalty_factor: float
 
     def __init__(self, vehicle_battery_capacity: resource_t, vehicle_storage_capacity: resource_t,
-                 replenishment_time: resource_t) -> None: ...
+                 replenishment_time: resource_t) -> None:
+        """
+        Creates an NIFTW evaluation.
+
+        :param vehicle_battery_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
+        :param vehicle_storage_capacity: The vehicle's storage capacity. Determines how much demand can be served in a single route.
+        :param replenishment_time: The time penalty incurred to replenish the vehicle's battery.
+        """
+        ...
 
 
 class NIFTWFRVCP:

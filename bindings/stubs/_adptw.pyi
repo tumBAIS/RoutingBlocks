@@ -64,11 +64,27 @@ def create_adptw_arc(data: ADPTWArcData) -> Arc:
 
 
 class ADPTWEvaluation(Evaluation):
+    """
+    Evaluation for ADPTW problems. Works only with arcs and vertices created using :ref:`create_adptw_arc` and :ref:`create_adptw_vertex`.
+    Uses a set of penalty factors to penalize infeasible solutions.
+
+    :var overload_penalty_factor: The penalty factor for overloading the vehicle.
+    :var overcharge_penalty_factor: The penalty factor for overcharging the vehicle.
+    :var time_shift_penalty_factor: The penalty factor for time shifts.
+    """
+
     overload_penalty_factor: float
     overcharge_penalty_factor: float
     time_shift_penalty_factor: float
 
-    def __init__(self, vehicle_battery_capacity: resource_t, vehicle_storage_capacity: resource_t) -> None: ...
+    def __init__(self, vehicle_battery_capacity: resource_t, vehicle_storage_capacity: resource_t) -> None:
+        """
+        Creates an ADPTW evaluation.
+
+        :param vehicle_battery_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
+        :param vehicle_storage_capacity: The vehicle's storage capacity. Determines how much demand can be served in a single route.
+        """
+        ...
 
 
 class ADPTWFRVCP:
