@@ -1,5 +1,5 @@
 [build-system]
-requires = ["scikit-build-core>=0.2.1", "pybind11", "mypy"]
+requires = ["scikit-build-core>=0.2.1", "pybind11"]
 build-backend = "scikit_build_core.build"
 
 
@@ -25,6 +25,7 @@ classifiers = [
 [project.optional-dependencies]
 test = ["pytest", "pytest-benchmark", "pytest-randomly", "pydantic"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-autoapi"]
+examples = ["click", "pydantic"]
 
 
 [tool.scikit-build]
@@ -36,8 +37,13 @@ testpaths = [
 ]
 
 [tool.cibuildwheel]
-test-command = 'python -m pytest {project}/test/tests -m "not benchmark" --randomly-dont-reorganize'
-test-extras = ["test"]
+test-command = [
+    'python -m pytest {project}/test/tests -m "not benchmark" --randomly-dont-reorganize',
+    'cd {project}/examples && python -m ils -n 10 evrptw/instances/evrptw/100/c101_21.txt',
+    'cd {project}/examples && python -m alns -n 10 evrptw/instances/evrptw/100/c101_21.txt',
+    'cd {project}/examples && python -m evrptw --time-limit 120 --config-path evrptw/config.json evrptw/instances/evrptw/100/c101_21.txt',
+]
+test-extras = ["test", "examples"]
 test-skip = ["*universal2:arm64"]
 build = ["cp*-manylinux_x86_64", "cp*-win32", "cp*-win_amd64", "cp*-macosx_*"]
 build-verbosity = 3
