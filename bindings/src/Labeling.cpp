@@ -104,23 +104,6 @@ namespace routingblocks::bindings {
             .def(pybind11::init<const Instance&, std::shared_ptr<PyPropagator>>())
             .def("optimize", &FRVCP<PyPropagator::value_type>::optimize,
                  "Solve FRVCP for the specified route.");
-
-        /*auto propagator_interface
-            = bind_propagator<routingblocks::Propagator, PyPropagator>(m, "Propagator")
-                  .def(pybind11::init<>());
-
-        bind_propagator<routingblocks::ADPTWPropagation>(m, "ADPTWPropagation",
-        propagator_interface) .def(pybind11::init<const routingblocks::Instance&>());
-
-        m.def("create_adptw_propagator", [](const routingblocks::Instance& instance) {
-            return std::make_shared<routingblocks::ADPTWPropagation>(instance);
-        });
-
-        pybind11::class_<routingblocks::Label, std::shared_ptr<routingblocks::Label>>(m, "DPLabel",
-                                                                        pybind11::dynamic_attr())
-            .def(pybind11::init<>());
-
-        */
     }
 
 }  // namespace routingblocks::bindings
