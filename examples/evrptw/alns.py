@@ -51,7 +51,7 @@ class CostComponentTracker:
 
 
 class ALNS:
-    def __init__(self, evaluation: routingblocks.Evaluation, py_instance: ADPTWInstance,
+    def __init__(self, evaluation: routingblocks.adptw.Evaluation, py_instance: ADPTWInstance,
                  cpp_instance: routingblocks.Instance,
                  params: ALNSParams, seed: int):
         self._evaluation = evaluation
@@ -178,19 +178,19 @@ class ALNS:
         return self._best_feasible_solution.cost if self._best_feasible_solution else sys.float_info.max
 
     def _make_feasible(self, solution: routingblocks.Solution):
-        penalty_factors = self._evaluation.penalty_factors
-        self._evaluation.penalty_factors = [penalty_factors[0], penalty_factors[1] * 100.,
-                                            penalty_factors[2] * 100.,
-                                            penalty_factors[3] * 100.]
+        penalty_factors = [self._evaluation.overload_penalty_factor, self._evaluation.overcharge_penalty_factor,
+                           self._evaluation.time_shift_penalty_factor]
+        self._update_penalty_factors(*(x * 100.0 for x in penalty_factors))
         self._local_search.optimize(solution, self._operators)
-        self._evaluation.penalty_factors = penalty_factors
+        self._update_penalty_factors(*penalty_factors)
 
     def _remove_vehicle(self, solution: routingblocks.Solution):
         # Reset penalty
-        current_penalties = self._evaluation.penalty_factors
-        for i in range(1, len(current_penalties)):
-            current_penalties[i] = max(current_penalties[i], self._params.initial_penalties[i - 1] * 100)
-        self._evaluation.penalty_factors = current_penalties
+        penalty_factors = [self._evaluation.overload_penalty_factor, self._evaluation.overcharge_penalty_factor,
+                           self._evaluation.time_shift_penalty_factor]
+        for i in range(len(penalty_factors)):
+            penalty_factors[i] = max(penalty_factors[i], self._params.initial_penalties[i - 1] * 100)
+        self._update_penalty_factors(*penalty_factors)
         self._boosted_penalties = True
 
         # Remove route
@@ -235,7 +235,7 @@ class ALNS:
                     self._best_solution = copy.deepcopy(solution)
                 if self._boosted_penalties:
                     self._boosted_penalties = False
-                    self._evaluation.penalty_factors = self._saved_penalties
+                    self._update_penalty_factors(*self._saved_penalties)
                 print(
                     f"[{self.elapsed:.2f}s, {self._iters}, {self._iters_since_improvement}]: Found new best feasible solution: {solution_cost} ({self._best_feasible_obj}, {len(solution)})")
                 score = self._params.new_best_feasible_score
@@ -333,7 +333,9 @@ class ALNS:
                     self._last_vehicle_decrease_iter = self._ls_iters
                     self._reached_vehicle_lb = True
                     if not self._boosted_penalties:
-                        self._saved_penalties = list(self._evaluation.penalty_factors)
+                        self._saved_penalties = [self._evaluation.overload_penalty_factor,
+                                                 self._evaluation.overcharge_penalty_factor,
+                                                 self._evaluation.time_shift_penalty_factor]
                     if len(self._best_feasible_solution) > self._vehicle_lb:
                         while len(self._current_solution) > len(self._best_feasible_solution) - 1:
                             self._remove_vehicle(self._current_solution)
@@ -344,7 +346,7 @@ class ALNS:
                         self._current_solution) and (
                         self._ls_iters - self._last_vehicle_decrease_iter) > self._params.vehicle_decreased_search_period_length:
                     self._current_solution = copy.deepcopy(self._best_feasible_solution)
-                    self._evaluation.penalty_factors = self._saved_penalties
+                    self._update_penalty_factors(*self._saved_penalties)
                     self._boosted_penalties = False
                     self._best_solution = copy.deepcopy(self._best_feasible_solution)
                     print(f"Increased max number of vehicles to {len(self._current_solution)}")
