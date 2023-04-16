@@ -45,7 +45,7 @@ autoapi_python_class_content = "class"
 autoapi_member_order = "bysource"
 autodoc_member_order = "bysource"
 
-autodoc_typehints = "description"
+autodoc_typehints = "both"
 
 # Bibtex
 bibtex_bibfiles = ['references.bib']
