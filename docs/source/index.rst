@@ -35,6 +35,7 @@ Welcome to RoutingBlock's documentation!
     examples
     development
     full_api
+    references
 
 
 Indices and tables

@@ -52,7 +52,7 @@ care of ordering, ensures unique vertex IDs, and validates consistency. The foll
 
     class MyVertexData:
         pass
-
+        
     class MyArcData:
         pass
 
@@ -74,6 +74,8 @@ care of ordering, ensures unique vertex IDs, and validates consistency. The foll
     instance = builder.build()
 
 
+
+.. _instance-builder:
 
 .. autoapiclass:: routingblocks.utility.InstanceBuilder
     :members:

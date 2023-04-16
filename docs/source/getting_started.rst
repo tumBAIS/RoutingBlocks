@@ -127,7 +127,7 @@ Once the instance is created, we can proceed to implement the ILS algorithm. We 
 
 .. note::
 
-    The module's name ``adptw`` refers to the classification introduced in `Schiffer et al. (2017) <https://www.semanticscholar.org/paper/A-solution-framework-for-the-class-of-vehicle-with-Schiffer-Klein/8eff30dda8ba9faf9aa4d814838fea20d7287203>`_.
+    The module's name ``adptw`` refers to the classification introduced in :cite:t:`vrpis`.
 
 Being done with the setup, we can start implementing the main ILS algorithm.
 We start by creating a random solution:

@@ -1,3 +1,7 @@
+
+from typing import Iterable, Tuple
+
+
 class Route:
     """
     Routes represent a sequence of visits to vertices, represented by Node objects.
@@ -19,7 +23,8 @@ class Route:
 
     def __init__(self, evaluation: Evaluation, instance: Instance) -> None:
         """
-        Initializes a new Route object.
+        Initializes a new Route object. The route is initially empty, that is, contains only start and end depots.
+        Refer to create_route for a method to create a route from a sequence of vertex ids.
 
         :param Evaluation evaluation: The Evaluation object used for cost and feasibility calculations.
         :param Instance instance: The Instance object representing the problem instance.
@@ -164,23 +169,30 @@ class Route:
         """
         ...
 
-    def insert_vertices_after(self, vertices) -> None:
+    def insert_vertices_after(self, vertices: Iterable[Tuple[VertexID, int]]) -> None:
         """
         Inserts a batch of vertices at the given positions. This method is more efficient than calling insert_segment_after
         multiple times.
 
 
-        :param Iterable vertices: The iterable containing the vertices with positions to insert.
+        :param Iterable vertices: The iterable containing tuples of vertices with the positions to insert after.
         """
         ...
 
     def remove_segment(self, begin_position: int, end_position: int) -> int:
         """
-        Removes a segment of nodes from the route.
+        Removes a segment of nodes from the route. Example:
+
+        .. code-block:: python
+
+            route = routingblocks.create_route(evaluation, instance, [D, C1, C2, C3, D])
+            new_position_of_end_position = route.remove_segment(1, 3)
+            print(route) # [D, C3, D]
+            print(new_position_of_end_position) # 1
 
         :param int begin_position: The start position of the segment to remove.
-        :param int end_position: The end position of the segment to remove.
-        :return: The new position after the removal.
+        :param int end_position: The end position of the segment to remove. Not inclusive.
+        :return: The new position of end_position after removal.
         :rtype: int
         """
         ...
@@ -201,16 +213,26 @@ class Route:
 
     def __copy__(self) -> Route:
         """
-        Creates a shallow copy of the route.
+        Creates a copy of the route. Copies Node objects and labels, but not the underlying Vertex and Instance objects.
 
-        :return: A shallow copy of the route.
+        :return: A deep copy of the route.
+        :rtype: Route
+        """
+        ...
+
+    def copy(self) -> Route:
+        """
+        Creates a copy of the route. Copies Node objects and labels, but not the underlying Vertex and Instance objects.
+
+        :return: A deep copy of the route.
         :rtype: Route
         """
         ...
 
     def __deepcopy__(self, memodict: Dict = None) -> Route:
         """
-        Creates a deep copy of the route.
+        Creates a copy of the route. Copies Node objects and labels, but not the underlying Vertex and Instance objects.
+        Same as __copy__.
 
         :param Dict memodict: A dictionary for memoization (optional).
         :return: A deep copy of the route.

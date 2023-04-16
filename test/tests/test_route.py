@@ -314,7 +314,7 @@ def test_route_insert_vertices(mock_evaluation, sorted_locations: bool, adptw_in
                                 [customers[0].vertex_id, customers[1].vertex_id, customers[2].vertex_id])
     # [0, 1, 2, 3, 0]
     to_insert = [customers[3].vertex_id, customers[4].vertex_id]
-    insertion_positions = [evrptw.NodeLocation(0, 0), evrptw.NodeLocation(0, 1)]
+    insertion_positions = [0, 1]
     if sorted_locations:
         insertion_positions.reverse()
         to_insert.reverse()

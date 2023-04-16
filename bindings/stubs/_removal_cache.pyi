@@ -1,9 +1,9 @@
 class RemovalMove:
     vertex_id: VertexID
     node_location: NodeLocation
-    delta_cost: cost_t
+    delta_cost: float
 
-    def __init__(self, vertex_id: VertexID, node_location: NodeLocation, delta_cost: cost_t) -> None: ...
+    def __init__(self, vertex_id: VertexID, node_location: NodeLocation, delta_cost: float) -> None: ...
 
     def __eq__(self, other: RemovalMove) -> bool: ...
 
