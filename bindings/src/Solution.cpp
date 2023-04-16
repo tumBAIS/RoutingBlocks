@@ -80,7 +80,8 @@ namespace routingblocks::bindings {
                                    "The route modification_timestamp. May be used for caching.")
             .def("__len__", &routingblocks::Route::size, "The number of vertices in the route.")
             .def("__copy__", [](const Route& r) { return Route(r); })
-            .def("__deepcopy__", [](const Route& r, const pybind11::dict&) { return Route(r); })
+            .def("copy", [](const Route& r) { return Route(r); })
+            .def("__deepcopy__", [](const Route& r, const pybind11::dict*) { return Route(r); })
             .def_property_readonly(
                 "end_depot",
                 [](const Route& r) -> const routingblocks::Node& { return *r.end_depot(); },
@@ -129,12 +130,13 @@ namespace routingblocks::bindings {
                 },
                 "Inserts the given nodes after the given position.")
             .def("insert_vertices_after",
-                 [](Route& route, pybind11::iterable& vertex_ids_and_locations_list) {
+                 [](Route& route, pybind11::iterable& vertex_ids_and_positions_list) {
                      std::vector<std::pair<VertexID, NodeLocation>> vertex_ids_and_locations;
 
-                     for (const auto& vertex_id_and_location : vertex_ids_and_locations_list) {
-                         vertex_ids_and_locations.push_back(
-                             vertex_id_and_location.cast<std::pair<VertexID, NodeLocation>>());
+                     for (const auto& vertex_id_and_position_iter : vertex_ids_and_positions_list) {
+                         auto [v_id, pos]
+                             = vertex_id_and_position_iter.cast<std::pair<VertexID, int>>();
+                         vertex_ids_and_locations.emplace_back(v_id, NodeLocation(0, pos));
                      }
 
                      route.insert_vertices_after(vertex_ids_and_locations.begin(),
@@ -209,6 +211,7 @@ namespace routingblocks::bindings {
                                    "Whether the solution is "
                                    "feasible.")
             .def("__copy__", [](const Solution& s) { return Solution(s); })
+            .def("copy", [](const Solution& s) { return Solution(s); })
             .def("__deepcopy__",
                  [](const Solution& s, const pybind11::dict&) -> Solution { return Solution(s); })
             .def(

@@ -3,8 +3,8 @@ class NIFTWVertexData:
     Data stored on vertices in an NIFTW problem setting.
     """
 
-    def __init__(self, x: float, y: float, demand: resource_t, earliest_time_of_arrival: resource_t,
-                 latest_time_of_arrival: resource_t, service_time: resource_t) -> None:
+    def __init__(self, x: float, y: float, demand: float, earliest_time_of_arrival: float,
+                 latest_time_of_arrival: float, service_time: float) -> None:
         """
         :param x: The x coordinate of the vertex.
         :param y: The y coordinate of the vertex.
@@ -21,7 +21,7 @@ class NIFTWArcData:
     Data stored on arcs in an NIFTW problem setting.
     """
 
-    def __init__(self, distance: resource_t, travel_time: resource_t, consumption: resource_t) -> None:
+    def __init__(self, distance: float, travel_time: float, consumption: float) -> None:
         """
         :param distance: The distance between the two vertices connected by the arc.
         :param travel_time: The time it takes to travel between the two vertices connected by the arc.
@@ -75,8 +75,8 @@ class NIFTWEvaluation(Evaluation):
     overcharge_penalty_factor: float
     time_shift_penalty_factor: float
 
-    def __init__(self, vehicle_battery_capacity: resource_t, vehicle_storage_capacity: resource_t,
-                 replenishment_time: resource_t) -> None:
+    def __init__(self, vehicle_battery_capacity: float, vehicle_storage_capacity: float,
+                 replenishment_time: float) -> None:
         """
         Creates an NIFTW evaluation.
 
@@ -88,7 +88,7 @@ class NIFTWEvaluation(Evaluation):
 
 
 class NIFTWFRVCP:
-    def __init__(self, instance: Instance, battery_capacity_time: resource_t,
-                 replenishment_time: resource_t) -> None: ...
+    def __init__(self, instance: Instance, battery_capacity_time: float,
+                 replenishment_time: float) -> None: ...
 
     def optimize(self, route_vertex_ids: List[VertexID]) -> List[VertexID]: ...

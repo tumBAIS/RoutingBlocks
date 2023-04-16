@@ -1,9 +1,9 @@
 class InsertionMove:
     vertex_id: VertexID
     after_node: NodeLocation
-    delta_cost: cost_t
+    delta_cost: float
 
-    def __init__(self, vertex_id: VertexID, after_node_location: NodeLocation, delta_cost: cost_t) -> None: ...
+    def __init__(self, vertex_id: VertexID, after_node_location: NodeLocation, delta_cost: float) -> None: ...
 
     def __eq__(self, other: InsertionMove) -> bool: ...
 
