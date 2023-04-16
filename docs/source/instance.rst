@@ -75,6 +75,8 @@ care of ordering, ensures unique vertex IDs, and validates consistency. The foll
 
 
 
+.. _instance-builder:
+
 .. autoapiclass:: routingblocks.utility.InstanceBuilder
     :members:
     :undoc-members:
