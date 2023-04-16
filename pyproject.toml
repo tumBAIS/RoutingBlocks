@@ -24,7 +24,7 @@ classifiers = [
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-benchmark", "pytest-randomly", "pydantic"]
-docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-autoapi"]
+docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-autoapi", "sphinxcontrib-bibtex"]
 examples = ["click", "pydantic"]
 
 
