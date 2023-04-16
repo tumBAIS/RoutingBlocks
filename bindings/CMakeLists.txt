@@ -48,11 +48,17 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 
 # Create stub file
 file(GLOB stub_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/stubs/*.pyi")
+
+# Generate an empty target file
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi "")
+
 add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi
-        COMMAND $<IF:$<STREQUAL:$<PLATFORM_ID>,Windows>,type,cat> ${stub_files} > "${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi"
-        DEPENDS ${stub_files}
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi
+    COMMAND ${CMAKE_COMMAND} -E echo "Concatenating files..."
+    COMMAND ${CMAKE_COMMAND} -E cat ${stub_files} > "${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi"
+    DEPENDS ${stub_files}
 )
+
 add_custom_target(stub_file ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi)
 add_dependencies(${PROJECT_NAME} stub_file)
 
