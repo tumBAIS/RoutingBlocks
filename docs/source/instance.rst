@@ -52,7 +52,7 @@ care of ordering, ensures unique vertex IDs, and validates consistency. The foll
 
     class MyVertexData:
         pass
-
+        
     class MyArcData:
         pass
 
