@@ -26,8 +26,11 @@ extensions = [
     'sphinx.ext.autodoc.typehints',
     'sphinx.ext.autosummary',
     'sphinx.ext.duration',
-    'sphinx.ext.doctest'
+    'sphinx.ext.doctest',
+    'sphinxcontrib.bibtex'
 ]
+
+# AutoAPI
 
 autosummary_generate = True
 autoapi_type = "python"
@@ -43,6 +46,9 @@ autoapi_member_order = "bysource"
 autodoc_member_order = "bysource"
 
 autodoc_typehints = "description"
+
+# Bibtex
+bibtex_bibfiles = ['references.bib']
 
 templates_path = ['_templates']
 exclude_patterns = []
