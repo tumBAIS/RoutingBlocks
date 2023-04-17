@@ -6,7 +6,6 @@ Welcome to RoutingBlock's documentation!
     :caption: Basics
 
     getting_started
-    concepts
 
 .. toctree::
     :maxdepth: 1

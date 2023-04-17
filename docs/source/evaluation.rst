@@ -10,7 +10,7 @@ concrete implementations.
 
 .. warning::
 
-    We recommend implementing a custom Evaluation class by extending the native RoutingBlocks library instead of providing a python implementation for code used beyond prototyping. See `<extension>`_ for more information
+    We recommend implementing a custom Evaluation class by extending the native RoutingBlocks library instead of providing a python implementation for code used beyond prototyping. See `native extensions <https://github.com/tumBAIS/routingblocks-native-extension-example>`_ for an example.
 
 .. autoapiclass:: routingblocks.PyConcatenationBasedEvaluation
     :members:
