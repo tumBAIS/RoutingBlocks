@@ -30,6 +30,7 @@ examples = ["click", "pydantic"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
+cmake.minimum-version = "3.18.0"
 
 [tool.pytest.ini_options]
 testpaths = [

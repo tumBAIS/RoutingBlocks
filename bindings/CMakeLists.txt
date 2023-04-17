@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.18)
 include(CheckIPOSupported)
 # To force building for a specific python version, set Python_ROOT_DIR to the respective path.
 # This can be a venv as well.
@@ -46,24 +46,19 @@ endif ()
 #
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 
+# Create stub file
 file(GLOB stub_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/stubs/*.pyi")
 
-function(cat IN_FILE OUT_FILE)
-    file(READ ${IN_FILE} CONTENTS)
-    file(APPEND ${OUT_FILE} "${CONTENTS}")
-endfunction()
-# Prepare a temporary file to "cat" to:
-file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi.in "")
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi
+        COMMAND ${CMAKE_COMMAND} -E echo "Concatenating files..."
+        COMMAND ${CMAKE_COMMAND} -E cat ${stub_files} > "${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi"
+        DEPENDS ${stub_files}
+)
 
-# Call the "cat" function for each input file
-foreach (STUB_FILE ${stub_files})
-    cat(${STUB_FILE} _routingblocks.pyi.in)
-endforeach ()
-
-# Copy the temporary file to the final location
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi.in ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi COPYONLY)
-message(STATUS "Created stub file: ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi")
+add_custom_target(stub_file ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi)
+add_dependencies(${PROJECT_NAME} stub_file)
 
 INSTALL(TARGETS routingblocks DESTINATION routingblocks)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks_bindings/binding_helpers.hpp DESTINATION routingblocks/include/routingblocks/)
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/_routingblocks.pyi DESTINATION routingblocks/)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/_routingblocks.pyi DESTINATION routingblocks/)
