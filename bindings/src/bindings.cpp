@@ -34,6 +34,7 @@ PYBIND11_MODULE(routingblocks_MODULE_NAME, m) {
     // Local search
     bind_neighborhood_structures(m);
     bind_local_search(m);
+    bind_pivoting_rule(m);
     // LS Operators
     bind_operators(m);
 

@@ -6,18 +6,56 @@
 
 namespace routingblocks::bindings {
 
+    class PivotingRuleTrampoline : public PivotingRule {
+      public:
+        using PivotingRule::PivotingRule;
+
+        std::shared_ptr<Move> select_move(const Solution& solution) override {
+            PYBIND11_OVERLOAD_PURE(std::shared_ptr<Move>, PivotingRule, select_move, solution);
+        }
+
+        bool continue_search(const std::shared_ptr<Move>& move, cost_t cost,
+                             const Solution& solution) override {
+            PYBIND11_OVERLOAD_PURE(bool, PivotingRule, continue_search, move, cost, solution);
+        }
+    };
+
+    void bind_pivoting_rule(pybind11::module_& m) {
+        pybind11::class_<PivotingRule, PivotingRuleTrampoline>(m, "PivotingRule")
+            .def(pybind11::init<>())
+            .def("select_move", &PivotingRule::select_move)
+            .def("continue_search", &PivotingRule::continue_search);
+
+        pybind11::class_<BestImprovementPivotingRule, PivotingRule>(m,
+                                                                    "BestImprovementPivotingRule")
+            .def(pybind11::init<>())
+            .def("select_move", &BestImprovementPivotingRule::select_move)
+            .def("continue_search", &BestImprovementPivotingRule::continue_search);
+
+        pybind11::class_<KBestImprovementPivotingRule, PivotingRule>(m,
+                                                                     "KBestImprovementPivotingRule")
+            .def(pybind11::init<size_t>())
+            .def("select_move", &KBestImprovementPivotingRule::select_move)
+            .def("continue_search", &KBestImprovementPivotingRule::continue_search);
+
+        pybind11::class_<FirstImprovementPivotingRule, PivotingRule>(m,
+                                                                     "FirstImprovementPivotingRule")
+            .def(pybind11::init<>())
+            .def("select_move", &FirstImprovementPivotingRule::select_move)
+            .def("continue_search", &FirstImprovementPivotingRule::continue_search);
+    }
+
     void bind_local_search(pybind11::module& m) {
         pybind11::class_<routingblocks::LocalSearch>(m, "LocalSearch")
             .def(pybind11::init<const routingblocks::Instance&, std::shared_ptr<Evaluation>,
-                                std::shared_ptr<Evaluation>>())
+                                std::shared_ptr<Evaluation>, PivotingRule*>(),
+                 pybind11::keep_alive<1, 5>())
             .def(
                 "optimize",
                 [](LocalSearch& ls, Solution& sol, std::vector<Operator*> operators) -> void {
                     ls.run(sol, operators.begin(), operators.end());
                 },
-                "Optimizes the passed solution inplace.")
-            .def("set_use_best_improvement", &LocalSearch::set_use_best_improvement,
-                 "Set whether to use best improvement or first improvement.");
+                "Optimizes the passed solution inplace.");
     }
 
     template <class T> void bind_generator_arc(pybind11::module& m, const char* name) {

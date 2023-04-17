@@ -1,53 +1,128 @@
 from __future__ import annotations
 
-import itertools
-import math
-import random
-import time
-from collections import defaultdict
-from pathlib import Path
-from typing import Tuple, Callable, Dict, List, Iterable
+from itertools import islice
 
 import pytest
+from typing import Optional
 
 import helpers
+import routingblocks
 
 from fixtures import *
 
-try:
-    import routingblocks as evrptw
-    from routingblocks import adptw
+from routingblocks import adptw
 
 
-    class MockLSOperator(evrptw.LocalSearchOperator):
-        def __init__(self):
-            evrptw.LocalSearchOperator.__init__(self)
-            self.ops = []
+class MockLSOperator(routingblocks.LocalSearchOperator):
+    def __init__(self):
+        routingblocks.LocalSearchOperator.__init__(self)
+        self.ops = []
 
-        def finalize_search(self) -> None:
-            self.ops.append("finalize_search")
+    def finalize_search(self) -> None:
+        self.ops.append("finalize_search")
 
-        def find_next_improving_move(self, arg0: evrptw.Evaluation, arg2, arg3):
-            self.ops.append("find_next_improving_move")
-            return None
+    def find_next_improving_move(self, arg0: routingblocks.Evaluation, arg2, arg3):
+        self.ops.append("find_next_improving_move")
+        return None
 
-        def prepare_search(self, arg0) -> None:
-            self.ops.append("prepare_search")
+    def prepare_search(self, arg0) -> None:
+        self.ops.append("prepare_search")
 
-        def reset(self) -> None:
-            self.ops = []
+    def reset(self) -> None:
+        self.ops = []
 
-except ModuleNotFoundError:
-    pass
+
+class MockPivotingRule(routingblocks.PivotingRule):
+    def __init__(self, always_abort: bool = True):
+        routingblocks.PivotingRule.__init__(self)
+        self.always_abort = always_abort
+        self.ops = []
+
+    def continue_search(self, found_improving_move: routingblocks.Move, delta_cost: float,
+                        solution: routingblocks.Solution) -> bool:
+        self.ops.append("continue_search")
+        return not self.always_abort
+
+    def select_move(self, solution: routingblocks.Solution) -> Optional[routingblocks.Move]:
+        self.ops.append("select_move")
+        return None
+
+
+class BestImprovementWithBlinksPivotingRule(routingblocks.PivotingRule):
+    def __init__(self, blink_probability: float, randgen: routingblocks.Random):
+        routingblocks.PivotingRule.__init__(self)
+        self._blink_probability = blink_probability
+        self._randgen = randgen
+        self._best_move = None
+        self._best_delta_cost = -1e-2
+
+    def continue_search(self, found_improving_move: routingblocks.Move, delta_cost: float,
+                        solution: routingblocks.Solution) -> bool:
+        if delta_cost < self._best_delta_cost:
+            self._best_move = found_improving_move
+            self._best_delta_cost = delta_cost
+            # If we do not blink, we can stop the search. Otherwise we continue.
+            # This ensures that we always return the best found move, even if only one is found and that one is blinked.
+            if self._randgen.uniform(0.0, 1.0) >= self._blink_probability:
+                return False
+        return True
+
+    def select_move(self, solution: routingblocks.Solution) -> Optional[routingblocks.Move]:
+        move = self._best_move
+        self._best_move = None
+        self._best_delta_cost = -1e-2
+        return move
+
+
+def test_local_search_blink_pivot(instance):
+    py_instance: helpers.Instance = instance[0]
+    instance: routingblocks.Instance = instance[1]
+    evaluation = adptw.Evaluation(py_instance.parameters.battery_capacity_time, py_instance.parameters.capacity)
+
+    route = routingblocks.create_route(evaluation, instance,
+                                       [station.vertex_id for station in islice(instance.stations, 1, 3)])
+    solution = routingblocks.Solution(evaluation, instance, [route])
+    assert solution.cost > 0
+    # Should find exactly two moves
+    operator = routingblocks.operators.RemoveStationOperator(instance)
+    pivoting_rule = BestImprovementWithBlinksPivotingRule(blink_probability=0.5, randgen=routingblocks.Random(0))
+
+    local_search = routingblocks.LocalSearch(instance, evaluation, None, pivoting_rule)
+
+    local_search.optimize(solution, [operator])
+
+
+@pytest.mark.parametrize("always_abort,expected_operations", [
+    (True, ["continue_search", "select_move"]),
+    (False, ["continue_search", "continue_search", "select_move"])
+])
+def test_local_search_custom_pivot_rule(instance, always_abort, expected_operations):
+    py_instance: helpers.Instance = instance[0]
+    instance: routingblocks.Instance = instance[1]
+    evaluation = adptw.Evaluation(py_instance.parameters.battery_capacity_time, py_instance.parameters.capacity)
+
+    route = routingblocks.create_route(evaluation, instance,
+                                       [station.vertex_id for station in islice(instance.stations, 1, 3)])
+    solution = routingblocks.Solution(evaluation, instance, [route])
+    assert solution.cost > 0
+    # Should find exactly two moves
+    operator = routingblocks.operators.RemoveStationOperator(instance)
+    pivoting_rule = MockPivotingRule(always_abort=always_abort)
+
+    local_search = routingblocks.LocalSearch(instance, evaluation, None, pivoting_rule)
+
+    local_search.optimize(solution, [operator])
+    assert pivoting_rule.ops == expected_operations
 
 
 @pytest.fixture
 def local_search_and_solution(instance, random_solution_factory, randgen):
     py_instance: helpers.Instance = instance[0]
-    instance: evrptw.Instance = instance[1]
+    instance: routingblocks.Instance = instance[1]
     evaluation = adptw.Evaluation(py_instance.parameters.battery_capacity_time, py_instance.parameters.capacity)
     solution = random_solution_factory(instance=instance, evaluation=evaluation)
-    return evrptw.LocalSearch(instance, evaluation, None), solution
+    pivoting_rule = routingblocks.BestImprovementPivotingRule()
+    return routingblocks.LocalSearch(instance, evaluation, None, pivoting_rule), solution
 
 
 def test_local_search_optimize_inplace(local_search_and_solution):
@@ -81,5 +156,5 @@ def test_neighborhood_iterator(random_solution):
                 for v, node_v in enumerate(route_j):
                     expected_moves.add((node_u, node_v))
 
-    actual_moves = set((x.origin_node, x.target_node) for x in evrptw.iter_neighborhood(solution))
+    actual_moves = set((x.origin_node, x.target_node) for x in routingblocks.iter_neighborhood(solution))
     assert actual_moves == expected_moves

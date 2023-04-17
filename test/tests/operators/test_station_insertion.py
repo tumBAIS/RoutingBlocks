@@ -36,7 +36,7 @@ def test_insert_station_operator_search(large_instance):
     assert not route.feasible
     assert route.cost_components[2] > 0
     station_insertion_operator = evrptw.operators.InsertStationOperator(instance)
-    ls = evrptw.LocalSearch(instance, evaluation, None)
+    ls = evrptw.LocalSearch(instance, evaluation, None, evrptw.FirstImprovementPivotingRule())
     ls.optimize(solution, [station_insertion_operator])
     # Charge penalty should be 0.
     assert route.cost_components[2] == 0.

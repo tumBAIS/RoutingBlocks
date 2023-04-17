@@ -66,7 +66,7 @@ First, import the library and read the instance
 
 .. note::
 
-    The instance format is described in the `supplemental material <https://data.mendeley.com/datasets/h3mrm5dhxw/1>`_ to `Schneider et. al (2014) <https://pubsonline.informs.org/doi/abs/10.1287/trsc.2013.0490>`_.
+    The instance format is described in the `supplemental material <https://data.mendeley.com/datasets/h3mrm5dhxw/1>`_ to :cite:t:`SchneiderStengerEtAl2014`.
 
 Next, we create a RoutingBlocks Instance object from the parsed data:
 
@@ -109,7 +109,7 @@ Once the instance is created, we can proceed to implement the ILS algorithm. We 
 
 .. note::
 
-        It is possible to implement a custom Evaluation class for custom problem settings (See `Custom problem settings <_custom_problem_settings>`_)
+        It is possible to implement a custom Evaluation class for custom problem settings (See :ref:`Custom problem settings <custom_problem_settings>`).
 
 .. code-block:: python
 
@@ -157,9 +157,10 @@ Subsequently, we create and configure the local search solver:
 
 .. code-block:: python
 
-    local_search = rb.LocalSearch(instance, evaluation, None)
-    # Configure the local search to use a best-improvement pivoting rule
-    local_search.set_use_best_improvement(True)
+    # Create a best-improvement pivoting rule
+    pivoting_rule = rb.BestImprovementPivotingRule()
+    # Configure the local search - use the best-improvement pivoting rule
+    local_search = rb.LocalSearch(instance, evaluation, None, pivoting_rule)
     # Create a set of allowed arcs
     arc_set = rb.ArcSet(instance.number_of_vertices)
 
@@ -172,7 +173,15 @@ Subsequently, we create and configure the local search solver:
     ]
 
 
-The local search solver accepts three arguments: the instance, the evaluation used, and a second evaluation object that verifies moves deemed profitable by the first evaluation class. This is beneficial for problems like EVRP-TW-PR, where exact evaluation is costly. By default, the ADPTW Evaluation class implements approximate move evaluation. We can either pass an exact evaluation class here, or we can pass None, which prompts the local search to validate moves by applying them to a solution copy and evaluating the cost based on forward labels. This is what we do here.
+The local search solver accepts four arguments: the instance, the evaluation used, a second evaluation object that verifies moves deemed profitable by the first evaluation class, and a pivoting rule.
+Passing a second evaluation object for verification is beneficial for problems like EVRP-TW-PR, where exact evaluation is costly.
+By default, the ADPTW Evaluation class implements approximate move evaluation. We can either pass an exact evaluation class here,
+or we can pass None, which prompts the local search to validate moves by applying them to a solution copy and evaluating the cost based on forward labels.
+
+The pivoting rule implements the pivoting strategy used by the local search. RoutingBlocks provides three pivoting rules:
+`best improvement <best_improvement_pivoting_rule>`_, `k-best improvement <k_best_improvement_pivoting_rule>`_, and `first improvement <first_improvement_pivoting_rule>`_.
+It is also possible to implement custom pivoting rules (See :ref:`custom pivoting rules <_custom_pivoting_rules>`_).
+The former is the default and is the one we use here. The latter stops the local search as soon as a profitable move is found.
 
 Additionally, we create a set of operators to be used later when invoking the local search. The implementations provided by RoutingBlocks require a set of allowed arcs as an argument. The operator will only consider arcs within this set. By default, all arcs are allowed.
 Executing the local search procedure is as simple as calling
@@ -250,9 +259,8 @@ Putting everything together, we arrive at the following code:
         evaluation.overcharge_penalty_factor = 100.
         evaluation.time_shift_penalty_factor = 100.
 
-        local_search = rb.LocalSearch(instance, evaluation, None)
-        # Configure the local search to use a best-improvement pivoting rule
-        local_search.set_use_best_improvement(True)
+        pivoting_rule = rb.BestImprovementPivotingRule()
+        local_search = rb.LocalSearch(instance, evaluation, None, pivoting_rule)
         # Create a set of allowed arcs
         arc_set = rb.ArcSet(instance.number_of_vertices)
 
@@ -301,9 +309,8 @@ RoutingBlocks offers an ALNS solver and several destroy and repair operators out
         evaluation.overcharge_penalty_factor = 100.
         evaluation.time_shift_penalty_factor = 100.
 
-        local_search = rb.LocalSearch(instance, evaluation, None)
-        # Configure the local search to use a best-improvement pivoting rule
-        local_search.set_use_best_improvement(True)
+        pivoting_rule = rb.BestImprovementPivotingRule()
+        local_search = rb.LocalSearch(instance, evaluation, None, pivoting_rule)
         # Create a set of allowed arcs
         arc_set = rb.ArcSet(instance.number_of_vertices)
 
@@ -336,7 +343,7 @@ RoutingBlocks offers an ALNS solver and several destroy and repair operators out
                                                                         blink_probability=0.1, randgen=randgen)))
 
 
-We begin with the boilerplate code established for the ILS and add just a few lines to create and configure the ALNS solver. This class is responsible for operator selection and weight adaptation. It takes a random engine and a smoothing factor as arguments. The smoothing factor determines the weight of historical performance when selecting an operator. Next, we create and register destroy and repair operators with the ALNS solver. RoutingBlocks provides a `set of standard operators <alns_operators>`_ out of the box. In this case, we use RandomInsertion, BestInsertion, RandomRemoval, and WorstRemoval. We configure BestInsertion and WorstRemoval to select insertion/removal spots using a blink selection criterion.
+We begin with the boilerplate code established for the ILS and add just a few lines to create and configure the ALNS solver. This class is responsible for operator selection and weight adaptation. It takes a random engine and a smoothing factor as arguments. The smoothing factor determines the weight of historical performance when selecting an operator. Next, we create and register destroy and repair operators with the ALNS solver. RoutingBlocks provides a :ref:`set of standard operators <alns_operators>` out of the box. In this case, we use RandomInsertion, BestInsertion, RandomRemoval, and WorstRemoval. We configure BestInsertion and WorstRemoval to select insertion/removal spots using a blink selection criterion.
 
 We can now employ the ALNS solver to perturb the current solution within the main loop:
 
@@ -378,7 +385,7 @@ We employ three essential methods of the ALNS solver:
 2. alns.collect_score: This method gathers scores for the provided operators. It requires the selected operators and a score as arguments.
 3. alns.adapt_operator_weights: This method adjusts the weights of the operators based on the scores collected during the last period.
 
-For more details on the ALNS solver, see the `documentation <alns>`_. The full code of the ALNS algorithm is available `here <alns_code>`_. A more sophisticated ALNS-based algorithm can be found in the `main repository <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/evrptw>`_.
+For more details on the ALNS solver, see the :ref:`documentation <alns>`. The full code of the ALNS algorithm is available :ref:`here <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/alns>`_. A more sophisticated ALNS-based algorithm can be found in the `main repository <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/evrptw>`_.
 
 Implementing custom operators
 ------------------------------------
@@ -539,4 +546,4 @@ To use it, simply create the corresponding CVRPData classes during instance cons
 
 .. warning::
 
-    We recommend implementing a custom Evaluation class by extending the native RoutingBlocks library instead of providing a python implementation for code used beyond prototyping. See `<extension>`_ for more information
+    We recommend implementing a custom Evaluation class by extending the native RoutingBlocks library instead of providing a python implementation for code used beyond prototyping. See `native extensions <https://github.com/tumBAIS/routingblocks-native-extension-example>`_ for an example.

@@ -42,7 +42,6 @@ namespace routingblocks {
             if (move) {
                 auto [route, after_node] = to_iter(move->_node, solution);
                 auto arc_iterator = SolutionArcIterator(solution, {route, after_node});
-                ++arc_iterator;
                 return arc_iterator;
             } else {
                 return SolutionArcIterator(solution, {solution.begin(), solution.begin()->begin()});

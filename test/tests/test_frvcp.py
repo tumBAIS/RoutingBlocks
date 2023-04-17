@@ -110,7 +110,7 @@ def test_frvcp_routes(large_instance):
     while True:
         picked_customers = random.choices([x.vertex_id for x in customers], k=random.randint(1, 10))
 
-        local_search = evrptw.LocalSearch(instance, evaluation, None)
+        local_search = evrptw.LocalSearch(instance, evaluation, None, evrptw.FirstImprovementPivotingRule())
         sol = evrptw.Solution(evaluation, instance,
                               [evrptw.create_route(evaluation, instance, picked_customers),
                                *(evrptw.Route(evaluation, instance) for _ in range(instance.fleet_size - 1))])

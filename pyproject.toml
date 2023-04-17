@@ -5,7 +5,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "RoutingBlocks"
-version = "0.1.7"
+version = "0.1.8"
 description = "A package for the implementation of vehicle routing problems with intermediate stops"
 readme = "README.md"
 authors = [
@@ -24,12 +24,14 @@ classifiers = [
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-benchmark", "pytest-randomly", "pydantic"]
-docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-autoapi", "sphinxcontrib-bibtex"]
+docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-autoapi", "sphinxcontrib-bibtex",
+    "sphinxcontrib-mermaid"]
 examples = ["click", "pydantic"]
 
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
+cmake.minimum-version = "3.18.0"
 
 [tool.pytest.ini_options]
 testpaths = [

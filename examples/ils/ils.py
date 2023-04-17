@@ -59,9 +59,8 @@ def iterated_local_search(instance: rb.Instance, vehicle_storage_capacity: float
     evaluation.overcharge_penalty_factor = 100.0
     evaluation.time_shift_penalty_factor = 100.0
 
-    local_search = rb.LocalSearch(instance, evaluation, None)
     # Configure the local search to use a best-improvement pivoting rule
-    local_search.set_use_best_improvement(True)
+    local_search = rb.LocalSearch(instance, evaluation, None, rb.BestImprovementPivotingRule())
     # Create a set of allowed arcs
     arc_set = rb.ArcSet(instance.number_of_vertices)
 
