@@ -2,10 +2,7 @@
 #include <routingblocks/LocalSearch.h>
 #include <routingblocks/Solution.h>
 
-#include <algorithm>
-#include <chrono>
 #include <set>
-#include <vector>
 
 namespace routingblocks {
     std::shared_ptr<Move> LocalSearch::_explore_neighborhood() {
@@ -20,7 +17,7 @@ namespace routingblocks {
                                                               next_move.get());
                 if (next_move == nullptr) {
                     break;
-                } else if (auto cost = _test_move(*next_move); cost < -1e2) {
+                } else if (auto cost = _test_move(*next_move); cost < -1e-2) {
                     if (!_pivoting_rule->continue_search(next_move, cost, _current_solution)) {
                         skip_remaining_operators = true;
                         break;

@@ -48,6 +48,25 @@ class MockPivotingRule(routingblocks.PivotingRule):
         return None
 
 
+class BestImprovementWithBlinksPivotingRule(routingblocks.PivotingRule):
+    def __init__(self, blink_probability: float, randgen: helpers.RandomGenerator):
+        routingblocks.PivotingRule.__init__(self)
+        self._blink_probability = blink_probability
+        self._randgen = randgen
+        self._best_move = None
+        self._best_delta_cost = -1e-2
+
+    def continue_search(self, found_improving_move: routingblocks.Move, delta_cost: float,
+                        solution: routingblocks.Solution) -> bool:
+        return self._randgen.random() < self._blink_probability
+
+    def select_move(self, solution: routingblocks.Solution) -> Optional[routingblocks.Move]:
+        move = self._best_move
+        self._best_move = None
+        self._best_delta_cost = -1e-2
+        return move
+
+
 @pytest.mark.parametrize("always_abort,expected_operations", [
     (True, ["continue_search", "select_move"]),
     (False, ["continue_search", "continue_search", "select_move"])

@@ -268,7 +268,7 @@ namespace routingblocks {
     class BestImprovementPivotingRule : public PivotingRule {
       private:
         std::shared_ptr<Move> _best_improving_move = nullptr;
-        cost_t _best_improving_move_cost = -1e2;
+        cost_t _best_improving_move_cost = -1e-2;
 
       public:
         bool continue_search(const std::shared_ptr<Move>& found_improving_move, cost_t exact_cost,
@@ -292,7 +292,7 @@ namespace routingblocks {
     class KBestImprovementPivotingRule : public PivotingRule {
       private:
         std::shared_ptr<Move> _best_improving_move = nullptr;
-        cost_t _best_improving_move_cost = -1e2;
+        cost_t _best_improving_move_cost = -1e-2;
         size_t _moves_seen = 0;
         size_t _k;
 
