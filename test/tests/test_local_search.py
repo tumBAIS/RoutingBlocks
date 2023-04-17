@@ -49,7 +49,7 @@ class MockPivotingRule(routingblocks.PivotingRule):
 
 
 class BestImprovementWithBlinksPivotingRule(routingblocks.PivotingRule):
-    def __init__(self, blink_probability: float, randgen: helpers.RandomGenerator):
+    def __init__(self, blink_probability: float, randgen: routingblocks.Random):
         routingblocks.PivotingRule.__init__(self)
         self._blink_probability = blink_probability
         self._randgen = randgen
@@ -58,13 +58,38 @@ class BestImprovementWithBlinksPivotingRule(routingblocks.PivotingRule):
 
     def continue_search(self, found_improving_move: routingblocks.Move, delta_cost: float,
                         solution: routingblocks.Solution) -> bool:
-        return self._randgen.random() < self._blink_probability
+        if delta_cost < self._best_delta_cost:
+            self._best_move = found_improving_move
+            self._best_delta_cost = delta_cost
+            # If we do not blink, we can stop the search. Otherwise we continue.
+            # This ensures that we always return the best found move, even if only one is found and that one is blinked.
+            if self._randgen.uniform(0.0, 1.0) >= self._blink_probability:
+                return False
+        return True
 
     def select_move(self, solution: routingblocks.Solution) -> Optional[routingblocks.Move]:
         move = self._best_move
         self._best_move = None
         self._best_delta_cost = -1e-2
         return move
+
+
+def test_local_search_blink_pivot(instance):
+    py_instance: helpers.Instance = instance[0]
+    instance: routingblocks.Instance = instance[1]
+    evaluation = adptw.Evaluation(py_instance.parameters.battery_capacity_time, py_instance.parameters.capacity)
+
+    route = routingblocks.create_route(evaluation, instance,
+                                       [station.vertex_id for station in islice(instance.stations, 1, 3)])
+    solution = routingblocks.Solution(evaluation, instance, [route])
+    assert solution.cost > 0
+    # Should find exactly two moves
+    operator = routingblocks.operators.RemoveStationOperator(instance)
+    pivoting_rule = BestImprovementWithBlinksPivotingRule(blink_probability=0.5, randgen=routingblocks.Random(0))
+
+    local_search = routingblocks.LocalSearch(instance, evaluation, None, pivoting_rule)
+
+    local_search.optimize(solution, [operator])
 
 
 @pytest.mark.parametrize("always_abort,expected_operations", [

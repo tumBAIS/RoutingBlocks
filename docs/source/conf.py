@@ -27,7 +27,8 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
+    'sphinxcontrib.mermaid',
 ]
 
 # AutoAPI
