@@ -65,8 +65,8 @@ class ALNS:
         # Create and configure algorithmic components
         self._adaptive_large_neighborhood = routingblocks.AdaptiveLargeNeighborhood(self._random,
                                                                                     self._params.adaptive_smoothing_factor)
-        self._local_search = routingblocks.LocalSearch(self._cpp_instance, evaluation, None)
-        self._local_search.set_use_best_improvement(self._params.use_best_improvement)
+        self._local_search = routingblocks.LocalSearch(self._cpp_instance, evaluation, None,
+                                                       routingblocks.BestImprovementPivotingRule())
 
         # Compute the granular neighborhood
         self._reduced_arc_set = create_reduced_arc_set(self._cpp_instance, self._py_instance, self._params.granularity)

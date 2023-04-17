@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class ArcSet:
     def __init__(self, number_of_vertices: int) -> None: ...
 
@@ -48,12 +51,80 @@ class LocalSearchOperator:
     def prepare_search(self, solution: Solution) -> None: ...
 
 
+class PivotingRule:
+    """
+    The pivoting rule interface.
+    """
+
+    def __init__(self) -> None:
+        ...
+
+    def select_move(self, solution: Solution) -> Optional[Move]:
+        """
+        Return the move to be applied to the solution. Returns none if no move is found.
+
+        :param Solution solution: The solution to be improved.
+        :return: The move to be applied to the solution.
+        :rtype: Optional[Move]
+        """
+        ...
+
+    def continue_search(self, found_improving_move: Move, delta_cost: float, solution: Solution) -> bool:
+        """
+        Determine if the search should continue or terminate.
+
+        :param Move found_improving_move: The move found to be improving.
+        :param float delta_cost: The (exact) cost difference between the current solution and the solution after applying the move.
+        :param Solution solution: The solution the move should be applied to.
+        :return: True if the search should continue, False otherwise.
+        """
+        ...
+
+
+class BestImprovementPivotingRule(PivotingRule):
+    """
+    The best improvement pivoting rule selects the best improving move found during the search for improving moves.
+    It never terminates the search prematurely.
+    """
+    ...
+
+
+class KBestImprovementPivotingRule(PivotingRule):
+    """
+    The k-best improvement pivoting rule selects best out of the first k improving moves found during the search for improving moves.
+    It terminates the search as soon as the k-th improving move is found.
+    """
+
+    def __init__(self, k: int) -> None:
+        """
+        Configures the number of improving moves to consider.
+
+        :param int k: The number of improving moves to consider.
+        """
+        ...
+
+    ...
+
+
+class FirstImprovementPivotingRule(PivotingRule):
+    """
+    The first improvement pivoting rule selects the first improving move found during the search for improving moves.
+    It terminates the search as soon as the first improving move is found.
+    """
+    ...
+
+
 class LocalSearch:
-    def __init__(self, instance: Instance, evaluation: Evaluation, exact_evaluation: Optional[Evaluation]) -> None: ...
+    """
+    This class implements a customizable local search algorithm.
+
+
+    """
+
+    def __init__(self, instance: Instance, evaluation: Evaluation, exact_evaluation: Optional[Evaluation],
+                 pivoting_rule: PivotingRule) -> None: ...
 
     def optimize(self, solution: Solution, operator: List[LocalSearchOperator]) -> None: ...
-
-    def set_use_best_improvement(self, best_improvement: bool) -> None: ...
 
 
 class QuadraticNeighborhoodIterator:

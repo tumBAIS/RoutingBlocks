@@ -9,10 +9,9 @@
 
 namespace routingblocks {
     std::shared_ptr<Move> LocalSearch::_explore_neighborhood() {
-        std::shared_ptr<Move> next_move, best_move;
+        std::shared_ptr<Move> next_move;
         // Discard moves that do not have an impact on the objective function to avoid
         // routing errors.
-        auto best_cost = -1e-2;
         for (auto& next_op : _operators) {
             next_op->prepare_search(_current_solution);
             while (true) {
@@ -20,17 +19,15 @@ namespace routingblocks {
                                                               next_move.get());
                 if (next_move == nullptr) {
                     break;
-                } else if (auto cost = _test_move(*next_move); cost < best_cost) {
-                    if (!use_best_improvement) {
-                        return next_move;
+                } else if (auto cost = _test_move(*next_move); cost < -1e2) {
+                    if (!_pivoting_rule->continue_search(next_move, cost, _current_solution)) {
+                        break;
                     }
-                    best_cost = cost;
-                    best_move = std::move(next_move);
                 }
             }
             next_op->finalize_search();
         }
-        return best_move;
+        return _pivoting_rule->select_move(_current_solution);
     }
 
     cost_t LocalSearch::_test_move(const Move& move) {
@@ -47,10 +44,11 @@ namespace routingblocks {
 
     LocalSearch::LocalSearch(const routingblocks::Instance& instance,
                              std::shared_ptr<eval_t> evaluation,
-                             std::shared_ptr<eval_t> exact_evaluation)
+                             std::shared_ptr<eval_t> exact_evaluation, PivotingRule* pivoting_rule)
         : _instance(&instance),
           _evaluation(std::move(evaluation)),
           _exact_evaluation(std::move(exact_evaluation)),
+          _pivoting_rule(pivoting_rule),
           _current_solution(_evaluation, *_instance, _instance->FleetSize()) {}
 
 }  // namespace routingblocks

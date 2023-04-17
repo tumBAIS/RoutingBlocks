@@ -69,17 +69,15 @@ namespace routingblocks {
     };
 
     template <class move_t>
-    concept specializes_exact_cost_computation
-        = requires(move_t move) {
-              move.evaluate_exact(std::declval<routingblocks::Evaluation&>(),
-                                  std::declval<const Instance&>(), std::declval<const Solution&>());
-          };
+    concept specializes_exact_cost_computation = requires(move_t move) {
+        move.evaluate_exact(std::declval<routingblocks::Evaluation&>(),
+                            std::declval<const Instance&>(), std::declval<const Solution&>());
+    };
 
     template <class operator_t>
-    concept specializes_move_construction
-        = requires(operator_t op) {
-              op.create_move(std::declval<NodeLocation>(), std::declval<NodeLocation>());
-          };
+    concept specializes_move_construction = requires(operator_t op) {
+        op.create_move(std::declval<NodeLocation>(), std::declval<NodeLocation>());
+    };
 
     template <class Impl> class GeneratorArcMove : public Move {
         NodeLocation _origin, _target;
@@ -240,6 +238,86 @@ namespace routingblocks {
         void finalize_search() override {}
     };
 
+    class PivotingRule {
+      public:
+        virtual ~PivotingRule() = default;
+        virtual bool continue_search(const std::shared_ptr<Move>& found_improving_move,
+                                     cost_t exact_cost, const Solution& solution)
+            = 0;
+        virtual std::shared_ptr<Move> select_move(const Solution& solution) = 0;
+    };
+
+    class FirstImprovementPivotingRule : public PivotingRule {
+      private:
+        std::shared_ptr<Move> _first_improving_move = nullptr;
+
+      public:
+        bool continue_search(const std::shared_ptr<Move>& found_improving_move, cost_t exact_cost,
+                             const Solution& solution) override {
+            _first_improving_move = found_improving_move;
+            return false;
+        }
+
+        std::shared_ptr<Move> select_move(const Solution& solution) override {
+            // Release the move
+            std::shared_ptr<Move> move = std::move(_first_improving_move);
+            return move;
+        }
+    };
+
+    class BestImprovementPivotingRule : public PivotingRule {
+      private:
+        std::shared_ptr<Move> _best_improving_move = nullptr;
+        cost_t _best_improving_move_cost = -1e2;
+
+      public:
+        bool continue_search(const std::shared_ptr<Move>& found_improving_move, cost_t exact_cost,
+                             const Solution&) override {
+            if (exact_cost < _best_improving_move_cost) {
+                _best_improving_move = found_improving_move;
+                _best_improving_move_cost = exact_cost;
+            }
+            return true;
+        }
+
+        std::shared_ptr<Move> select_move(const Solution&) override {
+            // Release the move
+            std::shared_ptr<Move> move = std::move(_best_improving_move);
+            // Reset the cost
+            _best_improving_move_cost = std::numeric_limits<cost_t>::max();
+            return move;
+        }
+    };
+
+    class KBestImprovementPivotingRule : public PivotingRule {
+      private:
+        std::shared_ptr<Move> _best_improving_move = nullptr;
+        cost_t _best_improving_move_cost = -1e2;
+        size_t _moves_seen = 0;
+        size_t _k;
+
+      public:
+        KBestImprovementPivotingRule(size_t k) : _k(k) {}
+
+        bool continue_search(const std::shared_ptr<Move>& found_improving_move, cost_t exact_cost,
+                             const Solution&) override {
+            if (exact_cost < _best_improving_move_cost) {
+                _best_improving_move = found_improving_move;
+                _best_improving_move_cost = exact_cost;
+            }
+            return (++_moves_seen) < _k;
+        }
+
+        std::shared_ptr<Move> select_move(const Solution&) override {
+            // Release the move
+            std::shared_ptr<Move> move = std::move(_best_improving_move);
+            // Reset the cost
+            _best_improving_move_cost = std::numeric_limits<cost_t>::max();
+            _moves_seen = 0;
+            return move;
+        }
+    };
+
     // Main local learch structure
     class LocalSearch {
         using eval_t = routingblocks::Evaluation;
@@ -250,9 +328,9 @@ namespace routingblocks {
         std::shared_ptr<eval_t> _evaluation;
         std::shared_ptr<eval_t> _exact_evaluation;
         std::vector<Operator*> _operators;
+        PivotingRule* _pivoting_rule;
 
         int loopID = 0;  // Current loop index
-        bool use_best_improvement = false;
 
         solution_t _current_solution;
 
@@ -261,10 +339,6 @@ namespace routingblocks {
         [[nodiscard]] std::shared_ptr<Move> _explore_neighborhood();
 
       public:
-        void set_use_best_improvement(bool best_improvement) {
-            this->use_best_improvement = best_improvement;
-        }
-
         // Run the local search with the specified penalty values
         template <class ForwardIterator>
             requires std::same_as<typename ForwardIterator::value_type, Operator*>
@@ -288,7 +362,7 @@ namespace routingblocks {
 
         // Constructor
         LocalSearch(const routingblocks::Instance& instance, std::shared_ptr<eval_t> evaluation,
-                    std::shared_ptr<eval_t> exact_evaluation);
+                    std::shared_ptr<eval_t> exact_evaluation, PivotingRule* pivoting_rule);
     };
 
 }  // namespace routingblocks

@@ -14,31 +14,27 @@ import helpers
 
 from fixtures import *
 
-try:
-    import routingblocks as evrptw
-    from routingblocks import adptw
+import routingblocks as evrptw
+from routingblocks import adptw
 
 
-    class MockLSOperator(evrptw.LocalSearchOperator):
-        def __init__(self):
-            evrptw.LocalSearchOperator.__init__(self)
-            self.ops = []
+class MockLSOperator(evrptw.LocalSearchOperator):
+    def __init__(self):
+        evrptw.LocalSearchOperator.__init__(self)
+        self.ops = []
 
-        def finalize_search(self) -> None:
-            self.ops.append("finalize_search")
+    def finalize_search(self) -> None:
+        self.ops.append("finalize_search")
 
-        def find_next_improving_move(self, arg0: evrptw.Evaluation, arg2, arg3):
-            self.ops.append("find_next_improving_move")
-            return None
+    def find_next_improving_move(self, arg0: evrptw.Evaluation, arg2, arg3):
+        self.ops.append("find_next_improving_move")
+        return None
 
-        def prepare_search(self, arg0) -> None:
-            self.ops.append("prepare_search")
+    def prepare_search(self, arg0) -> None:
+        self.ops.append("prepare_search")
 
-        def reset(self) -> None:
-            self.ops = []
-
-except ModuleNotFoundError:
-    pass
+    def reset(self) -> None:
+        self.ops = []
 
 
 @pytest.fixture
@@ -47,7 +43,8 @@ def local_search_and_solution(instance, random_solution_factory, randgen):
     instance: evrptw.Instance = instance[1]
     evaluation = adptw.Evaluation(py_instance.parameters.battery_capacity_time, py_instance.parameters.capacity)
     solution = random_solution_factory(instance=instance, evaluation=evaluation)
-    return evrptw.LocalSearch(instance, evaluation, None), solution
+    pivoting_rule = evrptw.BestImprovementPivotingRule()
+    return evrptw.LocalSearch(instance, evaluation, None, pivoting_rule), solution
 
 
 def test_local_search_optimize_inplace(local_search_and_solution):
