@@ -12,6 +12,7 @@ namespace routingblocks {
         std::shared_ptr<Move> next_move;
         // Discard moves that do not have an impact on the objective function to avoid
         // routing errors.
+        bool skip_remaining_operators = false;
         for (auto& next_op : _operators) {
             next_op->prepare_search(_current_solution);
             while (true) {
@@ -21,11 +22,15 @@ namespace routingblocks {
                     break;
                 } else if (auto cost = _test_move(*next_move); cost < -1e2) {
                     if (!_pivoting_rule->continue_search(next_move, cost, _current_solution)) {
+                        skip_remaining_operators = true;
                         break;
                     }
                 }
             }
             next_op->finalize_search();
+            if (skip_remaining_operators) {
+                break;
+            }
         }
         return _pivoting_rule->select_move(_current_solution);
     }
