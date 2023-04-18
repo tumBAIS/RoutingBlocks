@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 include(CheckIPOSupported)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CPM.cmake)
 # To force building for a specific python version, set Python_ROOT_DIR to the respective path.
 # This can be a venv as well.
 # See the FIND_PACKAGE python cmake documentation for details.
@@ -10,7 +11,14 @@ message(STATUS "Found python binary: ${Python_EXECUTABLE} (Version ${Python_VERS
 set(PYBIND11_PYTHON_VERSION ${Python_VERSION})
 set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 set(PYTHON_LIBS ${Python_LIBS})
-FIND_PACKAGE(pybind11 CONFIG REQUIRED)
+
+#cpm_add_subdirectory()
+#FIND_PACKAGE(pybind11 CONFIG REQUIRED)
+CPMAddPackage(
+        NAME pybind11
+        GITHUB_REPOSITORY pybind/pybind11
+        GIT_TAG smart_holder
+)
 
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/routingblocks_bindings/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
