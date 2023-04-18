@@ -1,6 +1,4 @@
 #include <pybind11/stl.h>
-#include <routingblocks/ADPTWEvaluation.h>
-#include <routingblocks/NIFTWEvaluation.h>
 #include <routingblocks/evaluation.h>
 #include <routingblocks_bindings/Evaluation.h>
 
@@ -184,46 +182,46 @@ namespace routingblocks::bindings {
         cost_t py_concatenate(const py_type& fwd, const py_type& bwd,
                               const Vertex& vertex) override {
             PYBIND11_OVERRIDE_PURE_NAME(cost_t, PyConcatenationBasedEvaluation, "concatenate",
-                                        py_concatenate, fwd, bwd, vertex);
+                                        py_concatenate, &fwd, &bwd, &vertex);
         }
 
         bool py_is_feasible(const py_type& label) const override {
             PYBIND11_OVERRIDE_PURE_NAME(bool, PyConcatenationBasedEvaluation, "is_feasible",
-                                        is_feasible, label);
+                                        is_feasible, &label);
         }
 
         cost_t py_compute_cost(const py_type& label) const override {
             PYBIND11_OVERRIDE_PURE_NAME(cost_t, PyConcatenationBasedEvaluation, "compute_cost",
-                                        py_compute_cost, label);
+                                        py_compute_cost, &label);
         }
 
         py_type py_propagate_forward(const py_type& pred_label, const Vertex& pred_vertex,
                                      const Vertex& vertex, const Arc& arc) const override {
             PYBIND11_OVERRIDE_PURE_NAME(py_type, PyConcatenationBasedEvaluation,
-                                        "propagate_forward", py_propagate_forward, pred_label,
-                                        pred_vertex, vertex, arc);
+                                        "propagate_forward", py_propagate_ & forward, &pred_label,
+                                        &pred_vertex, &vertex, &arc);
         }
 
         py_type py_propagate_backward(const py_type& succ_label, const Vertex& succ_vertex,
                                       const Vertex& vertex, const Arc& arc) const override {
             PYBIND11_OVERRIDE_PURE_NAME(py_type, PyConcatenationBasedEvaluation,
-                                        "propagate_backward", py_propagate_backward, succ_label,
-                                        succ_vertex, vertex, arc);
+                                        "propagate_backward", py_propagate_backward, &succ_label,
+                                        &succ_vertex, &vertex, &arc);
         }
 
         py_type py_create_forward_label(const Vertex& vertex) override {
             PYBIND11_OVERRIDE_PURE_NAME(py_type, PyConcatenationBasedEvaluation,
-                                        "create_forward_label", py_create_forward_label, vertex);
+                                        "create_forward_label", py_create_forward_label, &vertex);
         }
 
         py_type py_create_backward_label(const Vertex& vertex) override {
             PYBIND11_OVERRIDE_PURE_NAME(py_type, PyConcatenationBasedEvaluation,
-                                        "create_backward_label", py_create_backward_label, vertex);
+                                        "create_backward_label", py_create_backward_label, &vertex);
         }
 
         std::vector<resource_t> py_get_cost_components(const py_type& label) const override {
             PYBIND11_OVERRIDE_PURE_NAME(std::vector<resource_t>, PyConcatenationBasedEvaluation,
-                                        "get_cost_components", get_cost_components, label);
+                                        "get_cost_components", get_cost_components, &label);
         }
     };
 
@@ -233,54 +231,54 @@ namespace routingblocks::bindings {
       public:
         cost_t py_evaluate(const Instance& instance,
                            const std::vector<py_segment_type>& segments) override {
-            PYBIND11_OVERRIDE_PURE_NAME(cost_t, PyEvaluation, "evaluate", py_evaluate, instance);
+            PYBIND11_OVERRIDE_PURE_NAME(cost_t, PyEvaluation, "evaluate", py_evaluate, &instance);
         }
 
         bool py_is_feasible(const py_type& label) const override {
-            PYBIND11_OVERRIDE_PURE_NAME(bool, PyEvaluation, "is_feasible", is_feasible, label);
+            PYBIND11_OVERRIDE_PURE_NAME(bool, PyEvaluation, "is_feasible", is_feasible, &label);
         }
 
         cost_t py_compute_cost(const py_type& label) const override {
             PYBIND11_OVERRIDE_PURE_NAME(cost_t, PyEvaluation, "compute_cost", py_compute_cost,
-                                        label);
+                                        &label);
         }
 
         py_type py_propagate_forward(const py_type& pred_label, const Vertex& pred_vertex,
                                      const Vertex& vertex, const Arc& arc) const override {
             PYBIND11_OVERRIDE_PURE_NAME(py_type, PyEvaluation, "propagate_forward",
-                                        py_propagate_forward, pred_label, pred_vertex, vertex, arc);
+                                        py_propagate_forward, &pred_label, &pred_vertex, &vertex,
+                                        &arc);
         }
 
         py_type py_propagate_backward(const py_type& succ_label, const Vertex& succ_vertex,
                                       const Vertex& vertex, const Arc& arc) const override {
             PYBIND11_OVERRIDE_PURE_NAME(py_type, PyEvaluation, "propagate_backward",
-                                        py_propagate_backward, succ_label, succ_vertex, vertex,
-                                        arc);
+                                        py_propagate_backward, &succ_label, &succ_vertex, &vertex,
+                                        &arc);
         }
 
         py_type py_create_forward_label(const Vertex& vertex) override {
             PYBIND11_OVERRIDE_PURE_NAME(py_type, PyEvaluation, "create_forward_label",
-                                        py_create_forward_label, vertex);
+                                        py_create_forward_label, &vertex);
         }
 
         py_type py_create_backward_label(const Vertex& vertex) override {
             PYBIND11_OVERRIDE_PURE_NAME(py_type, PyEvaluation, "create_backward_label",
-                                        py_create_backward_label, vertex);
+                                        py_create_backward_label, &vertex);
         }
 
         std::vector<resource_t> py_get_cost_components(const py_type& label) const override {
             PYBIND11_OVERRIDE_PURE_NAME(std::vector<resource_t>, PyEvaluation,
-                                        "get_cost_components", get_cost_components, label);
+                                        "get_cost_components", get_cost_components, &label);
         }
     };
 
     auto bind_evaluation_interface(pybind11::module& m) {
-        return pybind11::class_<Evaluation, std::shared_ptr<Evaluation>>(m, "Evaluation");
+        return pybind11::class_<Evaluation>(m, "Evaluation");
     }
 
     void bind_py_evaluation(pybind11::module_& m, auto& evaluation_interface) {
-        pybind11::class_<PyConcatenationBasedEvaluation, PyConcatenationBasedEvaluationTramboline,
-                         std::shared_ptr<PyConcatenationBasedEvaluation>>(
+        pybind11::class_<PyConcatenationBasedEvaluation, PyConcatenationBasedEvaluationTramboline>(
             m, "PyConcatenationBasedEvaluation", evaluation_interface)
             .def(pybind11::init<>())
             .def("propagate_forward", &PyConcatenationBasedEvaluation::py_propagate_forward)
@@ -293,8 +291,8 @@ namespace routingblocks::bindings {
             .def("create_backward_label",
                  &PyConcatenationBasedEvaluation::py_create_backward_label);
 
-        pybind11::class_<PyEvaluation, PyEvaluationTramboline, std::shared_ptr<PyEvaluation>>(
-            m, "PyEvaluation", evaluation_interface)
+        pybind11::class_<PyEvaluation, PyEvaluationTramboline>(m, "PyEvaluation",
+                                                               evaluation_interface)
             .def(pybind11::init<>())
             .def("propagate_forward", &PyEvaluation::py_propagate_forward)
             .def("propagate_backward", &PyEvaluation::py_propagate_backward)

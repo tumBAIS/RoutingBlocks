@@ -40,32 +40,32 @@ namespace routingblocks::bindings {
 
         std::optional<value_type> propagate(const value_type& predecessor, const Vertex& origin,
                                             const Vertex& target, const Arc& arc) override {
-            PYBIND11_OVERRIDE_PURE(std::optional<value_type>, PyPropagator, propagate, predecessor,
-                                   origin, target, arc);
+            PYBIND11_OVERRIDE_PURE(std::optional<value_type>, PyPropagator, propagate, &predecessor,
+                                   &origin, &target, &arc);
         }
 
         bool dominates(const value_type& label, const value_type& other) override {
-            PYBIND11_OVERRIDE_PURE(bool, PyPropagator, dominates, label, other);
+            PYBIND11_OVERRIDE_PURE(bool, PyPropagator, dominates, &label, &other);
         }
 
         bool cheaper_than(const value_type& label, const value_type& other) override {
-            PYBIND11_OVERRIDE_PURE(bool, PyPropagator, cheaper_than, label, other);
+            PYBIND11_OVERRIDE_PURE(bool, PyPropagator, cheaper_than, &label, &other);
         }
 
         bool should_order_before(const value_type& label, const value_type& other) override {
-            PYBIND11_OVERRIDE_PURE(bool, PyPropagator, should_order_before, label, other);
+            PYBIND11_OVERRIDE_PURE(bool, PyPropagator, should_order_before, &label, &other);
         }
 
         std::vector<VertexID> extract_path(const value_type& sink_label) override {
-            PYBIND11_OVERRIDE_PURE(std::vector<VertexID>, PyPropagator, extract_path, sink_label);
+            PYBIND11_OVERRIDE_PURE(std::vector<VertexID>, PyPropagator, extract_path, &sink_label);
         }
 
         bool is_final_label(const value_type& _label) override {
-            PYBIND11_OVERRIDE_PURE(bool, PyPropagator, is_final_label, _label);
+            PYBIND11_OVERRIDE_PURE(bool, PyPropagator, is_final_label, &_label);
         }
 
         void prepare(const std::vector<VertexID>& vector) override {
-            PYBIND11_OVERRIDE_PURE(void, PyPropagator, prepare, vector);
+            PYBIND11_OVERRIDE_PURE(void, PyPropagator, prepare, &vector);
         }
 
         value_type create_root_label() override {
@@ -93,8 +93,7 @@ namespace routingblocks::bindings {
 
     void bind_labeling(pybind11::module_& m) {
         auto propagator_interface
-            = pybind11::class_<PyPropagator, PyPropagatorTramboline, std::shared_ptr<PyPropagator>>(
-                  m, "Propagator")
+            = pybind11::class_<PyPropagator, PyPropagatorTramboline>(m, "Propagator")
                   .def(pybind11::init<>());
         bind_propagator<PyPropagator>(propagator_interface);
 

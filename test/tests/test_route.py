@@ -106,6 +106,20 @@ def test_route_construction_from_route(adptw_instance: evrptw.Instance,
     assert_updated(mock_evaluation, instance, route)
 
 
+def test_route_create_route_evaluation_lifetime(adptw_instance: evrptw.Instance):
+    instance = adptw_instance
+    vertex_ids = [x.vertex_id for x in instance.customers] + [x.vertex_id for x in instance.stations]
+    random.shuffle(vertex_ids)
+
+    evaluation = MockEvaluation()
+    route = evrptw.create_route(evaluation, instance, vertex_ids)
+    route.update()
+    del evaluation
+    del adptw_instance
+    # Should still work
+    route.update()
+
+
 def test_route_iterator(random_route):
     *_, route = random_route
     for i, node in enumerate(route):

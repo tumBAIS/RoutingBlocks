@@ -11,12 +11,12 @@ namespace routingblocks::bindings {
         using PivotingRule::PivotingRule;
 
         std::shared_ptr<Move> select_move(const Solution& solution) override {
-            PYBIND11_OVERLOAD_PURE(std::shared_ptr<Move>, PivotingRule, select_move, solution);
+            PYBIND11_OVERRIDE_PURE(std::shared_ptr<Move>, PivotingRule, select_move, &solution);
         }
 
         bool continue_search(const std::shared_ptr<Move>& move, cost_t cost,
                              const Solution& solution) override {
-            PYBIND11_OVERLOAD_PURE(bool, PivotingRule, continue_search, move, cost, solution);
+            PYBIND11_OVERRIDE_PURE(bool, PivotingRule, continue_search, move, cost, &solution);
         }
     };
 
@@ -49,7 +49,7 @@ namespace routingblocks::bindings {
         pybind11::class_<routingblocks::LocalSearch>(m, "LocalSearch")
             .def(pybind11::init<const routingblocks::Instance&, std::shared_ptr<Evaluation>,
                                 std::shared_ptr<Evaluation>, PivotingRule*>(),
-                 pybind11::keep_alive<1, 5>())
+                 pybind11::keep_alive<1, 2>(), pybind11::keep_alive<1, 5>())
             .def(
                 "optimize",
                 [](LocalSearch& ls, Solution& sol, std::vector<Operator*> operators) -> void {

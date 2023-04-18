@@ -28,6 +28,7 @@ pybind11_add_module(${PROJECT_NAME} ${sources})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_definitions(${PROJECT_NAME} PUBLIC "routingblocks_MODULE_NAME=${PROJECT_NAME}")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "routingblocks_VERSION=${PROJECT_VERSION}")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "PYBIND11_USE_SMART_HOLDER_AS_DEFAULT")
 
 # Configure optimization flags
 if (CMAKE_COMPILER_IS_GNUCC)
