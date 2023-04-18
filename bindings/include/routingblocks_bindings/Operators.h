@@ -12,7 +12,4 @@ namespace routingblocks::bindings {
     void bind_operators(pybind11::module& m);
 }  // namespace routingblocks::bindings
 
-BIND_LIFETIME_PYTHON(routingblocks::Operator, "Operator")
-BIND_LIFETIME_PYTHON(routingblocks::Move, "Move")
-
 #endif  // routingblocks_BINDINGS_OPERATORS_H

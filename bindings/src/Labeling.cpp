@@ -32,8 +32,6 @@ namespace routingblocks {
     using PyPropagator = Propagator<pybind11::object>;
 }  // namespace routingblocks
 
-BIND_LIFETIME_PYTHON(routingblocks::Propagator<pybind11::object>, "Propagator")
-
 namespace routingblocks::bindings {
     class PyPropagatorTramboline : public PyPropagator {
       public:

@@ -16,7 +16,7 @@ namespace routingblocks {
     /**
      * \brief Destory Operator interface
      */
-    class destroy_operator : public std::enable_shared_from_this<destroy_operator> {
+    class destroy_operator {
       public:
         /**
          * Applies the operator to the passed solution.
@@ -39,7 +39,7 @@ namespace routingblocks {
     /**
      * \brief Destory Operator interface
      */
-    class repair_operator : public std::enable_shared_from_this<repair_operator> {
+    class repair_operator {
       public:
         /**
          * Applies the operator to the passed solution.

@@ -11,9 +11,6 @@
  * Couple the lifetime of objects created in python to the shared_ptr lifetime in c++.
  */
 
-BIND_LIFETIME_PYTHON(routingblocks::repair_operator, "RepairOperator")
-BIND_LIFETIME_PYTHON(routingblocks::destroy_operator, "DestroyOperator")
-
 namespace routingblocks::bindings {
 
     class py_repair_operator : public routingblocks::repair_operator {
