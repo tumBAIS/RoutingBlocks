@@ -12,8 +12,6 @@ set(PYBIND11_PYTHON_VERSION ${Python_VERSION})
 set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 set(PYTHON_LIBS ${Python_LIBS})
 
-#cpm_add_subdirectory()
-#FIND_PACKAGE(pybind11 CONFIG REQUIRED)
 CPMAddPackage(
         NAME pybind11
         GITHUB_REPOSITORY pybind/pybind11
