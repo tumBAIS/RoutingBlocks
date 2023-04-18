@@ -98,8 +98,12 @@ def test_large_neighborhood_custom_operators_lifetime(instance, random_solution_
     large_neighborhood = evrptw.AdaptiveLargeNeighborhood(randgen, 0.2)
 
     # Python frees the reference to Mock operators
-    large_neighborhood.add_destroy_operator(MockDestroyOperator(0))
-    large_neighborhood.add_repair_operator(MockRepairOperator(0))
+    destroy_op = MockDestroyOperator(0)
+    large_neighborhood.add_destroy_operator(destroy_op)
+    repair_op = MockRepairOperator(0)
+    large_neighborhood.add_repair_operator(repair_op)
+    del destroy_op
+    del repair_op
     # This should still work - the custom python object should still be valid
     large_neighborhood.generate(mock_evaluation, solution, 1)
 

@@ -14,6 +14,7 @@ Solution representation
 .. autoapiclass:: routingblocks.Solution
     :members:
     :undoc-members:
+    :class-doc-from: class
     :special-members: __len__, __iter__, __getitem__, __delitem__
 
     .. py:method:: __init__(self, evaluation: Evaluation, instance: Instance, number_of_routes: int)

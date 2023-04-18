@@ -1,11 +1,11 @@
 [build-system]
-requires = ["scikit-build-core>=0.2.1", "pybind11"]
+requires = ["scikit-build-core>=0.2.1"]
 build-backend = "scikit_build_core.build"
 
 
 [project]
 name = "RoutingBlocks"
-version = "0.1.8"
+version = "0.1.9"
 description = "A package for the implementation of vehicle routing problems with intermediate stops"
 readme = "README.md"
 authors = [

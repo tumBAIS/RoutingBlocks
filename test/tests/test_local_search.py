@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from itertools import islice
 
 import pytest
@@ -46,6 +47,124 @@ class MockPivotingRule(routingblocks.PivotingRule):
     def select_move(self, solution: routingblocks.Solution) -> Optional[routingblocks.Move]:
         self.ops.append("select_move")
         return None
+
+
+import routingblocks as rb
+
+
+class SplitRouteMove(rb.Move):
+    """
+    Splits a route into two routes. The passed location will be the first node of the second route.
+    """
+
+    def __init__(self, location: rb.NodeLocation):
+        rb.Move.__init__(self)
+        self.location = location
+
+    def apply(self, instance: rb.Instance, solution: rb.Solution) -> None:
+        # Create a new route
+        solution.add_route()
+        new_route_index = len(solution) - 1
+
+        # Swap the segment [location.position, end] of the route to be split with an empty segment of the new route
+        solution.exchange_segment(self.location.route, self.location.position, len(solution[self.location.route]) - 1,
+                                  new_route_index, 1, 1)
+
+    def get_cost_delta(self, evaluation: rb.Evaluation, instance: rb.Instance,
+                       solution: rb.Solution) -> float:
+        split_route = solution[self.location.route]
+        cost_of_first_route_after_split = rb.evaluate_splice(evaluation, instance, split_route,
+                                                             self.location.position, len(split_route) - 1)
+        cost_of_second_route_after_split = rb.evaluate_splice(evaluation, instance, split_route,
+                                                              1, self.location.position)
+
+        original_route_cost = solution[self.location.route].cost
+        return cost_of_first_route_after_split + cost_of_second_route_after_split - original_route_cost
+
+
+class SplitRouteOperator(rb.LocalSearchOperator):
+    def __init__(self, instance: rb.Instance):
+        rb.LocalSearchOperator.__init__(self)
+        self.instance = instance
+
+    def _increment_location(self, solution: rb.Solution, location: rb.NodeLocation):
+        """
+        Increments the given location to the next possible split location. Modifies the passed location in-place.
+        Returns None if no further splits are possible.
+        :param solution: The solution to be split
+        :param location: The location to be incremented
+        :return: The incremented location or None if the solution is exhausted
+        """
+        location.position += 1
+        # Move to the next route if the current one is exhausted
+        if location.position > len(solution[location.route]) - 1:
+            location.route += 1
+            location.position = 1
+        # No further splits possible
+        if location.route >= len(solution):
+            return None
+        return location
+
+    def _recover_from_move(self, solution: rb.Solution, move: Optional[SplitRouteMove]) -> Optional[rb.NodeLocation]:
+        """
+        Recovers the state of the search from the given move.
+        """
+        # If no move was given, start at the beginning
+        if move is None:
+            return rb.NodeLocation(0, 1)
+
+        # Otherwise continue at the next location
+        next_location = self._increment_location(solution, copy.copy(move.location))
+        return next_location
+
+    def finalize_search(self) -> None:
+        # No cleanup needed
+        pass
+
+    def prepare_search(self, solution: rb.Solution) -> None:
+        # No preparation needed
+        pass
+
+    def find_next_improving_move(self, evaluation: rb.Evaluation, solution: rb.Solution,
+                                 last_evaluated_move: rb.Move) -> Optional[rb.Move]:
+        assert isinstance(last_evaluated_move, SplitRouteMove) or last_evaluated_move is None
+        next_move_location = self._recover_from_move(solution, last_evaluated_move)
+
+        # Iterate over all possible split locations
+        while next_move_location is not None:
+            next_move = SplitRouteMove(next_move_location)
+            # Evaluate the corresponding move
+            if next_move.get_cost_delta(evaluation, self.instance, solution) < -1e-2:
+                # If the move is improving, return it
+                return next_move
+            # Otherwise continue with the next location
+            next_move_location = self._increment_location(solution, next_move_location)
+        # Terminate the search if no improving move was found
+        return None
+
+
+def test_local_search_op(instance):
+    py_instance: helpers.Instance = instance[0]
+    instance: routingblocks.Instance = instance[1]
+    evaluation = adptw.Evaluation(py_instance.parameters.battery_capacity_time,
+                                  sum(x.demand for x in py_instance.customers) // 2)
+    evaluation.overload_penalty_factor = 10000.
+    evaluation.overcharge_penalty_factor = 0.
+    evaluation.time_shift_penalty_factor = 0.
+
+    customers = list(instance.customers)
+    route = routingblocks.create_route(evaluation, instance,
+                                       [x.vertex_id for x in customers])
+    print(route, route.cost, route.cost_components)
+    solution = routingblocks.Solution(evaluation, instance, [route])
+    assert solution.cost > 0
+    # Should find exactly two moves
+    operator = SplitRouteOperator(instance)
+    pivoting_rule = rb.BestImprovementPivotingRule()
+
+    local_search = routingblocks.LocalSearch(instance, evaluation, None, pivoting_rule)
+
+    local_search.optimize(solution, [operator])
 
 
 class BestImprovementWithBlinksPivotingRule(routingblocks.PivotingRule):
@@ -132,7 +251,6 @@ def test_local_search_optimize_inplace(local_search_and_solution):
     assert solution[0] is route
 
 
-@pytest.mark.skip
 def test_local_search_custom_operator(local_search_and_solution):
     local_search, solution = local_search_and_solution
     operator = MockLSOperator()
@@ -141,7 +259,6 @@ def test_local_search_custom_operator(local_search_and_solution):
     assert operator.ops == ["prepare_search", "find_next_improving_move", "finalize_search"]
 
 
-@pytest.mark.skip
 def test_local_search_custom_operators_lifetime(local_search_and_solution):
     local_search, solution = local_search_and_solution
     local_search.optimize(solution, [MockLSOperator()])

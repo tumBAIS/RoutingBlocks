@@ -75,15 +75,16 @@ class LocalSearchOperator:
         ...
 
     def find_next_improving_move(self, evaluation: Evaluation, solution: Solution,
-                                 last_evaluated_move: Move) -> Move:
+                                 last_evaluated_move: Optional[Move]) -> Optional[Move]:
         """
         Finds the next improving move. Returns None if no improving move is found.
         To avoid looping forever, this method should pick up the search where it left off, i.e., at last_evaluated_move.
 
         :param Evaluation evaluation: The evaluation function to use.
         :param Solution solution: The solution to be improved.
-        :param Move last_evaluated_move: The last move that was evaluated. Note that this corresponds to the last Move this operator returned. None if no move has been evaluated yet.
+        :param Optional[Move] last_evaluated_move: The last move that was evaluated. Note that this corresponds to the last Move this operator returned. None if no move has been evaluated yet.
         :return: The next improving move. None if no improving move is found.
+        :rtype: Optional[Move]
         """
         ...
 
@@ -138,11 +139,11 @@ class KBestImprovementPivotingRule(PivotingRule):
     """
     The k - best improvement pivoting rule selects best out of the first k improving moves found during the search
     for improving moves. It terminates the search as soon as the k - th improving move is found.
+
     """
 
     def __init__(self, k: int) -> None:
         """
-        Configures the number of improving moves to consider.
         :param int k: The number of improving moves to consider.
         """
         ...

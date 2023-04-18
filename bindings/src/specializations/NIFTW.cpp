@@ -10,8 +10,7 @@ namespace routingblocks::bindings {
 
     void bind_niftw(pybind11::module_& m) {
         ::bindings::helpers::bind_concatenation_evaluation_specialization<NIFTWEvaluation>(
-            pybind11::class_<routingblocks::NIFTWEvaluation, std::shared_ptr<NIFTWEvaluation>,
-                             Evaluation>(m, "NIFTWEvaluation")
+            pybind11::class_<routingblocks::NIFTWEvaluation, Evaluation>(m, "NIFTWEvaluation")
                 .def(pybind11::init<resource_t, resource_t, resource_t>()))
             .def_readwrite("overload_penalty_factor", &NIFTWEvaluation::overload_penalty_factor)
             .def_readwrite("overcharge_penalty_factor", &NIFTWEvaluation::overcharge_penalty_factor)

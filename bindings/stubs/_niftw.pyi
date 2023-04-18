@@ -78,8 +78,6 @@ class NIFTWEvaluation(Evaluation):
     def __init__(self, vehicle_battery_capacity: float, vehicle_storage_capacity: float,
                  replenishment_time: float) -> None:
         """
-        Creates an NIFTW evaluation.
-
         :param vehicle_battery_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
         :param vehicle_storage_capacity: The vehicle's storage capacity. Determines how much demand can be served in a single route.
         :param replenishment_time: The time penalty incurred to replenish the vehicle's battery.

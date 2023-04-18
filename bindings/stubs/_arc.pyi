@@ -10,8 +10,6 @@ class Arc:
 
     def __init__(self, data: Any) -> None:
         """
-        Initializes a new Arc object.
-
         :param data: Additional data associated with the arc.
         """
         ...

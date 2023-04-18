@@ -42,7 +42,7 @@ autoapi_generate_api_docs = False
 autoapi_add_toctree_entry = False
 autoapi_add_objects_to_toctree = False
 
-autoapi_python_class_content = "class"
+autoapi_python_class_content = "both"
 autoapi_member_order = "bysource"
 autodoc_member_order = "bysource"
 

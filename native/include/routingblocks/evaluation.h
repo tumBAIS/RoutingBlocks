@@ -14,7 +14,7 @@
 
 namespace routingblocks {
 
-    class Evaluation : public std::enable_shared_from_this<Evaluation> {
+    class Evaluation {
       public:
         using label_holder_t = Node::label_holder_t;
 
