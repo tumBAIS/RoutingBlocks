@@ -138,11 +138,11 @@ class KBestImprovementPivotingRule(PivotingRule):
     """
     The k - best improvement pivoting rule selects best out of the first k improving moves found during the search
     for improving moves. It terminates the search as soon as the k - th improving move is found.
+
     """
 
     def __init__(self, k: int) -> None:
         """
-        Configures the number of improving moves to consider.
         :param int k: The number of improving moves to consider.
         """
         ...

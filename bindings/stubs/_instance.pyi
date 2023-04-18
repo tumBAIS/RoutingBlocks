@@ -15,20 +15,30 @@ class Instance:
     @overload
     def __init__(self, depot: Vertex, stations: List[Vertex], customers: List[Vertex], arcs: List[List[Arc]],
                  fleet_size: int) -> None:
-        """Initialize an Instance with a depot, lists of stations and customers, a list of arcs, and a fleet size."""
+        """
+        :param Vertex depot: The depot vertex
+        :param List[Vertex] stations: A list of station vertices
+        :param List[Vertex] customers: A list of customer vertices
+        :param List[List[Arc]]] arcs: A matrix of Arc objects representing the connections between vertices
+        :param int fleet_size: The number of vehicles in the fleet
+        """
         ...
 
     @overload
     def __init__(self, vertices: List[Vertex], arcs: List[List[Arc]]) -> None:
-        """Initialize an Instance with a list of vertices and a list of arcs. Sets the fleet size to the number of customers.
-        Expects vertices to be in the order depot, stations, customers
-        ."""
+        """
+        :param List[Vertex] vertices: A list of vertices in the order depot, stations, customers
+        :param List[List[Arc]] arcs: A list of lists of Arc objects representing the connections between vertices
+        """
         ...
 
     @overload
     def __init__(self, vertices: List[Vertex], arcs: List[List[Arc]], fleet_size: int) -> None:
-        """Initialize an Instance with a list of vertices, a list of arcs, and a fleet size. Expects vertices to be in the
-        order depot, stations, customers."""
+        """
+        :param List[Vertex] vertices: A list of vertices in the order depot, stations, customers
+        :param List[List[Arc]] arcs: A list of lists of Arc objects representing the connections between vertices
+        :param int fleet_size: The number of vehicles in the fleet
+        """
         ...
 
     @property

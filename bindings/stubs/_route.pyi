@@ -1,4 +1,3 @@
-
 from typing import Iterable, Tuple
 
 
@@ -23,7 +22,7 @@ class Route:
 
     def __init__(self, evaluation: Evaluation, instance: Instance) -> None:
         """
-        Initializes a new Route object. The route is initially empty, that is, contains only start and end depots.
+        The route constructor creates an empty route, that is, a route that contains only start and end depots.
         Refer to create_route for a method to create a route from a sequence of vertex ids.
 
         :param Evaluation evaluation: The Evaluation object used for cost and feasibility calculations.

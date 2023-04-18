@@ -7,8 +7,6 @@ class Node:
 
     def __init__(self, vertex: Vertex, fwd_label: AnyForwardLabel, bwd_label: AnyBackwardLabel) -> None:
         """
-        Initializes a new Node object.
-
         :param Vertex vertex: The associated Vertex object.
         :param AnyForwardLabel fwd_label: The forward label for the node.
         :param AnyBackwardLabel bwd_label: The backward label for the node.

@@ -79,10 +79,8 @@ class ADPTWEvaluation(Evaluation):
 
     def __init__(self, vehicle_battery_capacity: float, vehicle_storage_capacity: float) -> None:
         """
-        Creates an ADPTW evaluation.
-
-        :param vehicle_battery_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
-        :param vehicle_storage_capacity: The vehicle's storage capacity. Determines how much demand can be served in a single route.
+        :param float vehicle_battery_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
+        :param float vehicle_storage_capacity: The vehicle's storage capacity. Determines how much demand can be served in a single route.
         """
         ...
 

@@ -16,6 +16,7 @@ data. The following classes are available:
     :members:
     :undoc-members:
     :special-members: __len__, __iter__
+    :class-doc-from: class
 
     .. py:method:: __init__(self, depot: Vertex, stations: List[Vertex], customers: List[Vertex], arcs: List[List[Arc]], fleet_size: int) -> None
 
