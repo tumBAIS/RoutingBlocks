@@ -177,6 +177,8 @@ namespace routingblocks::bindings {
 
 BIND_LIFETIME_PYTHON(routingblocks::Evaluation, "Evaluation")
 BIND_LIFETIME_PYTHON(routingblocks::bindings::PyEvaluation, "PyEvaluation")
+BIND_LIFETIME_PYTHON(routingblocks::bindings::PyConcatenationBasedEvaluation,
+                     "PyConcatenationBasedEvaluation")
 
 namespace routingblocks::bindings {
 
