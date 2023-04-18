@@ -10,8 +10,7 @@ namespace routingblocks::bindings {
 
     void bind_adptw(pybind11::module_& m) {
         ::bindings::helpers::bind_concatenation_evaluation_specialization<ADPTWEvaluation>(
-            pybind11::class_<ADPTWEvaluation, std::shared_ptr<ADPTWEvaluation>, Evaluation>(
-                m, "ADPTWEvaluation")
+            pybind11::class_<ADPTWEvaluation, Evaluation>(m, "ADPTWEvaluation")
                 .def(pybind11::init<resource_t, resource_t>()))
             .def_readwrite("overload_penalty_factor", &ADPTWEvaluation::overload_penalty_factor)
             .def_readwrite("overcharge_penalty_factor", &ADPTWEvaluation::overcharge_penalty_factor)

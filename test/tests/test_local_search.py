@@ -251,7 +251,6 @@ def test_local_search_optimize_inplace(local_search_and_solution):
     assert solution[0] is route
 
 
-@pytest.mark.skip
 def test_local_search_custom_operator(local_search_and_solution):
     local_search, solution = local_search_and_solution
     operator = MockLSOperator()
@@ -260,7 +259,6 @@ def test_local_search_custom_operator(local_search_and_solution):
     assert operator.ops == ["prepare_search", "find_next_improving_move", "finalize_search"]
 
 
-@pytest.mark.skip
 def test_local_search_custom_operators_lifetime(local_search_and_solution):
     local_search, solution = local_search_and_solution
     local_search.optimize(solution, [MockLSOperator()])

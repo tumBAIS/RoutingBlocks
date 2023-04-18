@@ -67,7 +67,8 @@ namespace routingblocks::bindings {
     void bind_route(pybind11::module& m) {
         pybind11::class_<routingblocks::Route>(m, "Route")
             .def(pybind11::init<std::shared_ptr<Evaluation>, const Instance&>(),
-                 pybind11::keep_alive<1, 2>(), "Creates an empty route.")
+                 pybind11::keep_alive<1, 2>(), pybind11::keep_alive<1, 3>(),
+                 "Creates an empty route.")
             .def_property_readonly("cost", &routingblocks::Route::cost, "The cost of the route.")
             .def_property_readonly("cost_components", &routingblocks::Route::cost_components,
                                    "The cost components of the route.")
@@ -163,7 +164,7 @@ namespace routingblocks::bindings {
             .def("__ne__", &routingblocks::Route::operator!=, "Whether the routes are not equal.");
 
         m.def("create_route", &routingblocks::create_route_from_vector,
-              "Creates a route from the given vertices.");
+              "Creates a route from the given vertices.", pybind11::keep_alive<0, 3>{});
     }
 
     void bind_node_location(pybind11::module_& m) {
@@ -191,6 +192,14 @@ namespace routingblocks::bindings {
             .def("__lt__", &routingblocks::NodeLocation::operator<,
                  "Whether the node locations compare lexicographically smaller. Route index is "
                  "ordered before node position.")
+            .def("__copy__",
+                 [](const routingblocks::NodeLocation& location) {
+                     return routingblocks::NodeLocation(location);
+                 })
+            .def("__deepcopy__",
+                 [](const routingblocks::NodeLocation& location, pybind11::dict) {
+                     return routingblocks::NodeLocation(location);
+                 })
             .def("__str__", ::bindings::helpers::ostream_to_string<routingblocks::NodeLocation>)
             .def("__repr__", ::bindings::helpers::ostream_to_string<routingblocks::NodeLocation>);
     }
@@ -200,9 +209,10 @@ namespace routingblocks::bindings {
 
         pybind11::class_<routingblocks::Solution>(m, "Solution")
             .def(pybind11::init<std::shared_ptr<Evaluation>, const Instance&, size_t>(),
-                 "Creates an empty solution with the specified number of routes.")
+                 "Creates an empty solution with the specified number of routes.",
+                 pybind11::keep_alive<1, 3>())
             .def(pybind11::init<std::shared_ptr<Evaluation>, const Instance&, std::vector<Route>>(),
-                 "Creates a solution from the specified routes.")
+                 "Creates a solution from the specified routes.", pybind11::keep_alive<1, 3>())
             .def_property_readonly("cost", &routingblocks::Solution::cost,
                                    "The cost of the solution.")
             .def_property_readonly("cost_components", &routingblocks::Solution::cost_components,

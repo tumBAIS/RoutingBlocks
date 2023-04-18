@@ -14,15 +14,15 @@ namespace routingblocks::bindings {
 
       public:
         void prepare_search(const Solution& solution) override {
-            PYBIND11_OVERLOAD_PURE(void, routingblocks::Operator, prepare_search, solution);
+            PYBIND11_OVERRIDE_PURE(void, routingblocks::Operator, prepare_search, &solution);
         }
         std::shared_ptr<Move> find_next_improving_move(eval_t& evaluation, const Solution& solution,
                                                        const Move* previous_move) override {
-            PYBIND11_OVERLOAD_PURE(std::shared_ptr<Move>, routingblocks::Operator,
-                                   find_next_improving_move, evaluation, solution, previous_move);
+            PYBIND11_OVERRIDE_PURE(std::shared_ptr<Move>, routingblocks::Operator,
+                                   find_next_improving_move, &evaluation, &solution, previous_move);
         }
         void finalize_search() override {
-            PYBIND11_OVERLOAD_PURE(void, routingblocks::Operator, finalize_search);
+            PYBIND11_OVERRIDE_PURE(void, routingblocks::Operator, finalize_search);
         }
     };
 
@@ -32,18 +32,17 @@ namespace routingblocks::bindings {
       public:
         cost_t get_cost_delta(Evaluation& evaluation, const Instance& instance,
                               const Solution& solution) const override {
-            PYBIND11_OVERLOAD_PURE(cost_t, routingblocks::Move, get_cost_delta, evaluation,
-                                   instance, solution);
+            PYBIND11_OVERRIDE_PURE(cost_t, routingblocks::Move, get_cost_delta, &evaluation,
+                                   &instance, &solution);
         }
 
         void apply(const Instance& instance, Solution& solution) const override {
-            PYBIND11_OVERRIDE_PURE(void, routingblocks::Move, apply, instance, solution);
+            PYBIND11_OVERRIDE_PURE(void, routingblocks::Move, apply, &instance, &solution);
         }
     };
 
     auto bind_operator_interface(pybind11::module_& m) {
-        return pybind11::class_<routingblocks::Operator, PyOperator,
-                                std::shared_ptr<routingblocks::Operator>>(m, "LocalSearchOperator")
+        return pybind11::class_<routingblocks::Operator, PyOperator>(m, "LocalSearchOperator")
             .def(pybind11::init<>())
             .def("prepare_search", &routingblocks::Operator::prepare_search,
                  "Prepare the operator for "
@@ -55,8 +54,7 @@ namespace routingblocks::bindings {
     }
 
     auto bind_move_interface(pybind11::module_& m) {
-        return pybind11::class_<routingblocks::Move, PyMove, std::shared_ptr<routingblocks::Move>>(
-                   m, "Move")
+        return pybind11::class_<routingblocks::Move, PyMove>(m, "Move")
             .def(pybind11::init<>())
             .def("get_cost_delta", &routingblocks::Move::get_cost_delta,
                  "Get the cost of the move.")
@@ -73,11 +71,11 @@ namespace routingblocks::bindings {
                   << "_" << OriginSegmentSize << "_" << TargetSegmentSize;
         auto base_name_str = base_name.str();
 
-        pybind11::class_<operator_t, std::shared_ptr<operator_t>>(
+        pybind11::class_<operator_t>(
             m, base_name_str.data(), operator_interface,
             "Swap operator. Swaps a segment of customers from a route to another route.")
             .def(pybind11::init<const Instance&, const utility::arc_set*>(),
-                 pybind11::keep_alive<1, 3>())
+                 pybind11::keep_alive<1, 2>(), pybind11::keep_alive<1, 3>())
             .def("prepare_search", &operator_t::prepare_search)
             .def("find_next_improving_move", &operator_t::find_next_improving_move)
             .def("finalize_search", &operator_t::finalize_search)
@@ -89,7 +87,7 @@ namespace routingblocks::bindings {
                   << "_" << OriginSegmentSize << "_" << TargetSegmentSize;
         auto move_name_str = move_name.str();
 
-        pybind11::class_<operator_move_t, std::shared_ptr<operator_move_t>>(
+        pybind11::class_<operator_move_t>(
             m, move_name_str.data(), move_interface,
             "Relocate move. Moves a customer from a route to "
             "another route. Implemented for inter- and intra-route moves.")
@@ -100,13 +98,12 @@ namespace routingblocks::bindings {
 
     void bind_inter_route_two_opt(pybind11::module_& m, auto& operator_interface,
                                   auto& move_interface) {
-        pybind11::class_<routingblocks::InterRouteTwoOptOperator,
-                         std::shared_ptr<routingblocks::InterRouteTwoOptOperator>>(
+        pybind11::class_<routingblocks::InterRouteTwoOptOperator>(
             m, "InterRouteTwoOptOperator", operator_interface,
             "Considers two-opt moves between distinct routes. Tries to integrate the "
             "generator arc into the solution.")
             .def(pybind11::init<const Instance&, const utility::arc_set*>(),
-                 pybind11::keep_alive<1, 3>())
+                 pybind11::keep_alive<1, 3>(), pybind11::keep_alive<1, 3>())
             .def("prepare_search", &routingblocks::InterRouteTwoOptOperator::prepare_search)
             .def("find_next_improving_move",
                  &routingblocks::InterRouteTwoOptOperator::find_next_improving_move)
@@ -114,9 +111,8 @@ namespace routingblocks::bindings {
             .def("create_move", &routingblocks::InterRouteTwoOptOperator::create_move,
                  "Create a move that represents a given generator arc.");
 
-        pybind11::class_<routingblocks::InterRouteTwoOptMove,
-                         std::shared_ptr<routingblocks::InterRouteTwoOptMove>>(
-            m, "InterRouteTwoOptMove", move_interface)
+        pybind11::class_<routingblocks::InterRouteTwoOptMove>(m, "InterRouteTwoOptMove",
+                                                              move_interface)
             .def(pybind11::init<NodeLocation, NodeLocation>())
             .def("get_cost_delta", &routingblocks::InterRouteTwoOptMove::get_cost_delta)
             .def("apply", &routingblocks::InterRouteTwoOptMove::apply);
@@ -124,8 +120,7 @@ namespace routingblocks::bindings {
 
     void bind_station_in_operator(pybind11::module_& m, auto& operator_interface,
                                   auto& move_interface) {
-        pybind11::class_<routingblocks::InsertStationOperator,
-                         std::shared_ptr<routingblocks::InsertStationOperator>>(
+        pybind11::class_<routingblocks::InsertStationOperator>(
             m, "InsertStationOperator", operator_interface,
             "Considers station insertions between consecutive vertices.")
             .def(pybind11::init<const Instance&>())
@@ -134,9 +129,8 @@ namespace routingblocks::bindings {
                  &routingblocks::InsertStationOperator::find_next_improving_move)
             .def("finalize_search", &routingblocks::InsertStationOperator::finalize_search);
 
-        pybind11::class_<routingblocks::InsertStationMove,
-                         std::shared_ptr<routingblocks::InsertStationMove>>(
-            m, "StationInsertionMove", move_interface)
+        pybind11::class_<routingblocks::InsertStationMove>(m, "StationInsertionMove",
+                                                           move_interface)
             .def(pybind11::init<NodeLocation, VertexID>())
             .def("get_cost_delta", &routingblocks::InsertStationMove::get_cost_delta)
             .def("apply", &routingblocks::InsertStationMove::apply);
@@ -144,8 +138,7 @@ namespace routingblocks::bindings {
 
     void bind_station_out_operator(pybind11::module_& m, auto& operator_interface,
                                    auto& move_interface) {
-        pybind11::class_<routingblocks::RemoveStationOperator,
-                         std::shared_ptr<routingblocks::RemoveStationOperator>>(
+        pybind11::class_<routingblocks::RemoveStationOperator>(
             m, "RemoveStationOperator", operator_interface,
             "Considers station removals between consecutive vertices.")
             .def(pybind11::init<const Instance&>())
@@ -154,9 +147,7 @@ namespace routingblocks::bindings {
                  &routingblocks::RemoveStationOperator::find_next_improving_move)
             .def("finalize_search", &routingblocks::RemoveStationOperator::finalize_search);
 
-        pybind11::class_<routingblocks::RemoveStationMove,
-                         std::shared_ptr<routingblocks::RemoveStationMove>>(m, "StationRemovalMove",
-                                                                            move_interface)
+        pybind11::class_<routingblocks::RemoveStationMove>(m, "StationRemovalMove", move_interface)
             .def(pybind11::init<NodeLocation>())
             .def("get_cost_delta", &routingblocks::RemoveStationMove::get_cost_delta)
             .def("apply", &routingblocks::RemoveStationMove::apply);

@@ -11,9 +11,6 @@
  * Couple the lifetime of objects created in python to the shared_ptr lifetime in c++.
  */
 
-BIND_LIFETIME_PYTHON(routingblocks::repair_operator, "RepairOperator")
-BIND_LIFETIME_PYTHON(routingblocks::destroy_operator, "DestroyOperator")
-
 namespace routingblocks::bindings {
 
     class py_repair_operator : public routingblocks::repair_operator {
@@ -22,7 +19,7 @@ namespace routingblocks::bindings {
 
         void apply(Evaluation& evaluation, Solution& sol,
                    const std::vector<routingblocks::VertexID>& missing_vertices) override {
-            PYBIND11_OVERRIDE_PURE(void, routingblocks::repair_operator, apply, evaluation, sol,
+            PYBIND11_OVERRIDE_PURE(void, routingblocks::repair_operator, apply, &evaluation, &sol,
                                    missing_vertices);
         }
         std::string_view name() const override {
@@ -30,14 +27,13 @@ namespace routingblocks::bindings {
         }
 
         bool can_apply_to(const routingblocks::Solution& sol) const override {
-            PYBIND11_OVERRIDE_PURE(bool, routingblocks::repair_operator, can_apply_to, sol);
+            PYBIND11_OVERRIDE_PURE(bool, routingblocks::repair_operator, can_apply_to, &sol);
         }
     };
 
     auto bind_repair_operator_interface(pybind11::module_& m) {
-        return pybind11::class_<routingblocks::repair_operator, py_repair_operator,
-                                std::shared_ptr<routingblocks::repair_operator>>(m,
-                                                                                 "RepairOperator")
+        return pybind11::class_<routingblocks::repair_operator, py_repair_operator>(
+                   m, "RepairOperator")
             .def(pybind11::init<>())
             .def("apply", &routingblocks::repair_operator::apply,
                  "Apply the repair operator to the passed solution.")
@@ -56,7 +52,7 @@ namespace routingblocks::bindings {
                                                    routingblocks::Solution& sol,
                                                    size_t numberOfRemovedCustomers) override {
             PYBIND11_OVERRIDE_PURE(std::vector<routingblocks::VertexID>,
-                                   routingblocks::destroy_operator, apply, evaluation, sol,
+                                   routingblocks::destroy_operator, apply, &evaluation, &sol,
                                    numberOfRemovedCustomers);
         }
         std::string_view name() const override {
@@ -64,14 +60,13 @@ namespace routingblocks::bindings {
         }
 
         bool can_apply_to(const routingblocks::Solution& sol) const override {
-            PYBIND11_OVERRIDE_PURE(bool, routingblocks::destroy_operator, can_apply_to, sol);
+            PYBIND11_OVERRIDE_PURE(bool, routingblocks::destroy_operator, can_apply_to, &sol);
         };
     };
 
     auto bind_destroy_operator_interface(pybind11::module_& m) {
-        return pybind11::class_<routingblocks::destroy_operator, py_destroy_operator,
-                                std::shared_ptr<routingblocks::destroy_operator>>(m,
-                                                                                  "DestroyOperator")
+        return pybind11::class_<routingblocks::destroy_operator, py_destroy_operator>(
+                   m, "DestroyOperator")
             .def(pybind11::init<>())
             .def("apply", &routingblocks::destroy_operator::apply,
                  "Apply the destroy operator to the passed solution and return the id's of any "
@@ -85,8 +80,7 @@ namespace routingblocks::bindings {
 
     auto bind_random_destory_operator(pybind11::module_& m, auto& interface) {
         using _operator = routingblocks::lns::operators::RandomRemoval;
-        return pybind11::class_<_operator, std::shared_ptr<_operator>>(m, "RandomRemovalOperator",
-                                                                       interface)
+        return pybind11::class_<_operator>(m, "RandomRemovalOperator", interface)
             .def(pybind11::init<routingblocks::utility::random&>())
             .def("apply", &_operator::apply, "Remove random vertices from the solution.")
             .def("name", &_operator::name)
@@ -96,8 +90,7 @@ namespace routingblocks::bindings {
 
     void bind_random_insertion_operator(pybind11::module_& m, auto& interface) {
         using _operator = routingblocks::lns::operators::RandomInsertion;
-        pybind11::class_<_operator, std::shared_ptr<_operator>>(m, "RandomInsertionOperator",
-                                                                interface)
+        pybind11::class_<_operator>(m, "RandomInsertionOperator", interface)
             .def(pybind11::init<routingblocks::utility::random&>())
             .def("apply", &_operator ::apply,
                  "Inserts the passed vertices in order at random locations.")
