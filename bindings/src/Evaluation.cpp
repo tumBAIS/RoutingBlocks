@@ -2,6 +2,7 @@
 #include <routingblocks/evaluation.h>
 #include <routingblocks_bindings/Evaluation.h>
 
+#include <algorithm>
 #include <routingblocks_bindings/binding_helpers.hpp>
 
 namespace routingblocks::bindings {
