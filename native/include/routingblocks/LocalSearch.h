@@ -43,7 +43,7 @@ namespace routingblocks {
         Solution::route_t::const_iterator target_node;
     };
 
-    class Move {
+    class Move : public std::enable_shared_from_this<Move> {
       public:
         [[nodiscard]] virtual cost_t get_cost_delta(Evaluation& evaluation,
                                                     const Instance& instance,

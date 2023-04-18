@@ -109,7 +109,98 @@ The example below implements a custom operator that inserts depot visits, splitt
 
 .. code-block:: python
 
-    TODO
+    class SplitRouteMove(rb.Move):
+        """
+        Splits a route into two routes. The passed location will be the first node of the second route.
+        """
+
+        def __init__(self, location: rb.NodeLocation):
+            rb.Move.__init__(self)
+            self.location = location
+
+        def apply(self, instance: rb.Instance, solution: rb.Solution) -> None:
+            # Create a new route
+            solution.add_route()
+            new_route_index = len(solution) - 1
+
+            # Swap the segment [location.position, end] of the route to be split with an empty segment of the new route
+            solution.exchange_segment(self.location.route, self.location.position, len(solution[self.location.route]) - 1,
+                                      new_route_index, 1, 1)
+
+        def get_cost_delta(self, evaluation: rb.Evaluation, instance: rb.Instance,
+                           solution: rb.Solution) -> float:
+            split_route = solution[self.location.route]
+            cost_of_first_route_after_split = rb.evaluate_splice(evaluation, instance, split_route,
+                                                                 self.location.position, len(split_route) - 1)
+            cost_of_second_route_after_split = rb.evaluate_splice(evaluation, instance, split_route,
+                                                                  1, self.location.position)
+
+            original_route_cost = solution[self.location.route].cost
+            return cost_of_first_route_after_split + cost_of_second_route_after_split - original_route_cost
+
+
+    class SplitRouteOperator(rb.LocalSearchOperator):
+        def __init__(self, instance: rb.Instance):
+            rb.LocalSearchOperator.__init__(self)
+            self.instance = instance
+
+        def _increment_location(self, solution: rb.Solution, location: rb.NodeLocation):
+            """
+            Increments the given location to the next possible split location. Modifies the passed location in-place.
+            Returns None if no further splits are possible.
+            :param solution: The solution to be split
+            :param location: The location to be incremented
+            :return: The incremented location or None if the solution is exhausted
+            """
+            location.position += 1
+            # Move to the next route if the current one is exhausted
+            if location.position > len(solution[location.route]) - 1:
+                location.route += 1
+                location.position = 1
+            # No further splits possible
+            if location.route >= len(solution):
+                return None
+            return location
+
+        def _recover_from_move(self, solution: rb.Solution, move: Optional[SplitRouteMove]) -> Optional[rb.NodeLocation]:
+            """
+            Recovers the state of the search from the given move.
+            """
+            # If no move was given, start at the beginning
+            if move is None:
+                return rb.NodeLocation(0, 1)
+
+            # Otherwise continue at the next location
+            next_location = self._increment_location(solution, copy.copy(move.location))
+            return next_location
+
+        def finalize_search(self) -> None:
+            # No cleanup needed
+            pass
+
+        def prepare_search(self, solution: rb.Solution) -> None:
+            # No preparation needed
+            pass
+
+        def find_next_improving_move(self, evaluation: rb.Evaluation, solution: rb.Solution,
+                                     last_evaluated_move: rb.Move) -> Optional[rb.Move]:
+            assert isinstance(last_evaluated_move, SplitRouteMove) or last_evaluated_move is None
+            next_move_location = self._recover_from_move(solution, last_evaluated_move)
+
+            # Iterate over all possible split locations
+            while next_move_location is not None:
+                next_move = SplitRouteMove(next_move_location)
+                # Evaluate the corresponding move
+                if next_move.get_cost_delta(evaluation, self.instance, solution) < -1e-2:
+                    # If the move is improving, return it
+                    return next_move
+                # Otherwise continue with the next location
+                next_move_location = self._increment_location(solution, next_move_location)
+            # Terminate the search if no improving move was found
+            return None
+
+
+The signatures of the interfaces to implement are as follows:
 
 .. autoapiclass:: routingblocks.LocalSearchOperator
    :members:
