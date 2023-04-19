@@ -5,7 +5,7 @@ class Evaluation:
     """
     The evaluation class implements problem-specific cost and move evaluation functions. It's design bases on the
     concepts introduced in :cite:t:`VidalCrainicEtAl2014`.
-    Note that this class is an interace: it's not meant to be instantiated or used directly. Please use the concrete
+    Note that this class is an interface: it's not meant to be instantiated or used directly. Please use the concrete
     implementations of this interface and helper functions instead.
     """
 
