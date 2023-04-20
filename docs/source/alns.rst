@@ -3,13 +3,25 @@
 ALNS
 ====
 
-It takes as arguments a random engine and a smoothing factor. The smoothing factor determines the weight of historic performance when selecting an operator. The higher the smoothing factor, the more the operator's historic performance is taken into account when selecting an operator. The smoothing factor should be in the range [0, 1]. A value of 0 means that the operator's historic performance is ignored, while a value of 1 means that the operator's historic performance is the only factor considered when selecting an operator.
+RoutingBlocks provides a generic ALNS solver that can be extended with arbitrary destroy and repair operators.
+The solver manages operator selection, operator weights, and solution generation:
 
 .. autoapiclass:: routingblocks.AdaptiveLargeNeighborhood
     :members:
     :undoc-members:
 
+Operators
+---------
+
+The routingblocks package provides a set of destroy and repair operators.
+
 .. _alns_operators:
+
+Custom operators
+----------------
+
+Custom ALNS operators can be implemented by inheriting from the abstract base classes :py:class:`routingblocks.DestroyOperator` and :py:class:`routingblocks.RepairOperator` for destroy and repair operators, respectively.
+The interfaces are as follows:
 
 .. autoapiclass:: routingblocks.DestroyOperator
     :members:
