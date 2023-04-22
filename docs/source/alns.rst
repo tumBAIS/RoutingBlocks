@@ -3,6 +3,9 @@
 ALNS
 ====
 
+Solver
+------
+
 RoutingBlocks provides a generic ALNS solver that can be extended with arbitrary destroy and repair operators.
 The solver manages operator selection, operator weights, and solution generation:
 
@@ -16,6 +19,14 @@ Operators
 The routingblocks package provides a set of destroy and repair operators.
 
 .. _alns_operators:
+
+.. autoapiclass:: routingblocks.operators.RandomRemovalOperator
+    :members:
+    :undoc-members:
+
+.. autoapiclass:: routingblocks.operators.RandomInsertionOperator
+    :members:
+    :undoc-members:
 
 Custom operators
 ----------------

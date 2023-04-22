@@ -14,6 +14,8 @@ import helpers
 
 from fixtures import *
 
+import routingblocks
+
 try:
     import routingblocks as alns
     from routingblocks import adptw
@@ -53,7 +55,7 @@ def test_local_search_benchmark(instance_parser, instance_name,
     # Create routes
     randgen = random.Random(0)
     solution = random_solution_factory(instance, evaluation, randgen=randgen)
-    local_search = alns.LocalSearch(instance, evaluation, None)
+    local_search = alns.LocalSearch(instance, evaluation, None, routingblocks.BestImprovementPivotingRule())
     # Add operators
     operators = create_operators(instance)
     benchmark(run_local_search, solution=solution, local_search=local_search, operators=operators)

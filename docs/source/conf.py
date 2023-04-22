@@ -27,6 +27,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
+    'sphinx.ext.mathjax',
     'sphinxcontrib.bibtex',
     'sphinxcontrib.mermaid',
 ]
