@@ -16,15 +16,15 @@ class StationSeedSelector:
         ]
 
     def __call__(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution,
-                 removed_vertices: List[int]) -> routingblocks.Vertex:
+                 removed_vertices: List[routingblocks.NodeLocation]) -> routingblocks.NodeLocation:
         # Get all stations in the solution not removed yet
         stations = [x for x in self._get_station_locations(solution) if
-                    solution.lookup(x).vertex_id not in removed_vertices]
+                    x not in removed_vertices]
         if len(stations) == 0:
             raise StopIteration
         # Return a random one
         picked_station_location = stations[self._randgen.randint(0, len(stations) - 1)]
-        return solution.lookup(picked_station_location).vertex
+        return picked_station_location
 
 
 class StationVicinityRemovalOperator(routingblocks.DestroyOperator):
@@ -42,8 +42,7 @@ class StationVicinityRemovalOperator(routingblocks.DestroyOperator):
                  randgen: Optional[routingblocks.Randgen]):
         """
         :param instance: Instance the operator will be applied to
-        :param get_distance: A function taking two vertices and returning the distance between them. The distance can be
-        arbitrary, i.e., does not have to correspond to the evaluation function.
+        :param get_distance: A function taking two vertices and returning the distance between them. The distance can be arbitrary, i.e., does not have to correspond to the evaluation function.
         :param min_radius_factor: Minimum of the interval the radius is picked from
         :param max_radius_factor: Maximum of the interval the radius is picked from
         :param randgen: Random number generator
@@ -62,8 +61,6 @@ class StationVicinityRemovalOperator(routingblocks.DestroyOperator):
     def can_apply_to(self, solution: routingblocks.Solution) -> bool:
         """
         Station vicinity removal can be applied to any solution that contains at least one station.
-        :param solution: The solution to which the operator should be applied.
-        :return:
         """
         return any(node.vertex.is_station
                    for route in solution.routes for node in route)
