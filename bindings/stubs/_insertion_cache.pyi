@@ -3,7 +3,13 @@ class InsertionMove:
     after_node: NodeLocation
     delta_cost: float
 
-    def __init__(self, vertex_id: VertexID, after_node_location: NodeLocation, delta_cost: float) -> None: ...
+    def __init__(self, vertex_id: VertexID, after_node_location: NodeLocation, delta_cost: float) -> None:
+        """
+        :param vertex_id: The vertex to be inserted.
+        :param after_node: The node after which the vertex should be inserted.
+        :param delta_cost: The change in cost incurred from inserting the vertex at the specified position.
+        """
+        ...
 
     def __eq__(self, other: InsertionMove) -> bool: ...
 

@@ -21,6 +21,7 @@ release = '01.04.2023'
 routingblocks_import_path = Path(routingblocks.__file__).parent
 
 extensions = [
+    'sphinx_rtd_theme',
     'autoapi.extension',
     'sphinx.ext.autodoc',
     'sphinx.ext.autodoc.typehints',
@@ -60,3 +61,6 @@ exclude_patterns = []
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+html_theme_options = {
+    'navigation_depth': -1
+}

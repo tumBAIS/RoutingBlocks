@@ -1,19 +1,45 @@
-from typing import Iterable, Callable, TypeVar
+from typing import Iterable, TypeVar, Protocol, Generic
 from collections.abc import Sequence
 
 import routingblocks
 
 T = TypeVar('T')
-MoveSelector = Callable[[Iterable[T]], T]
+
+
+class MoveSelector(Protocol[T]):
+    """
+    A move selector selects a move from a sequence of moves.
+    """
+
+    def __call__(self, moves: Iterable[T]) -> T:
+        """
+        Selects a move from the sequence of moves.
+
+        :param moves: The sequence of moves.
+        :return: The selected move.
+        """
+        ...
 
 
 def first_move_selector(moves: Iterable[T]) -> T:
+    """
+    Selects the first move in the sequence.
+
+    :param moves: The sequence of moves.
+    :return: The first move in the sequence.
+    """
     move = next(iter(moves), None)
     assert move is not None, "Unable to select a move from an empty sequence"
     return move
 
 
 def last_move_selector(moves: Iterable[T]) -> T:
+    """
+    Selects the last move in the sequence.
+
+    :param moves: The sequence of moves.
+    :return: The last move in the sequence.
+    """
     if isinstance(moves, Sequence):
         return moves[len(moves) - 1]
     move = None
@@ -25,6 +51,12 @@ def last_move_selector(moves: Iterable[T]) -> T:
 
 
 def nth_move_selector_factory(n: int) -> MoveSelector[T]:
+    """
+    Creates a move selector which selects the nth move in the sequence.
+
+    :param n: The index of the move to select.
+    :return: A move selector which selects the nth move in the sequence.
+    """
     assert n > 0
 
     def select(moves: Iterable[T]) -> T:
@@ -44,6 +76,14 @@ def nth_move_selector_factory(n: int) -> MoveSelector[T]:
 
 
 def blink_selector_factory(blink_probability: float, randgen: routingblocks.Random) -> MoveSelector[T]:
+    """
+    Creates a move selector which selects the first move of the sequence with probability :math:`(1-p)`, the second move with
+    probability :math:`(1-p)^2`, where :math:`p` is the blink probability, and so on.
+
+    :param blink_probability: The probability of blinking.
+    :param randgen: The random number generator.
+    :return: The configured move selector.
+    """
     assert 0 <= blink_probability <= 1
 
     def select(moves: Iterable[T]) -> T:
@@ -59,6 +99,12 @@ def blink_selector_factory(blink_probability: float, randgen: routingblocks.Rand
 
 
 def random_selector_factory(rangen: routingblocks.Random):
+    """
+    Creates a move selector which selects a random move from the sequence.
+    :param rangen: The random number generator.
+    :return: The configured move selector.
+    """
+
     def select(moves: Iterable[T]) -> T:
         # TODO Improve
         if not isinstance(moves, Sequence):

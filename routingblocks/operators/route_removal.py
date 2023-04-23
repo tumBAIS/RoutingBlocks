@@ -3,8 +3,15 @@ from typing import List
 import routingblocks
 
 
-class RouteRemoveOperator(routingblocks.DestroyOperator):
+class RouteRemovalOperator(routingblocks.DestroyOperator):
+    """
+    Removes random routes from the solution. May remove more than the requested number of vertices.
+    """
+
     def __init__(self, rng: routingblocks.Random):
+        """
+        :param rng: The :py:class:`routingblocks.Random` instance to use.
+        """
         # Important: Do not use super()!
         routingblocks.DestroyOperator.__init__(self)
         self._rng = rng
@@ -12,7 +19,8 @@ class RouteRemoveOperator(routingblocks.DestroyOperator):
     def can_apply_to(self, _solution: routingblocks.Solution) -> bool:
         return len(_solution) > 0
 
-    def apply(self, evaluation: routingblocks.Evaluation, _solution: routingblocks.Solution, number_of_removed_vertices: int) -> List[
+    def apply(self, evaluation: routingblocks.Evaluation, _solution: routingblocks.Solution,
+              number_of_removed_vertices: int) -> List[
         int]:
         # Try to remove random routes
         removed_customers = []

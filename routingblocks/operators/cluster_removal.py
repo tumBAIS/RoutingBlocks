@@ -1,25 +1,60 @@
 from __future__ import annotations
 from bisect import bisect_left
-from typing import List, Callable, Iterable, Optional, Tuple, Union
+from typing import List, Callable, Iterable, Optional, Tuple, Union, Protocol
 
 import routingblocks
 
-SeedSelector = Callable[
-    [routingblocks.Evaluation, routingblocks.Solution, List[routingblocks.NodeLocation]], routingblocks.NodeLocation]
-ClusterMemberSelector = Callable[
-    [routingblocks.Evaluation, routingblocks.Solution, routingblocks.NodeLocation], Iterable[
-        routingblocks.NodeLocation]]
+
+class SeedSelector(Protocol):
+    """
+    Selects a seed vertex from a solution.
+    """
+
+    def __call__(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution,
+                 already_selected_vertices: List[routingblocks.NodeLocation]) -> routingblocks.NodeLocation:
+        """
+        :param evaluation: The evaluation to use
+        :param solution: The solution to select from
+        :param already_selected_vertices: A list of vertices that have already been selected, i.e., should not be included in the selection
+        :return:
+        """
+        ...
+
+
+class ClusterMemberSelector(Protocol):
+    """
+    Selects a cluster of vertices based on a seed vertex.
+    """
+
+    def __call__(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution,
+                 seed: routingblocks.NodeLocation) -> List[routingblocks.NodeLocation]:
+        """
+        :param evaluation: The evaluation to use
+        :param solution: The solution to select from
+        :param seed: The seed vertex
+        :return:
+        """
+        ...
 
 
 class ClusterRemovalOperator(routingblocks.DestroyOperator):
     """
     The ClusterRemovalOperator is a generic destroy operator that removes clusters of vertices from a solution.
-    The operator first selects a seed vertex to remove, and then selects a cluster of vertices around that seed.
+    The operator first selects a seed vertex, and then selects a cluster of vertices around that seed.
     These two steps are repeated until the desired number of vertices has been selected or no seed vertices can be
-    identified. The selected vertices are then removed from the solution.
+    identified. The selected vertices are then removed from the solution. Note that seed vertices are not removed unless
+    they are also selected by the cluster member selector.
+
+    The seed selection and cluster member selection are delegated to the :py:class:`routingblocks.operators.SeedSelector`
+    and :py:class:`routingblocks.operators.ClusterMemberSelector` parameters, respectively.
+    This allows to customize the operator for different use cases.
     """
 
     def __init__(self, seed_selector: SeedSelector, cluster_member_selector: ClusterMemberSelector):
+        """
+        :param seed_selector: The seed selector
+        :param cluster_member_selector: The cluster member selector
+        """
         # Important: Do not use super()!
         routingblocks.DestroyOperator.__init__(self)
         self._seed_selector = seed_selector

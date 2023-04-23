@@ -66,13 +66,13 @@ class AdaptiveLargeNeighborhood:
 
         w_{op, new} = \\alpha \\cdot \\frac{s_{op}}{\\max(1, n_{op})} + (1 - \\alpha) \\cdot w_{op, old}
 
-    Where:
+    Where
 
-    :math:´w_{op, new}` is the updated weight of operator :math:`op`
-    :math:´\\alpha` is the smoothing factor, which determines the importance of an operator's historical performance
-    :math:´s_{op}` is the sum of scores achieved by operator :math:`op` in the last period
-    :math:´n_{op}` is the total number of solutions generated using operator :math:`op` in the last period
-    :math:´w_{op, old}` is the old weight of operator :math:`op`
+    * :math:`w_{op, new}` is the updated weight of operator :math:`op`
+    * :math:`\\alpha` is the smoothing factor, which determines the importance of an operator's historical performance
+    * :math:`s_{op}` is the sum of scores achieved by operator :math:`op` in the last period
+    * :math:`n_{op}` is the total number of solutions generated using operator :math:`op` in the last period
+    * :math:`w_{op, old}` is the old weight of operator :math:`op`
     """
 
     def __init__(self, randgen: Random, smoothing_factor: float) -> None:
