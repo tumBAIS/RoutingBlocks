@@ -80,7 +80,7 @@ namespace routingblocks::bindings {
 
     auto bind_random_destory_operator(pybind11::module_& m, auto& interface) {
         using _operator = routingblocks::lns::operators::RandomRemoval;
-        return pybind11::class_<_operator>(m, "RandomRemovalOperator", interface)
+        return pybind11::class_<_operator>(m, "_RandomRemovalOperator", interface)
             .def(pybind11::init<routingblocks::utility::random&>())
             .def("apply", &_operator::apply, "Remove random vertices from the solution.")
             .def("name", &_operator::name)
@@ -90,7 +90,7 @@ namespace routingblocks::bindings {
 
     void bind_random_insertion_operator(pybind11::module_& m, auto& interface) {
         using _operator = routingblocks::lns::operators::RandomInsertion;
-        pybind11::class_<_operator>(m, "RandomInsertionOperator", interface)
+        pybind11::class_<_operator>(m, "_RandomInsertionOperator", interface)
             .def(pybind11::init<routingblocks::utility::random&>())
             .def("apply", &_operator ::apply,
                  "Inserts the passed vertices in order at random locations.")
@@ -183,9 +183,8 @@ namespace routingblocks::bindings {
         auto destroy_operator_interface = bind_destroy_operator_interface(m);
         auto repair_operator_interface = bind_repair_operator_interface(m);
 
-        auto operator_module = m.def_submodule("operators");
-        bind_random_insertion_operator(operator_module, repair_operator_interface);
-        bind_random_destory_operator(operator_module, destroy_operator_interface);
+        bind_random_insertion_operator(m, repair_operator_interface);
+        bind_random_destory_operator(m, destroy_operator_interface);
     }
 
 }  // namespace routingblocks::bindings

@@ -6,11 +6,14 @@ from dataclasses import dataclass
 
 import routingblocks
 
-RelatednessComputer = Callable[[int, int], float]
-
 
 @dataclass(frozen=True)
 class RelatedVertexRemovalMove:
+    """
+    :ivar vertex_id: The id of the corresponding vertex.
+    :ivar relatedness: The relatedness of the vertex to the seed vertex.
+    :ivar location: The location of the vertex in the solution.
+    """
     vertex_id: int
     relatedness: float
     location: routingblocks.NodeLocation
@@ -24,8 +27,16 @@ class RelatedVertexRemovalMove:
             self.location.position == other.location.position
 
 
-def build_relatedness_matrix(instance: routingblocks.Instance, relatedness_computer: RelatednessComputer) -> List[
-    List[float]]:
+def build_relatedness_matrix(instance: routingblocks.Instance, relatedness_computer: Callable[[int, int], float]) -> \
+        List[
+            List[float]]:
+    """
+    Builds a relatedness matrix for the given instance and relatedness function.
+
+    :param instance: The instance.
+    :param relatedness_computer: A function that computes the relatedness between two vertices. Takes as input the ids of the two vertices and returns a number that measures the degree of relatedness.
+    :return: A matrix of relatedness values.
+    """
     matrix: List[List[float]] = []
     n = instance.number_of_vertices
     for i in range(n):
@@ -37,11 +48,32 @@ def build_relatedness_matrix(instance: routingblocks.Instance, relatedness_compu
 
 
 class RelatedRemovalOperator(routingblocks.DestroyOperator):
+    """
+    Removes related vertices from the solution. The operator first selects an initial seed vertex.
+    Then, it selects the n most related vertices to the current seed vertex and adds them to the list of removed vertices.
+    It then selects the next seed vertex from the list of removed vertices and repeats the process until the desired number of vertices has been selected.
+    Finally, the operator removes the selected vertices from the solution.
+
+    The operator determines related vertices by using a relatedness matrix passed to the constructor.
+    This matrix contains a number that measures the degree of the relatedness between each pair of vertices.
+    The higher the number, the more related the vertices are.
+
+    (Initial) seed and related vertex selection is done using move selectors.
+    """
+
     def __init__(self, relatedness_matrix: List[List[float]],
                  move_selector: MoveSelector[RelatedVertexRemovalMove],
                  seed_selector: MoveSelector[RelatedVertexRemovalMove],
-                 initial_seed_selector: MoveSelector[routingblocks.Node] = None,
+                 initial_seed_selector: MoveSelector[routingblocks.Node],
                  cluster_size: int = 1):
+        """
+
+        :param relatedness_matrix: The relatedness matrix. See :py:func:`build_relatedness_matrix` for a way to build such a matrix.
+        :param move_selector: The move selector to use for selecting the vertex to remove. Receives a list of related vertices, ordered by the degree of relatedness in descending order.
+        :param seed_selector: The move selector to use for selecting the seed vertex.
+        :param initial_seed_selector: The move selector to use for selecting the initial seed vertex.
+        :param cluster_size: The number of related vertices to remove for each seed.
+        """
         # Important: Do not use super()!
         routingblocks.DestroyOperator.__init__(self)
         self._relatedness_matrix = relatedness_matrix

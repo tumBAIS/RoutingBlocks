@@ -62,4 +62,4 @@ def test_station_vicinity_removal(instance, mock_evaluation, randgen, raw_routes
                                key=lambda x: py_instance.arcs[picked_station.str_id, x.str_id].distance)[
                         :num_removed_vertices]
     assert len(removed_vertices) == len(expected_vertices)
-    assert set(expected_vertices) == set(removed_vertices)
+    assert set(x.vertex_id for x in expected_vertices) == set(removed_vertices)

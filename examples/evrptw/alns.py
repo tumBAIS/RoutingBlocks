@@ -7,7 +7,7 @@ import itertools
 import sys
 
 from routingblocks.operators import best_insert, WorstRemovalOperator, blink_selector_factory, first_move_selector
-from routingblocks.operators.route_removal import RouteRemoveOperator
+from routingblocks.operators.route_removal import RouteRemovalOperator
 from .operators import create_shaw_remove_operator, create_related_remove_operator
 from .instance import Instance as ADPTWInstance
 from .utility import distribute_randomly
@@ -117,7 +117,7 @@ class ALNS:
     def _configure_destroy_operators(self):
         self._adaptive_large_neighborhood.add_destroy_operator(
             routingblocks.operators.RandomRemovalOperator(self._random))
-        self._adaptive_large_neighborhood.add_destroy_operator(RouteRemoveOperator(self._random))
+        self._adaptive_large_neighborhood.add_destroy_operator(RouteRemovalOperator(self._random))
         self._adaptive_large_neighborhood.add_destroy_operator(
             create_related_remove_operator(self._py_instance, self._cpp_instance, self._random,
                                            self._params.tw_shift_weight, self._params.slack_weight))

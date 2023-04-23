@@ -1,6 +1,6 @@
 import random
 import sys
-from typing import List
+from typing import List, Tuple
 
 import routingblocks
 from routingblocks.operators import SeedSelector, ClusterMemberSelector, DistanceBasedClusterMemberSelector, \
@@ -10,13 +10,13 @@ import pytest
 
 
 class MockSeedSelector:
-    def __init__(self, seed_sequence: List[routingblocks.Vertex]):
+    def __init__(self, seed_sequence: List[routingblocks.NodeLocation]):
         self._next_return_idx = 0
         self._seed_sequence = seed_sequence
         self.calls = []
 
     def __call__(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution,
-                 removed_vertices) -> routingblocks.Vertex:
+                 removed_vertices) -> routingblocks.NodeLocation:
         # Abort when no further seeds are available
         if self._next_return_idx >= len(self._seed_sequence):
             self.calls.append(((evaluation, solution), None))
@@ -28,17 +28,25 @@ class MockSeedSelector:
 
 
 class MockClusterMemberSelector:
-    def __init__(self, cluster_sequence: List[List[routingblocks.Vertex]]):
+    def __init__(self, cluster_sequence: List[List[routingblocks.NodeLocation]]):
         self._next_return_idx = 0
         self._cluster_sequence = cluster_sequence
         self.calls = []
 
     def __call__(self, evaluation: routingblocks.Evaluation,
-                 solution: routingblocks.Solution, seed: routingblocks.Vertex) -> List[routingblocks.Vertex]:
+                 solution: routingblocks.Solution, seed: routingblocks.NodeLocation) -> List[
+        routingblocks.NodeLocation]:
         next_cluster = self._cluster_sequence[self._next_return_idx]
         self.calls.append(((evaluation, solution, seed), next_cluster))
         self._next_return_idx += 1
         return next_cluster
+
+
+def setup_expected_clusters(expected_clusters: List[Tuple[int, int]],
+                            solution: routingblocks.Solution) -> List[List[routingblocks.NodeLocation]]:
+    return [
+        (solution.find(seed)[0], [solution.find(x)[0] for x in cluster]) for seed, cluster in expected_clusters
+    ]
 
 
 @pytest.mark.parametrize('raw_routes,expected_clusters', [
@@ -70,18 +78,22 @@ def test_cluster_removal(instance, mock_evaluation, raw_routes, expected_cluster
     #   - Mock seed selector should be called to determine the seed
     #   - Mock cluster member selector should be called to determine the cluster members
     #   - Cluster members should be removed
-    cluster_member_selector, cluster_removal_operator, seed_selector, solution = setup_solution_and_operator(
+    cluster_member_selector, cluster_removal_operator, seed_selector, solution, expected_clusters = setup_solution_and_operator(
         expected_clusters, instance, mock_evaluation, raw_routes)
 
+    original_solution_size = sum(len(x) for x in solution)
+
     # All cluster members should be removed
-    expected_removed_customers = [x for cluster in expected_clusters for x in cluster[1]]
+    expected_removed_customers = [solution.lookup(x).vertex_id for cluster in expected_clusters for x in cluster[1]]
     number_of_removed_vertices = len(expected_removed_customers)
+
     removed_customers = cluster_removal_operator.apply(mock_evaluation, solution, number_of_removed_vertices)
 
     assert [x[1] for x in seed_selector.calls] == [x[0] for x in expected_clusters]
     assert [x[1] for x in cluster_member_selector.calls] == [x[1] for x in expected_clusters]
 
     assert removed_customers == expected_removed_customers
+    assert sum(len(x) for x in solution) == original_solution_size - number_of_removed_vertices
 
 
 def build_distance_function(vertices: List[routingblocks.Vertex], expected_picks: List[routingblocks.Vertex],
@@ -125,7 +137,7 @@ def test_cluster_removal_distance_based_selector(vertices, seed_vertex_idx, expe
     get_distance = build_distance_function(vertices, expected_pick, seed_vertex, radius)
 
     distance_cluster_member_selector = DistanceBasedClusterMemberSelector(vertices, get_distance, radius, radius)
-    cluster = distance_cluster_member_selector(None, None, seed_vertex)
+    cluster = distance_cluster_member_selector._select_vertices(seed_vertex)
     assert len(cluster) == len(expected_pick), f"Expected the cluster to contain the seed and the expected picks.\n" \
                                                f"Got: {[x.str_id for x in cluster]}, expected: {[x.str_id for x in expected_pick]}"
     assert set(cluster) == set(expected_pick), f"Expected the cluster to contain the seed and the expected picks.\n" \
@@ -147,11 +159,11 @@ def test_cluster_removal_stop_iteration(instance, mock_evaluation, raw_routes, e
     py_instance, instance = instance
     # Test if cases where no further clusters can be selected work
 
-    cluster_member_selector, cluster_removal_operator, seed_selector, solution = setup_solution_and_operator(
+    cluster_member_selector, cluster_removal_operator, seed_selector, solution, expected_clusters = setup_solution_and_operator(
         expected_clusters, instance, mock_evaluation, raw_routes)
 
     # All cluster members should be removed
-    expected_removed_customers = [x for cluster in expected_clusters for x in cluster[1]]
+    expected_removed_customers = [solution.lookup(x).vertex_id for cluster in expected_clusters for x in cluster[1]]
     # Request to remove more vertices than can be provided by the seed selector/cluster member selector
     number_of_removed_vertices = len(expected_removed_customers) + 1
     removed_customers = cluster_removal_operator.apply(mock_evaluation, solution, number_of_removed_vertices)
@@ -164,8 +176,11 @@ def test_cluster_removal_stop_iteration(instance, mock_evaluation, raw_routes, e
 
 
 def setup_solution_and_operator(expected_clusters, instance, mock_evaluation, raw_routes):
+    solution = create_solution(instance, mock_evaluation, raw_routes)
+    expected_clusters = setup_expected_clusters(expected_clusters, solution)
+
     seed_selector = MockSeedSelector([x[0] for x in expected_clusters])
     cluster_member_selector = MockClusterMemberSelector([x[1] for x in expected_clusters])
     cluster_removal_operator = ClusterRemovalOperator(seed_selector, cluster_member_selector)
-    solution = create_solution(instance, mock_evaluation, raw_routes)
-    return cluster_member_selector, cluster_removal_operator, seed_selector, solution
+
+    return cluster_member_selector, cluster_removal_operator, seed_selector, solution, expected_clusters
