@@ -180,7 +180,7 @@ or we can pass None, which prompts the local search to validate moves by applyin
 
 The pivoting rule implements the pivoting strategy used by the local search. RoutingBlocks provides three pivoting rules:
 `best improvement <best_improvement_pivoting_rule>`_, `k-best improvement <k_best_improvement_pivoting_rule>`_, and `first improvement <first_improvement_pivoting_rule>`_.
-It is also possible to implement custom pivoting rules (See :ref:`custom pivoting rules <_custom_pivoting_rules>`_).
+It is also possible to implement custom pivoting rules (See :ref:`custom pivoting rules <custom_pivoting_rules>`).
 The former is the default and is the one we use here. The latter stops the local search as soon as a profitable move is found.
 
 Additionally, we create a set of operators to be used later when invoking the local search. The implementations provided by RoutingBlocks require a set of allowed arcs as an argument. The operator will only consider arcs within this set. By default, all arcs are allowed.
