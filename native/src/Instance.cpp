@@ -22,6 +22,10 @@ Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> a
 
 Instance::Instance(std::vector<Vertex> vertices, std::vector<std::vector<Arc>> arcs, int fleetSize)
     : _vertices(std::move(vertices)), _arcs(std::move(arcs)), _fleet_size(fleetSize) {
+    if (_vertices.size() <= 1) {
+        throw std::runtime_error("Cannot create instance with less than 2 vertices");
+    }
+
     // vertices should be ordered as [depot, cust_1, ..., cust_n, station_1, ..., station_n]
     auto next_vertex = _vertices.begin();
     size_t next_vertex_id = 0;

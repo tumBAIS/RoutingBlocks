@@ -1,3 +1,5 @@
+.. _getting_started:
+
 Getting started
 ===============================
 
@@ -122,7 +124,7 @@ Once the instance is created, we can proceed to implement the ILS algorithm. We 
     # Set the penalty factors used to penalize violations of the time window, the
     # vehicle capacity, and the charge constraints
     evaluation.overload_penalty_factor = 100.
-    evaluation.overcharge_penalty_factor = 100.
+    evaluation.resource_penalty_factor = 100.
     evaluation.time_shift_penalty_factor = 100.
 
 .. note::
@@ -179,8 +181,8 @@ By default, the ADPTW Evaluation class implements approximate move evaluation. W
 or we can pass None, which prompts the local search to validate moves by applying them to a solution copy and evaluating the cost based on forward labels.
 
 The pivoting rule implements the pivoting strategy used by the local search. RoutingBlocks provides three pivoting rules:
-`best improvement <best_improvement_pivoting_rule>`_, `k-best improvement <k_best_improvement_pivoting_rule>`_, and `first improvement <first_improvement_pivoting_rule>`_.
-It is also possible to implement custom pivoting rules (See :ref:`custom pivoting rules <_custom_pivoting_rules>`_).
+:ref:`best improvement <best_improvement_pivoting_rule>`, :ref:`k-best improvement <k_best_improvement_pivoting_rule>`, and :ref:`first improvement <first_improvement_pivoting_rule>`.
+It is also possible to implement custom pivoting rules (See :ref:`custom pivoting rules <custom_pivoting_rules>`).
 The former is the default and is the one we use here. The latter stops the local search as soon as a profitable move is found.
 
 Additionally, we create a set of operators to be used later when invoking the local search. The implementations provided by RoutingBlocks require a set of allowed arcs as an argument. The operator will only consider arcs within this set. By default, all arcs are allowed.
@@ -256,7 +258,7 @@ Putting everything together, we arrive at the following code:
         # Set the penalty factors used to penalize violations of the time window, the
         # vehicle capacity, and the charge constraints
         evaluation.overload_penalty_factor = 100.
-        evaluation.overcharge_penalty_factor = 100.
+        evaluation.resource_penalty_factor = 100.
         evaluation.time_shift_penalty_factor = 100.
 
         pivoting_rule = rb.BestImprovementPivotingRule()
@@ -306,7 +308,7 @@ RoutingBlocks offers an ALNS solver and several destroy and repair operators out
         # Set the penalty factors used to penalize violations of the time window, the
         # vehicle capacity, and the charge constraints
         evaluation.overload_penalty_factor = 100.
-        evaluation.overcharge_penalty_factor = 100.
+        evaluation.resource_penalty_factor = 100.
         evaluation.time_shift_penalty_factor = 100.
 
         pivoting_rule = rb.BestImprovementPivotingRule()
@@ -385,165 +387,4 @@ We employ three essential methods of the ALNS solver:
 2. alns.collect_score: This method gathers scores for the provided operators. It requires the selected operators and a score as arguments.
 3. alns.adapt_operator_weights: This method adjusts the weights of the operators based on the scores collected during the last period.
 
-For more details on the ALNS solver, see the :ref:`documentation <alns>`. The full code of the ALNS algorithm is available :ref:`here <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/alns>`_. A more sophisticated ALNS-based algorithm can be found in the `main repository <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/evrptw>`_.
-
-Implementing custom operators
-------------------------------------
-
-The RoutingBlocks library provides a set of standard operators out of the box. However, it is also possible to implement custom local search, destroy, and repair operators. We'll implement a simple RouteRemoval destroy operator as an example:
-
-.. code-block:: python
-
-    # Custom destory, repair, and local serach operators inherit from the DestroyOperator, RepairOperator, and Operator base classe, respectively, respectively.
-    class RouteRemoveOperator(routingblocks.DestroyOperator):
-        def __init__(self, rng: routingblocks.Random):
-            # Important: Do not use super()!
-            routingblocks.DestroyOperator.__init__(self)
-            self._rng = rng
-
-        # Returns true if the operator can be applied to the current solution
-        def can_apply_to(self, _solution: routingblocks.Solution) -> bool:
-            return len(_solution) > 0
-
-        # Applies the operator to the current solution
-        def apply(self, evaluation: routingblocks.Evaluation, solution: routingblocks.Solution, number_of_removed_vertices: int) -> List[
-            int]:
-            # Try to remove random routes
-            removed_customers = []
-            while len(solution) > 0 and len(removed_customers) < number_of_removed_vertices:
-                random_route_index = self._rng.randint(0, len(solution) - 1)
-                removed_customers.extend(x.vertex_id for x in solution[random_route_index] if not x.vertex.is_depot)
-                del solution[random_route_index]
-            return removed_customers
-
-        # Returns the operator's name
-        def name(self) -> str:
-            return "RouteRemoveOperator"
-
-The operator removes random routes from the solution until the desired number of vertices has been removed. Destroy operators implement the DestroyOperator interface. The interface requires the implementation of the following methods:
-* can_apply_to: Returns true if the operator can be applied to the current solution
-* apply: Applies the operator to the current solution, returning the ids of the removed vertices
-* name: Returns the operator's name
-
-The operator can be registered with the ALNS solver in the same way as the standard operators:
-
-.. code-block:: python
-
-        alns.add_destroy_operator(RouteRemoveOperator(randgen))
-
-
-.. _custom_problem_settings:
-
-Adapting to custom problem settings
-------------------------------------
-
-So far, the example is limited to the EVRP-TW-PR. However, the library is designed to be easily extensible to other problem settings. To do so, we need to implement five interfaces:
-
-* VertexData: Holds the data associated with a vertex
-* ArcData: Holds the data associated with an arc
-* ForwardLabel: Holds the forward label of a vertex
-* BackwardLabel: Holds the backward label of a vertex
-* Evaluation: Implements the main labeling and evaluation logic
-
-Forward and Backward labels can also be combined into a single label class.
-
-The following example implements a simple CVRP evaluation class:
-
-.. code-block:: python
-
-    class CVRPVertexData:
-        def __init__(self, demand: int):
-            self.demand = demand
-
-
-    class CVRPArcData:
-        def __init__(self, distance: float):
-            self.distance = distance
-
-
-    class CVRPLabel:
-        def __init__(self, distance: float, load: float):
-            self.distance = distance
-            self.load = load
-
-
-    class CVRPEvaluation(rb.PyConcatenationBasedEvaluation):
-        def __init__(self, storage_capacity: float):
-            rb.PyConcatenationBasedEvaluation.__init__(self)
-            self._storage_capacity = storage_capacity
-            self.load_penalty = 1.
-
-        def _compute_cost(self, distance: float, load: float) -> float:
-            # Helper function to compute the cost of a label.
-            return distance + self.load_penalty * max(0., load - self._storage_capacity)
-
-        def compute_cost(self, label: CVRPLabel) -> float:
-            return self._compute_cost(label.distance, label.load)
-
-        def get_cost_components(self, label: CVRPLabel) -> List[float]:
-            return [label.distance, label.load]
-
-        def concatenate(self, fwd: CVRPLabel, bwd: CVRPLabel, vertex: rb.Vertex) -> float:
-            return self._compute_cost(fwd.distance + bwd.distance, fwd.load + bwd.load)
-
-        def create_backward_label(self, vertex: rb.Vertex) -> CVRPLabel:
-            return CVRPLabel(0., 0.)
-
-        def create_forward_label(self, vertex: rb.Vertex) -> CVRPLabel:
-            return CVRPLabel(0., vertex.data.demand)
-
-        def is_feasible(self, label: CVRPLabel) -> bool:
-            return label.load <= self._storage_capacity
-
-        def propagate_backward(self, succ_label: CVRPLabel, succ_vertex: rb.Vertex,
-                               vertex: rb.Vertex, arc: rb.Arc) -> CVRPLabel:
-            return CVRPLabel(succ_label.distance + arc.data.distance, succ_label.load + succ_vertex.data.demand)
-
-        def propagate_forward(self, pred_label: CVRPLabel, pred_vertex: rb.Vertex,
-                              vertex: rb.Vertex, arc: rb.Arc) -> CVRPLabel:
-            return CVRPLabel(pred_label.distance + arc.data.distance, pred_label.load + vertex.data.demand)
-
-.. warning::
-
-    Calls to vertex.data and arc.data are not type-safe: they work only if the vertex and arc data types have been defined in python. This is a tradeoff between performance and safety.
-
-To use it, simply create the corresponding CVRPData classes during instance construction and swap the evaluation class:
-
-.. code-block:: python
-    :linenos:
-    :emphasize-lines: 2, 6, 19, 29, 30
-
-    def create_instance(serialized_vertices, serialized_arcs) -> rb.Instance:
-        instance_builder = rb.utility.InstanceBuilder()
-        # Create and register the vertices
-        for vertex in serialized_vertices:
-            # Create problem-specific data held by vertices
-            vertex_data = CVRPVertexData(vertex['demand'])
-            # Register the vertex depending on it's type
-            if vertex['Type'] == 'd':
-                instance_builder.set_depot(vertex['StringID'], vertex_data)
-            elif vertex['Type'] == 'c':
-                instance_builder.add_customer(vertex['StringID'], vertex_data)
-            else:
-                instance_builder.add_station(vertex['StringID'], vertex_data)
-
-        # Create and register the arcs
-        for (i, j), arc in serialized_arcs.items():
-            # Create problem-specific data held by arcs
-            arc_data = CVRPArcData(arc['distance'])
-            instance_builder.add_arc(i, j, arc_data)
-
-        # Create instance
-        return instance_builder.build()
-
-    # ...
-
-    def alns(instance: rb.Instance, vehicle_storage_capacity: float,
-             number_of_iterations: int = 100, min_vertex_removal_factor: float = 0.2,
-             max_vertex_removal_factor: float = 0.4):
-        evaluation = CVRPEvaluation(vehicle_storage_capacity)
-        evaluation.load_penalty = 1000.0
-
-.. warning::
-
-    We recommend implementing a custom Evaluation class by extending the native RoutingBlocks library instead of providing a python implementation for code used beyond prototyping. See `native extensions <https://github.com/tumBAIS/routingblocks-native-extension-example>`_ for an example.
+For more details on the ALNS solver, see the :ref:`documentation <alns>`. The full code of the ALNS algorithm is available `here <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/alns>`_. A more sophisticated ALNS-based algorithm can be found in the `main repository <https://github.com/tumBAIS/RoutingBlocks/tree/main/examples/evrptw>`_.

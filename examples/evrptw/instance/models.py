@@ -1,6 +1,6 @@
 from typing import Iterable, Tuple, Dict
 from pydantic.dataclasses import dataclass
-from pydantic import root_validator, validator
+from pydantic import root_validator, field_validator
 from enum import Enum
 from itertools import product
 
@@ -37,7 +37,7 @@ class Vertex:
     def is_depot(self) -> bool:
         return self.vertex_type == VertexType.Depot
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     def check_depot_sation_demand(cls, values: Dict) -> Dict:
         if values['vertex_type'] in (VertexType.Depot, VertexType.Station):
             if values['demand'] != 0.0:
@@ -48,7 +48,7 @@ class Vertex:
                     "stations or depots cannot have a non-zero service_time")
         return values
 
-    @validator('service_time', 'demand', 'ready_time', 'due_time')
+    @field_validator('service_time', 'demand', 'ready_time', 'due_time')
     def check_nonzero_members(cls, value):
         if value < 0:
             raise ValueError(
@@ -62,7 +62,7 @@ class Arc:
     travel_time: float
     distance: float
 
-    @validator('*')
+    @field_validator('*')
     def check_nonzero_members(cls, value):
         if value < 0:
             raise ValueError('negative arcs are not allowed')
@@ -82,7 +82,7 @@ class Parameters:
     velocity: float  # distance/time
     fleet_size: int
 
-    @validator('*')
+    @field_validator('*')
     def check_nonzero_members(cls, value):
         if value <= 0.:
             raise ValueError('parameter values must be greater than 0')
@@ -99,19 +99,19 @@ class Instance:
     vertices: Dict[VertexID, Vertex]
     arcs: Dict[ArcID, Arc]
 
-    @validator('vertices')
+    @field_validator('vertices')
     def check_single_depot(cls, vertices: Dict[VertexID, Vertex]):
         if sum(1 for x in vertices.values() if x.is_depot) != 1:
             raise ValueError('expected exactly one depot')
         return vertices
 
-    @validator('vertices')
+    @field_validator('vertices')
     def check_at_least_one_customer(cls, vertices: Dict[VertexID, Vertex]):
         if sum(1 for x in vertices.values() if x.is_customer) == 0:
             raise ValueError('expected at least one customer')
         return vertices
 
-    @validator('vertices')
+    @field_validator('vertices')
     def check_vertex_ids_match(cls, vertices: Dict[VertexID, Vertex]):
         for v_id, v in vertices.items():
             if v_id != v.vertex_id:

@@ -9,8 +9,8 @@ class BestInsertionOperator(routingblocks.RepairOperator):
     """
     Iteratively (one at a time) inserts vertices according to the cost incurred from inserting them.
 
-    The operator uses a :ref:`routingblocks.operators.MoveSelector[routingblocks.InsertionMove]` to choose the
-    next vertex to insert. This selector receives as argument a list of :ref:`routingblocks.InsertionMove` objects,
+    The operator uses a :class:`routingblocks.operators.MoveSelector[routingblocks.InsertionMove]` to choose the
+    next vertex to insert. This selector receives as argument a list of :class:`routingblocks.InsertionMove` objects,
     each one representing a possible location at which the next vertex can be inserted, ordered by cost in descending order.
 
     This allows to customize the operator to different insertion strategies, such as inserting the vertex at the location

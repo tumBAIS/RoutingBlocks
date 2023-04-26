@@ -14,7 +14,7 @@ class ALNSParams:
     num_starting_solutions: int = 1
 
     delta_local_search: float = 0.3
-    delta_frvcp: float = 0.05
+    delta_fpo: float = 0.05
 
     adaptive_period_length: int = 50
     penalty_period_length: int = 50

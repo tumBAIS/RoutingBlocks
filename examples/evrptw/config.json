@@ -9,7 +9,7 @@
   "adaptive_period_length": 50,
   "penalty_period_length": 50,
   "delta_local_search": 0.5,
-  "delta_frvcp": 0.25,
+  "delta_fpo": 0.25,
   "target_feasibility_ratios": [
     0.9,
     0.9,

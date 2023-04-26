@@ -1,4 +1,4 @@
-Routingblocks Class Index
+Routingblocks class index
 -------------------------
 
 .. autoapimodule:: routingblocks

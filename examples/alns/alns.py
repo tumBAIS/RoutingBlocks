@@ -27,9 +27,9 @@ def alns(instance: rb.Instance, vehicle_storage_capacity: float, vehicle_battery
          max_vertex_removal_factor: float = 0.4):
     evaluation = rb.adptw.Evaluation(vehicle_battery_capacity_time, vehicle_storage_capacity)
     # Set the penalty factors used to penalize violations of the time window, the
-    # vehicle capacity, and the charge constraints
+    # vehicle capacity, and the resource constraints
     evaluation.overload_penalty_factor = 100.
-    evaluation.overcharge_penalty_factor = 100.
+    evaluation.resource_penalty_factor = 100.
     evaluation.time_shift_penalty_factor = 100.
 
     local_search = rb.LocalSearch(instance, evaluation, None, rb.BestImprovementPivotingRule())

@@ -30,7 +30,7 @@ class StationSeedSelector:
 class StationVicinityRemovalOperator(routingblocks.DestroyOperator):
     """
     Station vicinity removal is a specialized cluster removal operator designed to reorder customer visits in the
-    vicinity of recharging stations. The operator defines the vicinity of a station by selecting a random radius
+    vicinity of replenishment stations. The operator defines the vicinity of a station by selecting a random radius
     based on a percentage of the maximum distance between vertices. It then randomly chooses a recharging station
     and removes the station along with vertices within the selected radius, repeating this process until the
     desired number of vertices are removed.

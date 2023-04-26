@@ -3,6 +3,7 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import datetime
+import sys
 from pathlib import Path
 
 import routingblocks
@@ -18,7 +19,11 @@ release = '01.04.2023'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-routingblocks_import_path = Path(routingblocks.__file__).parent
+# routingblocks_import_path = Path(routingblocks.__file__).parent
+for path in map(Path, sys.path):
+    if (rb_path := path / 'routingblocks').exists():
+        routingblocks_import_path = rb_path
+        break
 
 extensions = [
     'sphinx_rtd_theme',

@@ -87,9 +87,9 @@ class Propagator:
         ...
 
 
-class FRVCP:
+class FacilityPlacementOptimizer:
     """
-    Algorithm that inserts visits to charging stations at optimal locations into a route.
+    Algorithm that inserts visits to replenishment facilities at optimal locations into a route.
     """
 
     def __init__(self, instance: Instance, propagator: Propagator) -> None:
@@ -102,7 +102,7 @@ class FRVCP:
 
     def optimize(self, route_vertex_ids: List[VertexID]) -> List[VertexID]:
         """
-        Inserts visits to charging stations at optimal locations into the route represented by the given vertex IDs.
+        Inserts visits to replenishment facilities at optimal locations into the route represented by the given vertex IDs.
 
         :param route_vertex_ids: The vertex IDs of the route.
         :return: The vertex IDs of the optimized route.
