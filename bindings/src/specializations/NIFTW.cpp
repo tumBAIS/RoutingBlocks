@@ -13,7 +13,7 @@ namespace routingblocks::bindings {
             pybind11::class_<routingblocks::NIFTWEvaluation, Evaluation>(m, "NIFTWEvaluation")
                 .def(pybind11::init<resource_t, resource_t, resource_t>()))
             .def_readwrite("overload_penalty_factor", &NIFTWEvaluation::overload_penalty_factor)
-            .def_readwrite("overcharge_penalty_factor", &NIFTWEvaluation::overcharge_penalty_factor)
+            .def_readwrite("resource_penalty_factor", &NIFTWEvaluation::overcharge_penalty_factor)
             .def_readwrite("time_shift_penalty_factor",
                            &NIFTWEvaluation::time_shift_penalty_factor);
 
@@ -32,7 +32,7 @@ namespace routingblocks::bindings {
                                                                          replenishment_time));
             }))
             .def("optimize", &FRVCP<NIFTWDPLabel>::optimize,
-                 "Solve FRVCP for the specified route.");
+                 "Solve the detour embedding problem for the specified route.");
     }
 
 }  // namespace routingblocks::bindings

@@ -25,7 +25,7 @@ class NIFTWArcData:
         """
         :param distance: The distance between the two vertices connected by the arc.
         :param travel_time: The time it takes to travel between the two vertices connected by the arc.
-        :param consumption: The time required to recharge the energy consumed when traveling between the two vertices connected by the arc.
+        :param consumption: The time required to recharge the resources consumed when traveling between the two vertices connected by the arc.
         """
         ...
 
@@ -62,31 +62,48 @@ def create_niftw_arc(data: NIFTWArcData) -> Arc:
     ...
 
 
-class NIFTWEvaluation(Evaluation):
+class NIFTWEvaluation(PyEvaluation):
     """
     Evaluation for NIFTW problems. Works only with arcs and vertices created using :ref:`create_niftw_arc` and :ref:`create_niftw_vertex`.
     Uses a set of penalty factors to penalize infeasible solutions.
 
     :var overload_penalty_factor: The penalty factor for overloading the vehicle.
-    :var overcharge_penalty_factor: The penalty factor for overcharging the vehicle.
+    :var resource_penalty_factor: The penalty factor for consuming more resources than carried by the vehicle.
     :var time_shift_penalty_factor: The penalty factor for time shifts.
     """
     overload_penalty_factor: float
     overcharge_penalty_factor: float
     time_shift_penalty_factor: float
 
-    def __init__(self, vehicle_battery_capacity: float, vehicle_storage_capacity: float,
+    def __init__(self, vehicle_resource_capacity: float, vehicle_storage_capacity: float,
                  replenishment_time: float) -> None:
         """
-        :param vehicle_battery_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
+        :param vehicle_resource_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
         :param vehicle_storage_capacity: The vehicle's storage capacity. Determines how much demand can be served in a single route.
-        :param replenishment_time: The time penalty incurred to replenish the vehicle's battery.
+        :param replenishment_time: The time penalty incurred to replenish all the resources carried by the vehicle.
         """
         ...
 
 
 class NIFTWFRVCP:
-    def __init__(self, instance: Instance, battery_capacity_time: float,
-                 replenishment_time: float) -> None: ...
+    """
+    NIFTW-specific detour insertion algorithm. Inserts visits to replenishment facilities at optimal locations into a route.
+    """
 
-    def optimize(self, route_vertex_ids: List[VertexID]) -> List[VertexID]: ...
+    def __init__(self, instance: Instance, battery_capacity_time: float,
+                 replenishment_time: float) -> None:
+        """
+
+        :param instance: The instance to optimize.
+        :param battery_capacity_time: The vehicle's resource capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
+        :param replenishment_time: The time penalty incurred to replenish all the resources carried by the vehicle.
+        """
+        ...
+
+    def optimize(self, route_vertex_ids: List[VertexID]) -> List[VertexID]:
+        """
+        Optimizes the route by inserting visits to replenishment facilities at optimal locations.
+        :param route_vertex_ids: The vertex ids of the route to optimize.
+        :return: The optimized route as a list of vertex ids.
+        """
+        ...

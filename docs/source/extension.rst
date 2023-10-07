@@ -1,6 +1,0 @@
-Extending the library
-=====================
-
-It is possible to write custom implementations of the :py:class:`routingblocks.PyEvaluation` and :py:class:`routingblocks.Propagator` classes. The `native extensions <https://github.com/tumBAIS/routingblocks-native-extension-example>`_ github template provides the necessary boilerplate code along with an example to get started.
-
-The source code of :py:class:`routingblocks.adptw.Evaluation` (`native/src/ADPTWEvaluation.cpp <https://github.com/tumBAIS/RoutingBlocks/blob/develop/native/src/ADPTWEvaluation.cpp>`_), :py:class:`routingblocks.niftw.Evaluation` (`native/src/NIFTWEvaluation.cpp <https://github.com/tumBAIS/RoutingBlocks/blob/develop/native/src/NIFTWEvaluation.cpp>`_), :py:class:`routingblocks.adptw.FRVCP` (`native/include/routingblocks/ADPTWEvaluation.h <https://github.com/tumBAIS/RoutingBlocks/blob/develop/native/include/routingblocks/ADPTWEvaluation.h>`_), and :py:class:`routingblocks.niftw.FRVCP` (`native/include/routingblocks/NIFTWEvaluation.h <https://github.com/tumBAIS/RoutingBlocks/blob/develop/native/include/routingblocks/NIFTWEvaluation.h>`_) provides further examples.

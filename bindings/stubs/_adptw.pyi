@@ -25,13 +25,13 @@ class ADPTWArcData:
         """
         :param distance: The distance between the two vertices connected by the arc.
         :param travel_time: The time it takes to travel between the two vertices connected by the arc.
-        :param consumption: The time required to recharge the energy consumed when traveling between the two vertices connected by the arc.
+        :param consumption: The time required to replenish the resource consumed when traveling between the two vertices connected by the arc.
         """
         ...
 
 
 # adptw submodule
-def create_adptw_vertex(vertex_id: int, str_id: str, is_station: bool, is_depot: bool,
+def create_adptw_vertex(vertex_id: int, str_id: str, is_facility: bool, is_depot: bool,
                         data: ADPTWVertexData) -> Vertex:
     """
     Creates a vertex for an ADPTW problem setting. Stores :param data directly as a native C++ object.
@@ -42,7 +42,7 @@ def create_adptw_vertex(vertex_id: int, str_id: str, is_station: bool, is_depot:
 
     :param vertex_id: The unique identifier of the vertex.
     :param str_id: A human-readable string identifier for the vertex.
-    :param is_station: Whether the vertex is a station.
+    :param is_facility: Whether the vertex is a replenishment facility.
     :param is_depot: Whether the vertex is a depot.
     :param data: The data to associate with this vertex.
     :return:
@@ -63,29 +63,45 @@ def create_adptw_arc(data: ADPTWArcData) -> Arc:
     ...
 
 
-class ADPTWEvaluation(Evaluation):
+class ADPTWEvaluation(PyEvaluation):
     """
     Evaluation for ADPTW problems. Works only with arcs and vertices created using :ref:`create_adptw_arc` and :ref:`create_adptw_vertex`.
     Uses a set of penalty factors to penalize infeasible solutions.
 
     :var overload_penalty_factor: The penalty factor for overloading the vehicle.
-    :var overcharge_penalty_factor: The penalty factor for overcharging the vehicle.
+    :var resource_penalty_factor: The penalty factor for consuming more resources than carried the vehicle.
     :var time_shift_penalty_factor: The penalty factor for time shifts.
     """
 
     overload_penalty_factor: float
-    overcharge_penalty_factor: float
+    resource_penalty_factor: float
     time_shift_penalty_factor: float
 
-    def __init__(self, vehicle_battery_capacity: float, vehicle_storage_capacity: float) -> None:
+    def __init__(self, vehicle_resource_capacity: float, vehicle_storage_capacity: float) -> None:
         """
-        :param float vehicle_battery_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully recharge an empty battery.
+        :param float vehicle_resource_capacity: The vehicle's battery capacity expressed in units of time, that is, the time it takes to fully replenish the resource of an empty vehicle.
         :param float vehicle_storage_capacity: The vehicle's storage capacity. Determines how much demand can be served in a single route.
         """
         ...
 
 
 class ADPTWFRVCP:
-    def __init__(self, instance: Instance, battery_capacity_time: float) -> None: ...
+    """
+    ADPTW-specific detour insertion algorithm. Inserts visits to replenishment facilities at optimal locations into a route.
+    """
 
-    def optimize(self, route_vertex_ids: List[VertexID]) -> List[VertexID]: ...
+    def __init__(self, instance: Instance, resource_capacity_time: float) -> None:
+        """
+
+        :param instance: The instance.
+        :param resource_capacity_time: The vehicle's resource capacity expressed in units of time, that is, the time it takes to fully replenish the resource of an empty vehicle.
+        """
+        ...
+
+    def optimize(self, route_vertex_ids: List[VertexID]) -> List[VertexID]:
+        """
+        Optimizes the route by inserting visits to replenishment facilities at optimal locations.
+        :param route_vertex_ids: The vertex ids of the route to optimize.
+        :return: The optimized route as a list of vertex ids.
+        """
+        ...
