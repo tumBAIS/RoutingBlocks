@@ -8,8 +8,8 @@ class WorstRemovalOperator(routingblocks.DestroyOperator):
     Iteratively (one at a time) removes vertices according to the benefit yielded by removing them, i.e., the change in
     the solution's cost with and without the vertex.
 
-    The operator uses a :ref:`routingblocks.operators.MoveSelector[routingblocks.RemovalMove]` to choose the
-    next vertex to remove. This selector receives as argument a list of :ref:`routingblocks.RemovalMove` objects,
+    The operator uses a :class:`routingblocks.operators.MoveSelector[routingblocks.RemovalMove]` to choose the
+    next vertex to remove. This selector receives as argument a list of :class:`routingblocks.RemovalMove` objects,
     each one representing a possible removal of a vertex from the solution, ordered by cost improvement.
 
     This allows to customize the operator to different removal strategies, such as removing the vertex with the

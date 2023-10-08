@@ -1,22 +1,13 @@
 .. _alns:
 
-ALNS
+Metaheuristic components
 ====
-
-Solver
-------
-
-RoutingBlocks provides a generic ALNS solver that can be extended with arbitrary destroy and repair operators.
-The solver manages operator selection, operator weights, and solution generation:
-
-.. autoapiclass:: routingblocks.AdaptiveLargeNeighborhood
-    :members:
-    :undoc-members:
 
 Operators
 ---------
 
-The routingblocks package provides a set of destroy and repair operators.
+The routingblocks package provides a set of destroy and repair operators that remove and insert vertices into a
+solution, respectively.
 
 .. _alns_operators:
 
@@ -100,10 +91,12 @@ Other
 
 .. autoapifunction:: routingblocks.operators.build_relatedness_matrix
 
+.. _alns_custom_operators:
+
 Custom operators
 ----------------
 
-Custom ALNS operators can be implemented by inheriting from the abstract base classes :py:class:`routingblocks.DestroyOperator` and :py:class:`routingblocks.RepairOperator` for destroy and repair operators, respectively.
+Custom operators can be implemented by inheriting from the abstract base classes :py:class:`routingblocks.DestroyOperator` and :py:class:`routingblocks.RepairOperator` for destroy and repair operators, respectively. See :ref:`here <custom_destroy_operator>` for an example.
 The interfaces are as follows:
 
 .. autoapiclass:: routingblocks.DestroyOperator
@@ -111,5 +104,20 @@ The interfaces are as follows:
     :undoc-members:
 
 .. autoapiclass:: routingblocks.RepairOperator
+    :members:
+    :undoc-members:
+
+Solvers
+-------
+
+RoutingBlocks provides (A)LNS solvers that can be extended with arbitrary destroy and repair operators.
+The solvers manage operator selection, operator weights, and solution generation. We note that this solver can also be
+used to implement other perturbation-based algorithms. Their interfaces are as follows:
+
+.. autoapiclass:: routingblocks.LargeNeighborhood
+    :members:
+    :undoc-members:
+
+.. autoapiclass:: routingblocks.AdaptiveLargeNeighborhood
     :members:
     :undoc-members:

@@ -101,6 +101,8 @@ The following operators are available:
 
 .. autoclass:: routingblocks.operators.SwapOperator_3_3
 
+.. _local_search_custom_operators:
+
 Custom Local Search Operators
 -----------------------------
 

@@ -71,8 +71,9 @@ class ALNS:
         # Compute the granular neighborhood
         self._reduced_arc_set = create_reduced_arc_set(self._cpp_instance, self._py_instance, self._params.granularity)
 
-        # Create specialized FRVCP solver
-        self._frvcp = routingblocks.adptw.FRVCP(self._cpp_instance, self._py_instance.parameters.battery_capacity_time)
+        # Create specialized facility placement optimizer
+        self._fpo = routingblocks.adptw.FacilityPlacementOptimizer(self._cpp_instance,
+                                                                   self._py_instance.parameters.battery_capacity_time)
 
         # Create cost component tracker
         self._cost_component_tracker = \
@@ -142,12 +143,12 @@ class ALNS:
 
     def _update_penalty_factors(self, overload_penalty: float, overcharge_penalty: float, time_shift_penalty: float):
         self._evaluation.overload_penalty_factor = overload_penalty
-        self._evaluation.overcharge_penalty_factor = overcharge_penalty
+        self._evaluation.resource_penalty_factor = overcharge_penalty
         self._evaluation.time_shift_penalty_factor = time_shift_penalty
 
     def _apply_dp(self, _solution: routingblocks.Solution) -> routingblocks.Solution:
         optimized_routes = [routingblocks.create_route(self._evaluation, self._cpp_instance,
-                                                       self._frvcp.optimize([x.vertex_id for x in route])[1:-1]) for
+                                                       self._fpo.optimize([x.vertex_id for x in route])[1:-1]) for
                             route
                             in
                             _solution]
@@ -285,7 +286,7 @@ class ALNS:
                 if self._params.shuffle_operators:
                     self._py_random.shuffle(self._operators)
                 self._local_search.optimize(_solution, self._operators)
-                if candidate_dist < self._best_dist * (1. + self._params.delta_frvcp):
+                if candidate_dist < self._best_dist * (1. + self._params.delta_fpo):
                     _solution = self._apply_dp(_solution)
                 else:
                     _solution = self._remove_empty_routes(_solution)

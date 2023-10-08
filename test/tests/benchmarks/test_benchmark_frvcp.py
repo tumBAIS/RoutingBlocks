@@ -29,7 +29,7 @@ def run_frvcp_on_routes(routes: List[List[int]], frvcp_factory):
         frvcp.optimize(route)
 
 
-@pytest.mark.benchmark(group="frvcp")
+@pytest.mark.benchmark(group="facility-placement-optimizer")
 @pytest.mark.parametrize("propagator", ['adptw-cpp'])
 def test_frvcp_benchmark_propagators(instance_parser,
                                      random_raw_route_factory, propagator, benchmark):

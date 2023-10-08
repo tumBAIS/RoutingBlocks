@@ -1,8 +1,8 @@
-Exact station placement (FRVCP)
+Exact replenishment facility placement
 ================================
 
-RoutingBlocks provides an implementation of the exact station placement algorithm described in :cite:t:`SchifferWalther2018`.
-The algorithm models the problem as a fixed-route vehicle charging problem (FRVCP). This problem corresponds to a resource-constrained shortest path problem (CSP) on an auxilliary graph, solved for each route in the solution independently. The auxilliary graph comprises a vertex for each non-station node in the route, and allows detours to charging stations by inserting copies of each CS between two consecutive non-station vertices (See `Figure 1`_). We refer to :cite:t:`SchifferWalther2018` for a comprehensive description of this procedure.
+RoutingBlocks provides an implementation of the exact replenishment facility placement algorithm described in :cite:t:`SchifferWalther2018`.
+The algorithm models the problem as a resource-constrained shortest path problem (CSP) on an auxilliary graph, solved for each route in the solution independently. The auxilliary graph comprises a vertex for each customer node in the route, and allows detours to replenishment facilities by inserting copies of each facility between two consecutive customer vertices (See `Figure 1`_). We refer to :cite:t:`SchifferWalther2018` for a comprehensive description of this procedure.
 
 .. _Figure 1:
 
@@ -10,7 +10,7 @@ The algorithm models the problem as a fixed-route vehicle charging problem (FRVC
     :align: center
     :scale: 50%
 
-    Figure 1: Auxilliary graph for a route with three customers. The dashed lines indicate potential detours to the charging stations.
+    Figure 1: Auxilliary graph for a route with three customers. The dashed lines indicate potential detours to the replenishment facilities.
 
 RoutingBlock's implementation of this algorithm that takes care of label
 mangement, dominance-based path pruning, graph building, and other boilerplate tasks
@@ -20,18 +20,18 @@ interface bases on the abstractions introduced in :cite:t:`Irnich2008`.
 
 Customizing this algorithm to a specific problem instance is analogous to implementing a custom evaluation class.
 Specifically, this requires implementing the :py:class:`routingblocks.Propagator` interface and providing a custom label class.
-The solver (:py:class:`routingblocks.FRVCP`) can be configured to use a custom propagator by passing it in the constructor.
+The solver (:py:class:`routingblocks.FacilityPlacementOptimizer`) can be configured to use a custom propagator by passing it in the constructor.
 
 .. warning::
 
     We recommend implementing a custom Propagators by extending the native RoutingBlocks library instead of providing a python implementation for code used beyond prototyping. See `the NIFTW source code <https://github.com/tumBAIS/RoutingBlocks/blob/develop/native/include/routingblocks/NIFTWEvaluation.h>`_ for an example.
 
-The pseudocode listed below outlines how the FRVCP solver accesses the propagator interface:
+The pseudocode listed below outlines how the FacilityPlacementOptimizer accesses the propagator interface:
 
 .. code-block:: python
     :linenos:
     :emphasize-lines: 7, 9, 20, 24, 32, 33, 36, 42
-    :caption: Pseudocode for the FRVCP solver, lines using the propagator interface are highlighted.
+    :caption: Pseudocode for the FacilityPlacementOptimizer, lines using the propagator interface are highlighted.
 
     def extract_label():
         # Find the vertex with the cheapest label in the node queue
@@ -77,7 +77,7 @@ The pseudocode listed below outlines how the FRVCP solver accesses the propagato
             settle(label, origin, propagator.order_before)
 
 
-.. autoapiclass:: routingblocks.FRVCP
+.. autoapiclass:: routingblocks.FacilityPlacementOptimizer
     :members:
     :undoc-members:
 

@@ -6,6 +6,8 @@ Welcome to RoutingBlock's documentation!
     :caption: Basics
 
     getting_started
+    custom_operators
+    custom_problem_settings
 
 .. toctree::
     :maxdepth: 1
@@ -30,8 +32,9 @@ Welcome to RoutingBlock's documentation!
     :maxdepth: 1
     :caption: Further Reading
 
-    extension
     examples
+    alternatives
+    contributing
     development
     full_api
     references

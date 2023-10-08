@@ -92,6 +92,16 @@ class Instance:
         ...
 
     @property
+    def vertices(self) -> Iterator[Vertex]:
+        """
+        Retrieves an iterator over the instance's vertices.
+
+        :return: An iterator over the instance's vertices.
+        :rtype: Iterator[Vertex]
+        """
+        ...
+
+    @property
     def stations(self) -> Iterator[Vertex]:
         """
         Retrieves an iterator over the station vertices.

@@ -102,6 +102,8 @@ namespace routingblocks::utility {
             }
             bool operator==(iterator other) const { return list_iter == other.list_iter; }
             bool operator!=(iterator other) const { return list_iter != other.list_iter; }
+            bool operator==(const_iterator other) const { return list_iter == other.list_iter; }
+            bool operator!=(const_iterator other) const { return list_iter != other.list_iter; }
             T& operator*() const { return list_iter->value; }
             T* operator->() const { return &(list_iter->value); }
 
