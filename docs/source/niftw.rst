@@ -1,7 +1,7 @@
 .. _NIFTW:
 
 NIFTW
-====
+======
 
 This module provides efficient implementations to solve NIFTW problems.
 

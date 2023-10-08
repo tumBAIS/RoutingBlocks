@@ -1,5 +1,5 @@
 Exact replenishment facility placement
-================================
+=======================================
 
 RoutingBlocks provides an implementation of the exact replenishment facility placement algorithm described in :cite:t:`SchifferWalther2018`.
 The algorithm models the problem as a resource-constrained shortest path problem (CSP) on an auxilliary graph, solved for each route in the solution independently. The auxilliary graph comprises a vertex for each customer node in the route, and allows detours to replenishment facilities by inserting copies of each facility between two consecutive customer vertices (See `Figure 1`_). We refer to :cite:t:`SchifferWalther2018` for a comprehensive description of this procedure.

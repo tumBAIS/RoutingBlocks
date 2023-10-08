@@ -1,7 +1,7 @@
 .. _alns:
 
 Metaheuristic components
-====
+=========================
 
 Operators
 ---------

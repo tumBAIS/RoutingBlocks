@@ -1,7 +1,7 @@
 .. _custom_problem_settings:
 
 Custom problem settings
-=====================
+========================
 
 Prototyping in Python
 --------------------------
@@ -15,7 +15,7 @@ So far, the example developed in the previous sections is limited to the EVRP-TW
 * Evaluation: Implements the main labeling and evaluation logic
 
 Label and data classes
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Implementing VertexData, ArcData, and Label classes is straightforward:
 
@@ -46,7 +46,7 @@ Implementing VertexData, ArcData, and Label classes is straightforward:
     The example above effectively duplicates the code for CVRPForwardLabel and CVRPBackwardLabel. There is no requirement for distinct ForwardLabel and BackwardLabel classes, i.e., we could replace these with a single CVRPLabel class. For the sake of clarity, we keep them separate in this example.
 
 The evaluation class
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 Having defined the data and label classes holding problem-specific data, we can now implement the evaluation class.
 RoutingBlocks provides two interfaces for this purpose (cf. :ref:`Evaluation`):
@@ -144,7 +144,7 @@ we can solve the CVRP by simply swapping the evaluation class and creating the c
     We recommend implementing a custom Evaluation class by extending the native RoutingBlocks library instead of providing a Python implementation for code used beyond prototyping.
 
 Writing a native extension
---------------------------
+----------------------------
 
 Pure Python-based implementations of :py:class:`routingblocks.PyEvaluation`, :py:class:`routingblocks.PyConcatenationBasedEvaluation`, and :py:class:`routingblocks.Propagator` classes suffer from a significant performance penalty. This is due to the fact that parts of the library provided in native code need to return control to python interpreter for every evaluation.
 To avoid this, the library provides native extension interfaces for all of it's runtime critical components.

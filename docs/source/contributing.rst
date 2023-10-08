@@ -1,12 +1,12 @@
 Contribution opportunities
-=========================
+==========================
 
 We welcome and appreciate contributions from the community, researchers, and practitioners alike to enhance the functionality, usability, and documentation of our package.
 For instructions on how to set up a development environment, see :ref:`development`.
 Here are some key areas where your contributions can add significant value:
 
 Methodological enhancements
--------------------------
+----------------------------
 
 Custom evaluation classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -21,10 +21,10 @@ The performance of most metaheuristic algorithms is heavily reliant on the stren
 By contributing novel or improved operators and algorithms, you aid in enhancing the package’s efficiency and accuracy.
 
 Documentation improvements
--------------------------
+-----------------------------
 
 Improving conciseness and clarity
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While we strive to provide comprehensive documentation, there is always room for enhancement.
 Contributions that focus on making the documentation more concise and clear are essential.

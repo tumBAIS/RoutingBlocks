@@ -179,7 +179,7 @@ class ALNS:
         return self._best_feasible_solution.cost if self._best_feasible_solution else sys.float_info.max
 
     def _make_feasible(self, solution: routingblocks.Solution):
-        penalty_factors = [self._evaluation.overload_penalty_factor, self._evaluation.overcharge_penalty_factor,
+        penalty_factors = [self._evaluation.overload_penalty_factor, self._evaluation.resource_penalty_factor,
                            self._evaluation.time_shift_penalty_factor]
         self._update_penalty_factors(*(x * 100.0 for x in penalty_factors))
         self._local_search.optimize(solution, self._operators)
@@ -187,7 +187,7 @@ class ALNS:
 
     def _remove_vehicle(self, solution: routingblocks.Solution):
         # Reset penalty
-        penalty_factors = [self._evaluation.overload_penalty_factor, self._evaluation.overcharge_penalty_factor,
+        penalty_factors = [self._evaluation.overload_penalty_factor, self._evaluation.resource_penalty_factor,
                            self._evaluation.time_shift_penalty_factor]
         for i in range(len(penalty_factors)):
             penalty_factors[i] = max(penalty_factors[i], self._params.initial_penalties[i - 1] * 100)
@@ -320,7 +320,7 @@ class ALNS:
                                zip(feasibility_rations,
                                    self._params.target_feasibility_ratios,
                                    [self._evaluation.overload_penalty_factor,
-                                    self._evaluation.overcharge_penalty_factor,
+                                    self._evaluation.resource_penalty_factor,
                                     self._evaluation.time_shift_penalty_factor])
                                ]
                 self._update_penalty_factors(overload_penalty=new_factors[0],
@@ -335,7 +335,7 @@ class ALNS:
                     self._reached_vehicle_lb = True
                     if not self._boosted_penalties:
                         self._saved_penalties = [self._evaluation.overload_penalty_factor,
-                                                 self._evaluation.overcharge_penalty_factor,
+                                                 self._evaluation.resource_penalty_factor,
                                                  self._evaluation.time_shift_penalty_factor]
                     if len(self._best_feasible_solution) > self._vehicle_lb:
                         while len(self._current_solution) > len(self._best_feasible_solution) - 1:
