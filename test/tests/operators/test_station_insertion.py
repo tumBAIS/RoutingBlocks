@@ -26,8 +26,8 @@ def test_insert_station_operator_search(large_instance):
     py_instance, instance = large_instance
     evaluation = niftw.Evaluation(py_instance.parameters.battery_capacity_time,
                                   py_instance.parameters.capacity, 0.)
-    # Set overcharge penalty sufficiently high to ensure that the operator inserts stations until (charge) feasible.
-    evaluation.overcharge_penalty_factor = 1000.
+    # Set resource penalty sufficiently high to ensure that the operator inserts stations until (charge) feasible.
+    evaluation.resource_penalty_factor = 1000.
     evaluation.overload_penalty_factor = 0.
     evaluation.time_shift_penalty_factor = 0.
 

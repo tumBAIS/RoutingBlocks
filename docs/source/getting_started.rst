@@ -124,7 +124,7 @@ Once the instance is created, we can proceed to implement the ILS algorithm. We 
     # Set the penalty factors used to penalize violations of the time window, the
     # vehicle capacity, and the charge constraints
     evaluation.overload_penalty_factor = 100.
-    evaluation.overcharge_penalty_factor = 100.
+    evaluation.resource_penalty_factor = 100.
     evaluation.time_shift_penalty_factor = 100.
 
 .. note::
@@ -258,7 +258,7 @@ Putting everything together, we arrive at the following code:
         # Set the penalty factors used to penalize violations of the time window, the
         # vehicle capacity, and the charge constraints
         evaluation.overload_penalty_factor = 100.
-        evaluation.overcharge_penalty_factor = 100.
+        evaluation.resource_penalty_factor = 100.
         evaluation.time_shift_penalty_factor = 100.
 
         pivoting_rule = rb.BestImprovementPivotingRule()
@@ -308,7 +308,7 @@ RoutingBlocks offers an ALNS solver and several destroy and repair operators out
         # Set the penalty factors used to penalize violations of the time window, the
         # vehicle capacity, and the charge constraints
         evaluation.overload_penalty_factor = 100.
-        evaluation.overcharge_penalty_factor = 100.
+        evaluation.resource_penalty_factor = 100.
         evaluation.time_shift_penalty_factor = 100.
 
         pivoting_rule = rb.BestImprovementPivotingRule()

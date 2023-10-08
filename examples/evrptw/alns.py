@@ -142,7 +142,7 @@ class ALNS:
 
     def _update_penalty_factors(self, overload_penalty: float, overcharge_penalty: float, time_shift_penalty: float):
         self._evaluation.overload_penalty_factor = overload_penalty
-        self._evaluation.overcharge_penalty_factor = overcharge_penalty
+        self._evaluation.resource_penalty_factor = overcharge_penalty
         self._evaluation.time_shift_penalty_factor = time_shift_penalty
 
     def _apply_dp(self, _solution: routingblocks.Solution) -> routingblocks.Solution:

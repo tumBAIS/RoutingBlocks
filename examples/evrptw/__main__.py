@@ -65,7 +65,7 @@ def main(instance_path: Path, config_path: Path, output_path: Path, seed: int, t
     overload_penalty_factor, overcharge_penalty_factor, time_shift_penalty_factor = compute_initial_penalties(
         py_instance)
     evaluation.overload_penalty_factor = overload_penalty_factor
-    evaluation.overcharge_penalty_factor = overcharge_penalty_factor
+    evaluation.resource_penalty_factor = overcharge_penalty_factor
     evaluation.time_shift_penalty_factor = time_shift_penalty_factor
 
     if seed is None:

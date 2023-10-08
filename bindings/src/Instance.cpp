@@ -55,6 +55,12 @@ namespace routingblocks::bindings {
             .def_property_readonly("number_of_stations", &routingblocks::Instance::NumberOfStations)
             .def_property_readonly("number_of_vertices", &routingblocks::Instance::NumberOfVertices)
             .def_property_readonly("depot", &routingblocks::Instance::Depot, "The depot vertex.")
+            .def_property_readonly(
+                "vertices",
+                [](const routingblocks::Instance& inst) {
+                    return pybind11::make_iterator(inst.begin(), inst.end());
+                },
+                "Returns an iterator over the instance's vertices.")
             .def_property_readonly("stations",
                                    [](const routingblocks::Instance& inst) {
                                        auto stations = inst.Stations();

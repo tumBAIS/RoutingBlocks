@@ -149,7 +149,7 @@ def test_local_search_op(instance):
     evaluation = adptw.Evaluation(py_instance.parameters.battery_capacity_time,
                                   sum(x.demand for x in py_instance.customers) // 2)
     evaluation.overload_penalty_factor = 10000.
-    evaluation.overcharge_penalty_factor = 0.
+    evaluation.resource_penalty_factor = 0.
     evaluation.time_shift_penalty_factor = 0.
 
     customers = list(instance.customers)

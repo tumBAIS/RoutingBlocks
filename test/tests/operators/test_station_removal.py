@@ -12,7 +12,7 @@ def test_station_removal_search(large_instance):
                                   py_instance.parameters.capacity, 0.)
 
     # Make sure that there is no penalty for removing stations.
-    evaluation.overcharge_penalty_factor = 0.
+    evaluation.resource_penalty_factor = 0.
     evaluation.overload_penalty_factor = 0.
     evaluation.time_shift_penalty_factor = 0.
 

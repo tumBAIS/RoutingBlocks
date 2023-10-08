@@ -72,7 +72,7 @@ class NIFTWEvaluation(PyEvaluation):
     :var time_shift_penalty_factor: The penalty factor for time shifts.
     """
     overload_penalty_factor: float
-    overcharge_penalty_factor: float
+    resource_penalty_factor: float
     time_shift_penalty_factor: float
 
     def __init__(self, vehicle_resource_capacity: float, vehicle_storage_capacity: float,
