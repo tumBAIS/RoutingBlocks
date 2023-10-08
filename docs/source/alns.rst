@@ -107,12 +107,16 @@ The interfaces are as follows:
     :members:
     :undoc-members:
 
-Solver
-------
+Solvers
+-------
 
-RoutingBlocks provides a ALNS solver that can be extended with arbitrary destroy and repair operators.
-The solver manages operator selection, operator weights, and solution generation. We note that this solver can also be
-used to implement regular LNS and perturbation-based algorithms. The interface is as follows:
+RoutingBlocks provides (A)LNS solvers that can be extended with arbitrary destroy and repair operators.
+The solvers manage operator selection, operator weights, and solution generation. We note that this solver can also be
+used to implement other perturbation-based algorithms. Their interfaces are as follows:
+
+.. autoapiclass:: routingblocks.LargeNeighborhood
+    :members:
+    :undoc-members:
 
 .. autoapiclass:: routingblocks.AdaptiveLargeNeighborhood
     :members:

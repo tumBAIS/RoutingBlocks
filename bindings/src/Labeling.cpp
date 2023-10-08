@@ -73,8 +73,6 @@ namespace routingblocks::bindings {
         }
     };
 
-    using PyFRVCP = routingblocks::FRVCP<pybind11::object>;
-
     template <class PropagatorClass> auto bind_propagator(auto& propagator) {
         return propagator.def("propagate", &PropagatorClass::propagate)
             .def("dominates", &PropagatorClass::dominates, "Returns true if label dominates other.")
@@ -97,10 +95,10 @@ namespace routingblocks::bindings {
                   .def(pybind11::init<>());
         bind_propagator<PyPropagator>(propagator_interface);
 
-        pybind11::class_<FRVCP<PyPropagator::value_type>>(m, "FRVCP")
+        pybind11::class_<FRVCP<PyPropagator::value_type>>(m, "FacilityPlacementOptimizer")
             .def(pybind11::init<const Instance&, std::shared_ptr<PyPropagator>>())
             .def("optimize", &FRVCP<PyPropagator::value_type>::optimize,
-                 "Solve FRVCP for the specified route.");
+                 "Solves the detour embedding problem for the specified route.");
     }
 
 }  // namespace routingblocks::bindings

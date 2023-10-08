@@ -85,7 +85,7 @@ class ADPTWEvaluation(PyEvaluation):
         ...
 
 
-class ADPTWFRVCP:
+class ADPTWFacilityPlacementOptimizer:
     """
     ADPTW-specific detour insertion algorithm. Inserts visits to replenishment facilities at optimal locations into a route.
     """

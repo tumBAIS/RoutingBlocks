@@ -20,18 +20,18 @@ interface bases on the abstractions introduced in :cite:t:`Irnich2008`.
 
 Customizing this algorithm to a specific problem instance is analogous to implementing a custom evaluation class.
 Specifically, this requires implementing the :py:class:`routingblocks.Propagator` interface and providing a custom label class.
-The solver (:py:class:`routingblocks.FRVCP`) can be configured to use a custom propagator by passing it in the constructor.
+The solver (:py:class:`routingblocks.FacilityPlacementOptimizer`) can be configured to use a custom propagator by passing it in the constructor.
 
 .. warning::
 
     We recommend implementing a custom Propagators by extending the native RoutingBlocks library instead of providing a python implementation for code used beyond prototyping. See `the NIFTW source code <https://github.com/tumBAIS/RoutingBlocks/blob/develop/native/include/routingblocks/NIFTWEvaluation.h>`_ for an example.
 
-The pseudocode listed below outlines how the CSP solver accesses the propagator interface:
+The pseudocode listed below outlines how the FacilityPlacementOptimizer accesses the propagator interface:
 
 .. code-block:: python
     :linenos:
     :emphasize-lines: 7, 9, 20, 24, 32, 33, 36, 42
-    :caption: Pseudocode for the CSP solver, lines using the propagator interface are highlighted.
+    :caption: Pseudocode for the FacilityPlacementOptimizer, lines using the propagator interface are highlighted.
 
     def extract_label():
         # Find the vertex with the cheapest label in the node queue
@@ -77,7 +77,7 @@ The pseudocode listed below outlines how the CSP solver accesses the propagator 
             settle(label, origin, propagator.order_before)
 
 
-.. autoapiclass:: routingblocks.FRVCP
+.. autoapiclass:: routingblocks.FacilityPlacementOptimizer
     :members:
     :undoc-members:
 

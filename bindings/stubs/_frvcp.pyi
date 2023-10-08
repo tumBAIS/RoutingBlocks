@@ -87,7 +87,7 @@ class Propagator:
         ...
 
 
-class FRVCP:
+class FacilityPlacementOptimizer:
     """
     Algorithm that inserts visits to replenishment facilities at optimal locations into a route.
     """

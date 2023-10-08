@@ -24,12 +24,12 @@ namespace routingblocks::bindings {
         m.def("create_niftw_vertex", &::bindings::helpers::vertex_constructor<NIFTWVertexData>);
         m.def("create_niftw_arc", &::bindings::helpers::arc_constructor<NIFTWArcData>);
 
-        pybind11::class_<FRVCP<NIFTWDPLabel>>(m, "NIFTWFRVCP")
-            .def(pybind11::init<>([](const Instance& instance, resource_t battery_capacity,
+        pybind11::class_<FRVCP<NIFTWDPLabel>>(m, "NIFTWFacilityPlacementOptimizer")
+            .def(pybind11::init<>([](const Instance& instance, resource_t resource_capacity,
                                      resource_t replenishment_time) {
-                return FRVCP<NIFTWDPLabel>(
-                    instance, std::make_shared<Propagator<NIFTWDPLabel>>(instance, battery_capacity,
-                                                                         replenishment_time));
+                return FRVCP<NIFTWDPLabel>(instance,
+                                           std::make_shared<Propagator<NIFTWDPLabel>>(
+                                               instance, resource_capacity, replenishment_time));
             }))
             .def("optimize", &FRVCP<NIFTWDPLabel>::optimize,
                  "Solve the detour embedding problem for the specified route.");

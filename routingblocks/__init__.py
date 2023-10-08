@@ -7,3 +7,4 @@ from . import utility
 # Specializations
 from . import adptw
 from . import niftw
+from .large_neighborhood import LargeNeighborhood

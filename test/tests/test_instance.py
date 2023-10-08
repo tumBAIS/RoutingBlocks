@@ -36,7 +36,8 @@ def create_arcs_matrix(num_vertices):
 
 
 def test_create_and_verify_instance(depot, customers, stations):
-    instance = create_basic_instance(depot, customers, stations)
+    arcs = create_arcs_matrix(1 + len(customers) + len(stations))
+    instance = create_basic_instance(depot, customers, stations, arcs=arcs)
 
     assert instance.fleet_size == 2
     assert instance.number_of_customers == 2
@@ -58,6 +59,11 @@ def test_create_and_verify_instance(depot, customers, stations):
             assert expected.is_depot == actual.is_depot
             assert expected.is_station == actual.is_station
             assert expected.data == actual.data
+
+    for v, arc_row in zip(instance, arcs):
+        for u, arc in zip(instance, arc_row):
+            assert id(instance.get_arc(v.vertex_id, u.vertex_id)) != id(arc)
+            assert instance.get_arc(v.vertex_id, u.vertex_id).data == arc.data
 
 
 def test_get_vertex_and_arc(depot, customers, stations):

@@ -24,7 +24,7 @@ namespace routingblocks::bindings {
         m.def("create_adptw_vertex", &::bindings::helpers::vertex_constructor<ADPTWVertexData>);
         m.def("create_adptw_arc", &::bindings::helpers::arc_constructor<ADPTWArcData>);
 
-        pybind11::class_<FRVCP<ADPTWLabel>>(m, "ADPTWFRVCP")
+        pybind11::class_<FRVCP<ADPTWLabel>>(m, "ADPTWFacilityPlacementOptimizer")
             .def(pybind11::init<>([](const Instance& instance, resource_t resource_capacity) {
                 return FRVCP<ADPTWLabel>(instance, std::make_shared<Propagator<ADPTWLabel>>(
                                                        instance, resource_capacity));

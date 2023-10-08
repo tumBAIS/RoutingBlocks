@@ -103,6 +103,7 @@ def blink_selector_factory(blink_probability: float, randgen: routingblocks.Rand
 def random_selector_factory(rangen: routingblocks.Random):
     """
     Creates a move selector which selects a random move from the sequence.
+
     :param rangen: The random number generator.
     :return: The configured move selector.
     """

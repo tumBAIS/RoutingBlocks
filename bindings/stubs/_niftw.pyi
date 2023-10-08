@@ -85,7 +85,7 @@ class NIFTWEvaluation(PyEvaluation):
         ...
 
 
-class NIFTWFRVCP:
+class NIFTWFacilityPlacementOptimizer:
     """
     NIFTW-specific detour insertion algorithm. Inserts visits to replenishment facilities at optimal locations into a route.
     """
