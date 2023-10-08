@@ -41,6 +41,7 @@ def last_move_selector(moves: Iterable[T]) -> T:
     :return: The last move in the sequence.
     """
     if isinstance(moves, Sequence):
+        assert len(moves) > 0, "Unable to select a move from an empty sequence"
         return moves[len(moves) - 1]
     move = None
     # Exhaust the iterator
@@ -61,6 +62,7 @@ def nth_move_selector_factory(n: int) -> MoveSelector[T]:
 
     def select(moves: Iterable[T]) -> T:
         if isinstance(moves, Sequence):
+            assert len(moves) > n, "Unable to select a move from an empty sequence"
             return moves[n - 1]
         remaining = n
         move = None
@@ -92,7 +94,7 @@ def blink_selector_factory(blink_probability: float, randgen: routingblocks.Rand
             if randgen.uniform(0, 1) <= blink_probability:
                 continue
             break
-        assert move is not None, "Unable to select a move from an empty sequence"
+        assert move is not None, "Sequence was exhausted before a move was selected"
         return move
 
     return select
@@ -106,9 +108,9 @@ def random_selector_factory(rangen: routingblocks.Random):
     """
 
     def select(moves: Iterable[T]) -> T:
-        # TODO Improve
         if not isinstance(moves, Sequence):
             moves = [*moves]
+        assert len(moves) > 0, "Unable to select a move from an empty sequence"
         pos = rangen.randint(0, len(moves) - 1)
         return moves[pos]
 
